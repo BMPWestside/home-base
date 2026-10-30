@@ -107,7 +107,9 @@
 
   .trk-add{display:block;margin:-4px auto 14px;padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.2);color:var(--soft);font-weight:700;font-size:13px}
   .gas .gh button{all:unset;cursor:pointer;flex:1}
-  .gas .gh .ed{flex:none;opacity:.6;font-size:15px;letter-spacing:0}
+  .gas .gh .ed{flex:none;opacity:.65;font-size:16px;letter-spacing:0;cursor:pointer;padding:4px 6px;border-radius:8px}
+  .gas .gh .ed.add{font-size:20px;font-weight:800;opacity:.8;margin-right:2px}
+  .divider{height:1px;margin:4px 18px 14px;background:currentColor;opacity:.18}
   .gas{margin:0 14px 12px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.08);color:var(--ink)}
   .gas .gh{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
   .gas .gr{display:flex;align-items:center;gap:8px;margin-top:12px}
@@ -701,7 +703,7 @@ function render(){
   if (S.tab !== "shopping" && S.tab !== "personal") S.tab = "shopping";
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
-  view.innerHTML = `<div class="pull" id="mpull"><span>Pull to add</span></div>${S.tab==="personal"?`<div id="trackers"></div>`:""}<div id="mslot"></div><div id="bands"></div>`;
+  view.innerHTML = `${S.tab==="personal"?`<div id="trackers"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal") renderTrackers();
   renderBands();
 }
@@ -791,7 +793,7 @@ const dayNum = iso => { const [y,m,d] = iso.split("-").map(Number); return Math.
 const fmtDate = iso => { const [y,m,d] = iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric"}); };
 function renderTrackers(){
   const host = document.getElementById("trackers"); if (!host) return;
-  host.innerHTML = (S.trackers||[]).map(t => {
+  host.innerHTML = (S.trackers||[]).map((t, ti) => {
     const ch = (t.changes||[]).slice().sort();
     const last = ch[ch.length-1];
     const since = last ? dayNum(isoToday()) - dayNum(last) : null;
@@ -800,13 +802,13 @@ function renderTrackers(){
     const stats = [gaps.length ? `Last one lasted ${gaps[gaps.length-1]} days` : "", avg!=null && gaps.length>1 ? `average ${avg} days` : "",
                    avg!=null && since!=null ? (since >= avg ? "⚠️ due" : `about ${avg - since} day${avg-since===1?"":"s"} left`) : ""].filter(Boolean).join(" · ");
     return `<div class="gas" data-tid="${t.id}">
-      <div class="gh"><button data-tedit="${t.id}">${t.icon||"⏱️"} ${esc(t.name)}</button><span class="ed" data-tedit="${t.id}">✎</span></div>
+      <div class="gh"><button data-tedit="${t.id}">${t.icon||"⏱️"} ${esc(t.name)}</button>${ti===0?`<span class="ed add" data-tadd="1" aria-label="Add tracker">＋</span>`:""}<span class="ed" data-tedit="${t.id}">✎</span></div>
       <div class="gr"><span class="gl">${esc(t.label||"Done on")}:</span><input type="date" class="tdate" value="${last || isoToday()}" max="${isoToday()}"><button class="gs" data-tsave="${t.id}">Save</button></div>
       ${last ? `<div class="big"><b>${since}</b><span>day${since===1?"":"s"} since last time</span></div>` : ""}
       ${stats ? `<div class="stats">${stats}</div>` : ""}
       ${ch.length ? `<div class="hist">${ch.slice(-4).reverse().map(d=>`<button data-tdel="${t.id}|${d}">${fmtDate(d)} ✕</button>`).join("")}</div>` : ""}
     </div>`;
-  }).join("") + `<button class="trk-add" id="trkAdd">＋ Add tracker</button>`;
+  }).join("") + ((S.trackers||[]).length ? "" : `<button class="trk-add" data-tadd="1">＋ Add tracker</button>`);
   const T = id => S.trackers.find(t=>t.id===id);
   host.querySelectorAll("[data-tsave]").forEach(b => b.onclick = () => {
     const t = T(b.dataset.tsave), v = b.parentNode.querySelector(".tdate").value; if (!t || !v) return;
@@ -821,7 +823,7 @@ function renderTrackers(){
     undoToast("Removed " + fmtDate(d), () => { t.changes.push(d); t.changes.sort(); save(); renderTrackers(); });
   });
   host.querySelectorAll("[data-tedit]").forEach(b => b.onclick = () => editTracker(b.dataset.tedit));
-  host.querySelector("#trkAdd").onclick = () => editTracker(null);
+  host.querySelectorAll("[data-tadd]").forEach(b => b.onclick = () => editTracker(null));
 }
 function editTracker(id, sub){
   const t = id ? S.trackers.find(x=>x.id===id) : null;
