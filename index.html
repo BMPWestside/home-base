@@ -101,8 +101,8 @@
   .band .n{position:absolute;top:10px;right:14px;font-size:15px;font-weight:700;opacity:.95}
   .band.done .t .tt{text-decoration:line-through;text-decoration-thickness:2px;opacity:.75}
   .band .sub{font-size:12px;opacity:.7;margin-top:4px;font-weight:600}
-  .prog{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(0,0,0,.25)}
-  .prog i{display:block;height:100%;background:currentColor;opacity:.85;border-radius:0 3px 3px 0;transition:width .3s}
+  .prog{position:absolute;left:44px;right:44px;bottom:12px;height:3px;border-radius:3px;background:rgba(0,0,0,.22);overflow:hidden}
+  .prog i{display:block;height:100%;background:currentColor;opacity:.7;border-radius:3px;transition:width .3s}
   .lifting{position:relative;z-index:10;box-shadow:0 14px 30px rgba(0,0,0,.45);filter:brightness(1.08)}
 
   .trk-add{display:block;margin:-4px auto 14px;padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.2);color:var(--soft);font-weight:700;font-size:13px}
@@ -725,7 +725,7 @@ function renderBands(){
       ${open? `<span class="n">${open}</span>`:""}
       <div class="t">${iconHTML(c)}<span class="tt">${esc(c.title)}</span>${c.shared?`<span class="sh" title="Shared">👥</span>`:""}</div>
       ${done? `<div class="sub">All done</div>` : ""}
-      ${total? `<div class="prog"><i style="width:${pct}%"></i></div>` : ""}
+      ${pct>0 && !done ? `<div class="prog"><i style="width:${pct}%"></i></div>` : ""}
     </button></div>`;
   });
   host.innerHTML = html;
@@ -1141,11 +1141,11 @@ function openAdder(kind){
   };
   inp.onblur = () => { commit(); slot.innerHTML = ""; };
 }
-function setupPull(target, atTop, getInd, trigger){
+function setupPull(target, atTop, getInd, trigger, exclude){
   let sy=null, sx=0, pulling=false, d=0;
   const reset = () => { const ind=getInd(); if(ind){ind.classList.add("anim");ind.style.height="0";} };
   const begin = (x,y,el) => {
-    if (!atTop() || (el && el.closest && el.closest("input,select,.confirm,.stp,[contenteditable='true']"))) { sy=null; return; }
+    if (!atTop() || (el && el.closest && (el.closest("input,select,.confirm,.stp,[contenteditable='true']") || (exclude && el.closest(exclude))))) { sy=null; return; }
     sy=y; sx=x; pulling=false; d=0;
   };
   const move = (x,y,ev) => {
@@ -1175,7 +1175,8 @@ function setupPull(target, atTop, getInd, trigger){
     window.addEventListener("pointermove", mm); window.addEventListener("pointerup", mu);
   });
 }
-setupPull(view, () => S.tab!=="work" && window.scrollY<=0, () => document.getElementById("mpull"), () => openAdder("card"));
+// listen on the whole page so pulling works even when a tab has no lists yet
+setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0, () => document.getElementById("mpull"), () => openAdder("card"), "#sheet,#menu,#scrim");
 setupPull(itemsEl, () => itemsEl.scrollTop<=0, () => document.getElementById("ipull"), () => openAdder("item"));
 
 /* ================= pinch in / tap title to close ================= */
