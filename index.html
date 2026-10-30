@@ -22,12 +22,15 @@
     --acc:#1f55d8; --soft:#a9c4ea; --ink:#ffffff; --onacc:#ffffff; --menu:#0d2a55; --danger:#ff7b74;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{background:var(--bottom)}
   html,body{margin:0;min-height:100%}
+  body::before{content:"";position:fixed;inset:-2px;z-index:-1;background:linear-gradient(180deg,var(--top),var(--bottom));transition:background .3s}
+  .statusbg{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--top);z-index:60;pointer-events:none}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
-    background:linear-gradient(180deg,var(--top),var(--bottom)) fixed;
+    background:transparent;min-height:100vh;min-height:100dvh;
     color:var(--acc);
-    padding-top:env(safe-area-inset-top);
+    padding-top:calc(env(safe-area-inset-top) + 6px);
     padding-bottom:env(safe-area-inset-bottom);
     overscroll-behavior:none;
     transition:background .3s,color .3s;
@@ -47,7 +50,7 @@
   .gear:active{background:rgba(255,255,255,.1)}
 
   .tabs{
-    position:sticky;top:0;z-index:5;
+    position:sticky;top:calc(env(safe-area-inset-top) + 4px);z-index:5;
     display:flex;gap:6px;margin:10px 16px 14px;padding:5px;
     background:rgba(0,0,0,.3);border-radius:16px;
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
@@ -166,7 +169,7 @@
   /* open list */
   .sheet{
     position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;
-    padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
+    padding-top:calc(env(safe-area-inset-top) + 6px);padding-bottom:env(safe-area-inset-bottom);
     opacity:0;transform:translateY(30px) scale(.98);pointer-events:none;
     transition:opacity .22s ease, transform .26s cubic-bezier(.2,.8,.2,1);
   }
@@ -286,6 +289,7 @@
 </style>
 </head>
 <body>
+<div class="statusbg"></div>
 <header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1><button class="gear" id="gear" aria-label="Settings">⚙︎</button></header>
 
 <nav class="tabs" id="tabs">
@@ -683,9 +687,12 @@ function applyTheme(){
   const b = document.body;
   b.className = S.tab;
   const keys = ["top","bottom","acc","soft","ink","onacc","menu"];
-  if (S.tab === "work"){ keys.forEach(k => b.style.removeProperty("--"+k)); return; }
-  const th = theme(); keys.forEach(k => b.style.setProperty("--"+k, th[k]));
+  const root = document.documentElement;
+  const tm = document.querySelector('meta[name="theme-color"]');
+  if (S.tab === "work"){ keys.forEach(k => { b.style.removeProperty("--"+k); root.style.removeProperty("--"+k); }); if (tm) tm.content = "#0b2d63"; return; }
+  const th = theme(); keys.forEach(k => { b.style.setProperty("--"+k, th[k]); root.style.setProperty("--"+k, th[k]); });
   b.style.setProperty("--rowbg", th.row);
+  if (tm) tm.content = th.top;
 }
 
 /* ================= main view ================= */
@@ -854,13 +861,14 @@ setInterval(() => { if (S.tab==="personal") renderTrackers(); }, 60*60*1000);
 const sheet = document.getElementById("sheet"), itemsEl = document.getElementById("items"), ilist = document.getElementById("ilist");
 let openSeq = 0;
 function openCard(id){ openSeq++; openId = id; confirmId = null; document.getElementById("islot").innerHTML=""; renderSheet(); sheet.classList.add("on"); itemsEl.scrollTop = 0; }
-function closeCard(){ sheet.classList.remove("on"); openId = null; closeMenu(); render(); }
+function closeCard(){ const sb = document.querySelector(".statusbg"); if (sb) sb.style.background = ""; sheet.classList.remove("on"); openId = null; closeMenu(); render(); }
 
 function renderSheet(){
   const c = findCard(openId); if (!c) { closeCard(); return; }
   const th = theme();
   const i = cards().indexOf(c), {bg,fg} = colorFor(i, Math.max(cards().length,6));
   sheet.style.background = `linear-gradient(180deg, ${bg}, ${th.b})`;
+  const sb = document.querySelector(".statusbg"); if (sb) sb.style.background = bg;
   sheet.style.color = fg;
   document.getElementById("stitle").innerHTML = `${iconHTML(c)}${esc(c.title)}${c.shared?" 👥":""}`;
   const open = c.items.filter(x=>!x.done), done = c.items.filter(x=>x.done);
