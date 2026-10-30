@@ -1,5 +1,5 @@
 // My Lists — offline cache. Same-origin files only; sync calls to Google go straight to the network.
-const CACHE = "homebase-v2";
+const CACHE = "homebase-v3";
 const SHELL = ["./", "index.html", "manifest.json", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-180.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
