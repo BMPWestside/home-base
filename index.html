@@ -78,13 +78,13 @@
   .bconf .no{background:rgba(255,255,255,.15);color:#fff;padding:9px 14px;border-radius:10px;font-weight:700}
   .band .t{font-size:24px;font-weight:700;line-height:1.15;word-break:break-word}
   .band .ic{margin-right:8px}
-  .lg{display:inline-block;width:34px;height:34px;border-radius:9px;background:#fff;object-fit:contain;padding:2px;vertical-align:middle;margin-right:10px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-  .stitle .lg{width:36px;height:36px;margin-right:10px;vertical-align:-6px}
+  .lg{display:inline-block;width:38px;height:38px;object-fit:contain;vertical-align:middle;margin-right:10px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+  .stitle .lg{width:38px;height:38px;margin-right:10px;vertical-align:-8px}
   .set-sel{width:calc(100% - 16px);margin:2px 8px 6px;appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;border:0;color:var(--ink);border-radius:12px;padding:11px 34px 11px 12px;font-size:16px;font-weight:600;outline:none}
   .set-sel option{color:#000}
   .lrow{display:flex;align-items:center;gap:10px;padding:6px 8px 4px}
   .lrow .prev{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:26px;flex:none;overflow:hidden}
-  .lrow .prev img{width:100%;height:100%;object-fit:contain;background:#fff;padding:3px;box-sizing:border-box}
+  .lrow .prev img{width:100%;height:100%;object-fit:contain;padding:3px;box-sizing:border-box}
   .lrow .pill{padding:10px 12px;font-size:14px}
   .sg2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
   .sg2 .set-sel{width:calc(100% - 12px);margin:2px 6px 4px}
@@ -1213,20 +1213,64 @@ scrim.onclick = () => { if (Date.now() - (menu._at||0) > 450) closeMenu(); };
 const openSettings = () => showSettings(null);
 document.getElementById("gear").onclick = openSettings;
 
+// Make the logo's plain background transparent: flood-fill from the edges, removing pixels
+// close to the edge colour (white, or any solid colour a screenshot has around the logo).
+function knockOutBackground(cv){
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const im = ctx.getImageData(0, 0, W, H), d = im.data;
+  // background colour = most common colour among the edge pixels
+  const counts = new Map();
+  const key = i => (d[i]>>4)+","+(d[i+1]>>4)+","+(d[i+2]>>4);
+  for (let x = 0; x < W; x++) for (const y of [0, H-1]) { const i = (y*W+x)*4; if (d[i+3] > 200){ const k = key(i); counts.set(k, (counts.get(k)||0)+1); } }
+  for (let y = 0; y < H; y++) for (const x of [0, W-1]) { const i = (y*W+x)*4; if (d[i+3] > 200){ const k = key(i); counts.set(k, (counts.get(k)||0)+1); } }
+  if (!counts.size) return false;                     // already transparent around the edges
+  const best = [...counts.entries()].sort((a,b)=>b[1]-a[1])[0];
+  if (best[1] < (W+H) * 0.5) return false;            // edges aren't a plain colour — leave it alone
+  const [br,bg,bb] = best[0].split(",").map(v => v*16+8);
+  const near = i => Math.abs(d[i]-br) + Math.abs(d[i+1]-bg) + Math.abs(d[i+2]-bb);
+  const seen = new Uint8Array(W*H), stack = [];
+  for (let x = 0; x < W; x++){ stack.push(x, (H-1)*W + x); }
+  for (let y = 0; y < H; y++){ stack.push(y*W, y*W + W-1); }
+  while (stack.length){
+    const p = stack.pop(); if (seen[p]) continue; seen[p] = 1;
+    const i = p*4; if (d[i+3] === 0) continue;
+    const dist = near(i);
+    if (dist > 90) continue;
+    d[i+3] = dist < 45 ? 0 : Math.round(d[i+3] * (dist-45)/45);   // soft edge
+    const x = p % W, y = (p / W) | 0;
+    if (x > 0) stack.push(p-1); if (x < W-1) stack.push(p+1);
+    if (y > 0) stack.push(p-W); if (y < H-1) stack.push(p+W);
+  }
+  ctx.putImageData(im, 0, 0);
+  return true;
+}
+function logoCanvas(img){
+  const N = 128, sc = Math.min(N/img.width, N/img.height, 1);
+  const cv = document.createElement("canvas"); cv.width = Math.max(1, Math.round(img.width*sc)); cv.height = Math.max(1, Math.round(img.height*sc));
+  cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+  knockOutBackground(cv);
+  return cv.toDataURL("image/png");
+}
 function resizeLogo(file){
   return new Promise((res, rej) => {
     const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => {
-      const N = 112, sc = Math.min(N/img.width, N/img.height, 1);
-      const cv = document.createElement("canvas"); cv.width = Math.round(img.width*sc); cv.height = Math.round(img.height*sc);
-      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
-      URL.revokeObjectURL(url);
-      let d = cv.toDataURL("image/webp", .85); if (!d.startsWith("data:image/webp")) d = cv.toDataURL("image/png");
-      res(d);
-    };
+    img.onload = () => { URL.revokeObjectURL(url); try { res(logoCanvas(img)); } catch(e){ rej(e); } };
     img.onerror = rej; img.src = url;
   });
 }
+// logos uploaded before this change: clear their backgrounds once
+(function fixOldLogos(){
+  const todo = [];
+  ["shopping","personal"].forEach(t => (S.tabs[t]||[]).forEach(c => { if (c.logo && !c.logoT) todo.push(c); }));
+  if (!todo.length) return;
+  let left = todo.length;
+  todo.forEach(c => {
+    const img = new Image();
+    img.onload = () => { try { c.logo = logoCanvas(img); } catch(e){} c.logoT = 1; if (--left === 0){ save(); refreshAll(); } };
+    img.onerror = () => { c.logoT = 1; if (--left === 0) save(); };
+    img.src = c.logo;
+  });
+})();
 
 function showSettings(listId, sub){
   const onLists = S.tab !== "work";
@@ -1277,7 +1321,7 @@ function showSettings(listId, sub){
     menu.querySelector("#rn").onsubmit = e => { e.preventDefault(); const v = menu.querySelector("#rnIn").value.trim(); if (v){ c.title = v; save(); refreshAll(); toast("Renamed"); showSettings(c.id); } };
     menu.querySelector("#logoIn").onchange = async e => {
       const f = e.target.files && e.target.files[0]; if (!f) return;
-      try { c.logo = await resizeLogo(f); save(); refreshAll(); showSettings(c.id); toast("Logo added"); } catch(_){ toast("Couldn't read that image"); }
+      try { c.logo = await resizeLogo(f); c.logoT = 1; save(); refreshAll(); showSettings(c.id); toast("Logo added"); } catch(_){ toast("Couldn't read that image"); }
     };
     menu.querySelector("#emo").onclick = () => showSettings(c.id, "icon");
     const rm = menu.querySelector("#rmLogo"); if (rm) rm.onclick = () => { delete c.logo; save(); refreshAll(); showSettings(c.id); };
