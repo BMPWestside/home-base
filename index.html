@@ -79,6 +79,7 @@
   .band .t{font-size:24px;font-weight:700;line-height:1.15;word-break:break-word}
   .band .ic{margin-right:8px}
   .lg{display:inline-block;width:38px;height:38px;object-fit:contain;vertical-align:middle;margin-right:10px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+  .stitle .lgbig{display:block;margin:0 auto;max-width:70%;height:64px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
   .stitle .lg{width:38px;height:38px;margin-right:10px;vertical-align:-8px}
   .set-sel{width:calc(100% - 16px);margin:2px 8px 6px;appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;border:0;color:var(--ink);border-radius:12px;padding:11px 34px 11px 12px;font-size:16px;font-weight:600;outline:none}
   .set-sel option{color:#000}
@@ -872,7 +873,7 @@ function renderSheet(){
   sheet.style.background = `linear-gradient(180deg, ${bg}, ${th.b})`;
   const sb = document.querySelector(".statusbg"); if (sb) sb.style.background = bg;
   sheet.style.color = fg;
-  document.getElementById("stitle").innerHTML = `${iconHTML(c)}${esc(c.title)}${c.shared?" 👥":""}`;
+  document.getElementById("stitle").innerHTML = c.logo ? `<img class="lgbig" src="${c.logo}" alt="${esc(c.title)}">` : `${iconHTML(c)}${esc(c.title)}${c.shared?" 👥":""}`;
   const open = c.items.filter(x=>!x.done), done = c.items.filter(x=>x.done);
   document.getElementById("smeta").textContent = c.items.length ? `${open.length} to go · ${done.length} done` : "";
   const pr = document.getElementById("sprog");
