@@ -62,7 +62,7 @@
   /* list cards */
   .band{
     position:relative;display:block;width:100%;text-align:center;
-    padding:26px 44px 28px;min-height:88px;overflow:hidden;
+    padding:15px 44px 17px;min-height:60px;overflow:hidden;
     transition:filter .15s, transform .15s;
   }
   .band,.item{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
@@ -76,8 +76,8 @@
   .bconf .bb{display:flex;gap:8px;flex:none}
   .bconf .yes{background:#e5483f;color:#fff;padding:9px 14px;border-radius:10px;font-weight:800}
   .bconf .no{background:rgba(255,255,255,.15);color:#fff;padding:9px 14px;border-radius:10px;font-weight:700}
-  body.shopping .band{text-align:left;padding-left:22px}
-  .band .t{font-size:24px;font-weight:700;line-height:1.15;word-break:break-word}
+  body.shopping .band{text-align:left;padding-left:18px}
+  .band .t{font-size:20px;font-weight:700;line-height:1.15;word-break:break-word}
   .band .ic{margin-right:8px}
   .lg{display:inline-block;width:38px;height:38px;object-fit:contain;vertical-align:middle;margin-right:10px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
   .stitle .lgbig{display:block;margin:0 auto;max-width:70%;height:64px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
@@ -251,6 +251,8 @@
   @keyframes lkshake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
   .acts4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:2px 8px 8px}
   .acts4 button{padding:11px 2px;border-radius:12px;background:rgba(255,255,255,.1);font-size:13px;font-weight:700;color:var(--ink)}
+  .pbars.bnextbars{margin:0 0 12px}
+  .bnextbars .pi{display:grid;place-items:center}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -261,10 +263,10 @@
   .menu .mt{padding:10px 12px 4px !important}
   .sep{height:1px;background:rgba(255,255,255,.1);margin:6px 10px}
   .band .sh{font-size:15px;margin-left:6px;opacity:.85;vertical-align:middle}
-  .band .n{position:absolute;top:10px;right:14px;font-size:15px;font-weight:700;opacity:.95}
+  .band .n{position:absolute;top:50%;transform:translateY(-50%);right:16px;font-size:15px;font-weight:700;opacity:.95}
   .band.done .t .tt{text-decoration:line-through;text-decoration-thickness:2px;opacity:.75}
   .band .sub{font-size:12px;opacity:.7;margin-top:4px;font-weight:600}
-  .prog{position:absolute;left:44px;right:44px;bottom:12px;height:3px;border-radius:3px;background:rgba(0,0,0,.22);overflow:hidden}
+  .prog{position:absolute;left:44px;right:44px;bottom:7px;height:3px;border-radius:3px;background:rgba(0,0,0,.22);overflow:hidden}
   .prog i{display:block;height:100%;background:currentColor;opacity:.7;border-radius:3px;transition:width .3s}
   .lifting{position:relative;z-index:10;box-shadow:0 14px 30px rgba(0,0,0,.45);filter:brightness(1.08)}
 
@@ -310,6 +312,23 @@
   .dates .dd.soon{color:var(--acc)}
   .dmore{display:block;margin:6px auto 0;font-size:13px;font-weight:800;color:var(--acc)}
   .today{margin:0 14px 12px;padding:10px 12px;border-radius:16px;background:rgba(0,0,0,.24)}
+  #bands.fit{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-radius:0}
+  .pbars{margin:0 14px 10px;padding:8px 12px 6px;border-radius:16px;background:rgba(0,0,0,.24)}
+  .pbars .th{font-size:11px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--soft);margin:0 2px 2px}
+  .pbar{display:flex;align-items:center;gap:10px;width:100%;padding:6px 2px;text-align:left;color:var(--ink)}
+  .pbar .pi{width:20px;text-align:center;font-size:15px;flex:none}
+  .pbar .pm{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+  .pbar .pl{display:flex;align-items:baseline;gap:6px;font-size:13.5px;min-width:0}
+  .pbar .pl b{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pbar .pa{font-weight:700;opacity:.85;white-space:nowrap}
+  .pbar .pw{margin-left:auto;font-size:12px;font-weight:800;color:var(--soft);white-space:nowrap}
+  .pbar .pt{height:4px;border-radius:3px;background:rgba(255,255,255,.13);overflow:hidden}
+  .pbar .pt i{display:block;height:100%;border-radius:3px;background:#3ccf7a;transition:width .4s}
+  .pbar.warm .pt i{background:#f2c14e}
+  .pbar.hot .pt i{background:#ff9f43}
+  .pbar.late .pt i{background:#ff5a4e}
+  .pbar.auto .pt i{background:#6aa8ff}
+  .pbar.late .pw,.pbar.hot .pw{color:#ff8a80}
   .today .th{font-size:11.5px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--soft);margin:0 2px 4px}
   .today .trow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 2px;text-align:left;color:var(--ink);font-size:14.5px}
   .today .trow + .trow{border-top:1px solid rgba(255,255,255,.07)}
@@ -943,11 +962,12 @@ function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
   if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="bills"></div>`; renderBills(); return; }
-  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div>`:""}${S.tab==="personal"?`<div id="trackers"></div><div id="dates"></div><div id="pbills"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
+  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div>`:""}${S.tab==="personal"?`<div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal"){ renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
   renderBanner();
   if (S.tab==="shopping") renderToday();
   renderBands();
+  fitBands();
 }
 function renderBands(){
   const host = document.getElementById("bands"); if (!host) return;
@@ -1465,34 +1485,57 @@ function editDate(id){
 }
 
 /* ================= Today card (top of Shopping) ================= */
+function pbarRow(o){
+  const pct = Math.max(4, Math.min(100, Math.round(o.pct)));
+  return `<button class="pbar ${o.tone||""}" ${o.attrs||""}><span class="pi">${o.icon}</span><span class="pm"><span class="pl"><b>${o.name}</b>${o.amt ? `<span class="pa">${o.amt}</span>` : ""}<span class="pw">${o.when}</span></span><span class="pt"><i style="width:${pct}%"></i></span></span></button>`;
+}
+function pTone(pct, late){ return late ? "late" : pct >= 85 ? "hot" : pct >= 55 ? "warm" : ""; }
+function dueWords(d){ return d < 0 ? `${-d} day${d<-1?"s":""} overdue` : d === 0 ? "today" : d === 1 ? "tomorrow" : `in ${d} days`; }
 function todayRows(){
   const rows = [];
   if (typeof BB !== "undefined" && typeof bbUnpaid === "function"){
-    bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
-      const d = daysTo(b.dueDate);
-      rows.push({ k:"bill", icon:"💸", html:`<b>${esc(bbProv(b.provider).name)}</b> ${money(b.amount)} · ${d < 0 ? `${-d} days overdue` : d === 0 ? "due today" : d === 1 ? "due tomorrow" : `due in ${d} days`}`, pid:b.provider });
+    bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 7).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
+      const d = daysTo(b.dueDate), pct = d < 0 ? 100 : (7 - d) / 7 * 100;
+      rows.push({ k:"bill", pid:b.provider, icon:"💸", name:esc(bbProv(b.provider).name), amt:money0(b.amount), when:dueWords(d), pct, tone:pTone(pct, d <= 0) });
     });
   }
   const gas = (S.trackers||[]).find(t => /gas/i.test(t.name||"") || t.icon === "🔥");
   if (gas && (gas.changes||[]).length){
     const ch = gas.changes.slice().sort(), last = ch[ch.length-1], since = dayNum(isoToday()) - dayNum(last);
     const gaps = ch.slice(1).map((d,i) => dayNum(d) - dayNum(ch[i])), avg = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length) : null;
-    rows.push({ k:"gas", icon:"🔥", html:`Gas bottle · <b>${since} days</b>${avg ? ` (usually ${avg})` : ""}${avg && since >= avg ? " · ⚠️ due" : ""}` });
+    const pct = avg ? since / avg * 100 : 50;
+    rows.push({ k:"gas", icon:"🔥", name:"Gas bottle", when: avg ? `${since} of ~${avg} days${since >= avg ? " · due" : ""}` : `${since} days`, pct, tone:pTone(pct, avg && since >= avg) });
   }
-  const up = (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 7).sort((a,b) => a.days - b.days)[0];
-  if (up) rows.push({ k:"date", icon: up.dt.icon || "📅", html:`<b>${esc(up.dt.name)}</b> · ${up.days === 0 ? "today 🎉" : up.days === 1 ? "tomorrow" : `in ${up.days} days`}` });
+  (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 14).sort((a,b) => a.days - b.days).slice(0,2).forEach(up => {
+    const pct = (14 - up.days) / 14 * 100;
+    rows.push({ k:"date", icon: up.dt.icon || "📅", name:esc(up.dt.name), when: up.days === 0 ? "today 🎉" : dueWords(up.days), pct, tone: up.days <= 1 ? "hot" : up.days <= 7 ? "warm" : "" });
+  });
   return rows;
 }
 function renderToday(){
   const host = document.getElementById("today"); if (!host) return;
   const rows = todayRows();
-  if (!rows.length){ host.innerHTML = ""; return; }
-  host.innerHTML = `<div class="today"><div class="th">Today</div>${rows.map(r => `<button class="trow" data-k="${r.k}"${r.pid ? ` data-pid="${esc(r.pid)}"` : ""}><span>${r.icon}</span><span class="tt">${r.html}</span></button>`).join("")}</div>`;
-  host.querySelectorAll(".trow").forEach(b => b.onclick = () => {
+  if (!rows.length){ host.innerHTML = ""; fitBands(); return; }
+  host.innerHTML = `<div class="pbars"><div class="th">Today</div>${rows.map(r => pbarRow(Object.assign({}, r, { attrs:`data-k="${r.k}"${r.pid ? ` data-pid="${esc(r.pid)}"` : ""}` }))).join("")}</div>`;
+  host.querySelectorAll(".pbar").forEach(b => b.onclick = () => {
     if (b.dataset.k === "bill"){ S.tab = "bills"; save(); render(); setTimeout(() => typeof bbOpenProvider === "function" && bbOpenProvider(b.dataset.pid), 50); }
     else { S.tab = "personal"; save(); render(); }
   });
+  fitBands();
 }
+
+/* ================= lists area: fit to screen, scroll only the lists ================= */
+function fitBands(){
+  const b = document.getElementById("bands"); if (!b) return;
+  if (!(S.tab === "shopping" || S.tab === "personal")){ b.classList.remove("fit"); b.style.maxHeight = ""; return; }
+  const pb = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+  const top = b.getBoundingClientRect().top + window.scrollY;
+  const avail = Math.floor(window.innerHeight - top - pb - 4);
+  if (avail >= 180){ b.classList.add("fit"); b.style.maxHeight = avail + "px"; }
+  else { b.classList.remove("fit"); b.style.maxHeight = ""; }
+}
+addEventListener("resize", () => fitBands());
+if (window.ResizeObserver){ let fbRaf = 0; new ResizeObserver(() => { cancelAnimationFrame(fbRaf); fbRaf = requestAnimationFrame(fitBands); }).observe(document.getElementById("view")); }
 
 /* ================= tracker history ================= */
 function showTrackerHistory(id){
@@ -1566,13 +1609,13 @@ function attachHold(el, container, sel, onDone, onDrop){
     timer = setTimeout(() => { timer = null; startDrag(sy); }, HOLD_MS);
   };
   const early = (x, y) => { if (timer && (Math.abs(x-sx) > 8 || Math.abs(y-sy) > 8)) cancelTimer(); };
-  let startY = 0, baseTop = 0, dragging = false, overZone = false;
+  let startScroll = 0, startY = 0, baseTop = 0, dragging = false, overZone = false;
   const zone = onDrop ? document.getElementById("dropzone") : null;
-  const scroller = () => container === ilist ? itemsEl : null;
+  const scroller = () => container === ilist ? itemsEl : (container.id === "bands" && container.classList.contains("fit") ? container : null);
   const peers = () => [...container.querySelectorAll(":scope > " + sel)];
   function startDrag(y){
     window.__drag = true; dragging = true;
-    startY = y; baseTop = el.offsetTop;
+    startY = y; baseTop = el.offsetTop; startScroll = (scroller() || {}).scrollTop || 0;
     el.classList.add("lifting");
     el.style.transition = "box-shadow .15s"; el.style.transform = "scale(1.03)";
     if (zone){ zone.classList.add("show"); overZone = false; }
@@ -1593,9 +1636,10 @@ function attachHold(el, container, sel, onDone, onDrop){
       el.style.opacity = "";
     }
     const sc = scroller();
-    if (sc){ if (y < 120) sc.scrollTop -= 10; else if (y > innerHeight - (zone ? 150 : 80) && !overZone) sc.scrollTop += 10; }
+    if (sc && sc !== itemsEl){ const r = sc.getBoundingClientRect(); if (y < r.top + 50) sc.scrollTop -= 10; else if (y > r.bottom - 50) sc.scrollTop += 10; }
+    else if (sc){ if (y < 120) sc.scrollTop -= 10; else if (y > innerHeight - (zone ? 150 : 80) && !overZone) sc.scrollTop += 10; }
     else { if (y < 80) scrollBy(0,-10); else if (y > innerHeight - 80) scrollBy(0,10); }
-    const want = baseTop + (y - startY);
+    const want = baseTop + (y - startY) + (sc ? sc.scrollTop - startScroll : 0);
     const list = peers(), i = list.indexOf(el), prev = list[i-1], next = list[i+1];
     if (prev && want < prev.offsetTop + prev.offsetHeight/2){
       const b = prev.offsetTop; container.insertBefore(el, prev); flip(prev, b);
@@ -1702,7 +1746,7 @@ function setupPull(target, atTop, getInd, trigger, exclude){
   });
 }
 // listen on the whole page so pulling works even when a tab has no lists yet
-setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0, () => document.getElementById("mpull"), () => S.tab === "bills" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
+setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0 && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
 setupPull(itemsEl, () => itemsEl.scrollTop<=0, () => document.getElementById("ipull"), () => openAdder("item"));
 
 /* ================= pinch in / tap title to close ================= */
@@ -2094,7 +2138,7 @@ function bbMissing(){
 function updateBillsBadge(){
   const t = document.querySelector('.tab[data-tab="bills"]'); if (!t) return;
   const urgent = bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).length + bbReview().length;
-  t.innerHTML = "Bills" + (urgent ? `<i class="tbadge">${urgent}</i>` : "");
+  void urgent; t.textContent = "Bills";
 }
 
 const BB_CAT_ICON = {
@@ -2201,9 +2245,11 @@ function bbDueHTML(){
   let h = "";
   bbMissing().forEach(m => { h += `<div class="balert">${bbAv(m.p,"sm")}<div><b>${esc(m.p.name)} hasn't arrived</b><span>${m.late} days later than usual · last ${niceD(m.last)}</span></div></div>`; });
   const u = bbUnpaid();
-  const next = u.filter(x => x.dueDate).sort((a,c) => a.dueDate < c.dueDate ? -1 : 1)[0];
-  if (next){ const p = bbProv(next.provider), w = bbWhen(next);
-    h += `<button class="bnext" data-prov="${esc(p.id)}"><span class="bdot ${bbState(next)}"></span><span class="lbl">Next</span><b>${esc(p.name)}</b><span class="amt">${money(next.amount)}</span><span class="w ${w.c}">${w.t}</span></button>`; }
+  const dated = u.filter(x => x.dueDate).sort((a,c) => a.dueDate < c.dueDate ? -1 : 1);
+  let nx = dated.filter(x => daysTo(x.dueDate) <= 14).slice(0, 5); if (!nx.length) nx = dated.slice(0, 1);
+  if (nx.length) h += `<div class="pbars bnextbars"><div class="th">Next</div>${nx.map(b => { const p = bbProv(b.provider), d = daysTo(b.dueDate), w = bbWhen(b);
+    const pct = d < 0 ? 100 : Math.max(0, (14 - d) / 14 * 100);
+    return pbarRow({ icon:`<span class="bdot ${bbState(b)}"></span>`, name:esc(p.name), amt:money(b.amount), when:w.t, pct, tone: b.autopay && d >= 0 ? "auto" : pTone(pct, d <= 0), attrs:`data-prov="${esc(p.id)}"` }); }).join("")}</div>`;
   h += bbCalHTML();
   const latest = {};
   BB.bills.filter(b => b.status === "due" || b.status === "paid").forEach(b => { const kk = b.dueDate || b.paidDate || ""; if (!latest[b.provider] || kk > latest[b.provider]) latest[b.provider] = kk; });
