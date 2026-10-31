@@ -1701,7 +1701,7 @@ function parseBillBellLink(text){
     let api = p.get("api"), key = p.get("key");
     if (api && key){
       api = api.trim().replace(/\/dev(\?.*)?$/, "/exec");                  // the editor's test address doesn't work on phones
-      if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(api)) return null;
+      if (!/^https?:\/\//.test(api)) return null;
       return { api, key: key.trim() };
     }
   } catch(e){}
@@ -1723,6 +1723,27 @@ function bbJsonp(params, timeoutMs){
     document.head.appendChild(el);
   });
 }
+// Ask the BillBell script directly first (the same way Home Base syncs your lists);
+// fall back to the script-tag method BillBell itself uses.
+async function bbGet(params, timeoutMs){
+  const q = new URLSearchParams(Object.assign({}, params, { key: LOCAL.bbKey, t: Date.now() }));
+  const url = LOCAL.bbApi + (LOCAL.bbApi.includes("?") ? "&" : "?") + q.toString();
+  let firstErr;
+  try {
+    const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = ctl ? setTimeout(() => ctl.abort(), timeoutMs || 60000) : null;
+    const r = await fetch(url, { cache:"no-store", signal: ctl ? ctl.signal : undefined });
+    if (timer) clearTimeout(timer);
+    const data = await r.json();
+    if (data && data.error) throw Object.assign(new Error(data.error), { fromScript:true });
+    return data;
+  } catch(e){
+    if (e.fromScript) throw e;
+    firstErr = e;
+  }
+  try { return await bbJsonp(params, timeoutMs); }
+  catch(e){ throw e.message && !/error page/.test(e.message) ? e : firstErr && firstErr.name === "AbortError" ? new Error("BillBell took too long to answer") : e; }
+}
 function bbNormalise(data){
   BB.providers = (data.providers||[]).map(p => Object.assign({}, p, { cycle: Number(p.cycle)||0 }));
   BB.bills = (data.bills||[]).map(b => Object.assign({}, b, { amount: Number(b.amount)||0, autopay: String(b.autopay) === "true" }));
@@ -1737,8 +1758,8 @@ async function bbCall(action, payload){
   const big = JSON.stringify(payload||{}).length > 1500;
   if (action === "upload" || big){
     await fetch(LOCAL.bbApi, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ key: LOCAL.bbKey, action }, payload)) });
-    data = await bbJsonp({ action:"data" });
-  } else data = await bbJsonp({ action, payload: JSON.stringify(payload||{}) }, action === "scan" ? 300000 : 60000);
+    data = await bbGet({ action:"data" });
+  } else data = await bbGet({ action, payload: JSON.stringify(payload||{}) }, action === "scan" ? 300000 : 60000);
   bbNormalise(data);
   try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
   renderBillsSafe();
@@ -1750,7 +1771,7 @@ async function billsRefresh(spin){
   if (!bbOn() || BB.loading) return;
   BB.loading = true;
   try {
-    const data = await bbJsonp({ action:"data" });
+    const data = await bbGet({ action:"data" });
     bbNormalise(data); BB.err = "";
     try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
     if (spin) toast("Bills up to date");
