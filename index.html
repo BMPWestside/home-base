@@ -516,6 +516,24 @@
   body.work .toast{background:#fff;color:#0b2d63}
   .toast.on{opacity:1;transform:translate(-50%,0)}
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+  /* ===== see-through glass look ===== */
+  body::after{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;filter:blur(40px);opacity:.55;
+    background:radial-gradient(circle at 12% 18%,var(--acc) 0,transparent 32%),radial-gradient(circle at 88% 42%,var(--soft) 0,transparent 30%),radial-gradient(circle at 30% 85%,var(--acc) 0,transparent 28%)}
+  .statusbg{background:transparent !important}
+  .tabs,.gas,.pbar,.bseg,.btile,.bcard,.today,.bnext,.bstat,.bcal,.bring,.balert,.toast,#toast,#dropzone,.menu,.lock{
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5)}
+  .tabs{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+  .gas{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}
+  .btile{background:rgba(255,255,255,.08) !important;border:1px solid rgba(255,255,255,.14)}
+  .bcard{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+  .menu{background:color-mix(in srgb,var(--menu) 72%,transparent);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
+  .scrim{background:rgba(0,0,0,.28)}
+  #bands{padding:0 12px}
+  #bands > .bw{margin-bottom:8px;border-radius:18px}
+  .band{border:1px solid rgba(255,255,255,.18);border-radius:18px;-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+  .sheet{-webkit-backdrop-filter:blur(30px) saturate(1.5);backdrop-filter:blur(30px) saturate(1.5)}
+  .item:not(.confirm) .fg{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 </style>
 </head>
 <body>
@@ -926,6 +944,7 @@ setInterval(() => { if (weeklyReset()){ if (S.tab!=="work") renderBands(); if (o
 /* ================= helpers ================= */
 const hex = h => [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const mix = (a,b,t) => { const A=hex(a),B=hex(b); return "rgb("+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")+")"; };
+const glass = (rgb, a) => String(rgb).replace(/^rgb\(/, "rgba(").replace(/\)$/, "," + a + ")");
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const cards = () => S.tabs[S.tab];
 const findCard = id => cards().find(c=>c.id===id);
@@ -987,7 +1006,7 @@ function renderBands(){
         <span class="bb"><button class="yes" data-byes="${c.id}">Delete</button><button class="no" data-bno="1">Cancel</button></span></div></div>`;
       return;
     }
-    html += `<div class="bw" data-open="${c.id}"><div class="bdel">🗑 Delete</div><button class="band ${done?"done":""}" style="background:${bg};color:${fg}">
+    html += `<div class="bw" data-open="${c.id}"><div class="bdel">🗑 Delete</div><button class="band ${done?"done":""}" style="background:linear-gradient(135deg,${glass(bg,.62)},${glass(bg,.34)});color:${fg}">
       ${open? `<span class="n">${open}</span>`:""}
       <div class="t">${iconHTML(c)}<span class="tt">${esc(c.title)}</span>${c.shared?`<span class="sh" title="Shared">👥</span>`:""}</div>
       ${done? `<div class="sub">All done</div>` : ""}
@@ -1136,8 +1155,8 @@ function renderSheet(){
   const c = findCard(openId); if (!c) { closeCard(); return; }
   const th = theme();
   const i = cards().indexOf(c), {bg,fg} = colorFor(i, Math.max(cards().length,6));
-  sheet.style.background = `linear-gradient(180deg, ${bg}, ${th.b})`;
-  const sb = document.querySelector(".statusbg"); if (sb) sb.style.background = bg;
+  sheet.style.background = `linear-gradient(180deg, ${glass(bg,.72)}, ${glass(mix(th.b,th.b,0),.82)})`;
+  const sb = document.querySelector(".statusbg"); if (sb) sb.style.background = "transparent";
   sheet.style.color = fg;
   document.getElementById("stitle").innerHTML = c.logo ? `<img class="lgbig" src="${c.logo}" alt="${esc(c.title)}">` : `${iconHTML(c)}${esc(c.title)}${c.shared?" 👥":""}`;
   const open = c.items.filter(x=>!x.done), done = c.items.filter(x=>x.done);
