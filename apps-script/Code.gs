@@ -55,3 +55,45 @@ function handle_(p) {
   }
   return out_({ ok: false, error: 'unknown op' });
 }
+
+
+/* ---------- Daily gas bottle check (email) ----------
+ * Run setupDailyCheck() once from the editor (select it in the toolbar, press Run, allow access).
+ * Every morning around 8am it checks the Gas bottle tracker and emails you once when the
+ * bottle reaches its average life. Add more addresses below if you like (comma separated).
+ */
+const ALERT_EMAILS = '';
+
+function checkGasBottle() {
+  const props = PropertiesService.getScriptProperties();
+  const data = read_('house', Number(props.getProperty('ver_house') || 0));
+  if (!data) return;
+  const t = (data.trackers || []).find(x => /gas/i.test(x.name || '') || x.icon === '🔥');
+  if (!t) return;
+  const ch = (t.changes || []).slice().sort();
+  if (ch.length < 2) return;                                   // need one full bottle to know the average
+  const day = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); };
+  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  const gaps = ch.slice(1).map((d, i) => day(d) - day(ch[i]));
+  const avg = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+  const last = ch[ch.length - 1], since = day(today) - day(last);
+  if (since < avg) return;
+  if (props.getProperty('gas_alerted') === last) return;      // only once per bottle
+  const to = [Session.getEffectiveUser().getEmail()].concat(ALERT_EMAILS.split(',').map(s => s.trim()).filter(Boolean)).join(',');
+  MailApp.sendEmail({
+    to: to,
+    subject: '🔥 Gas bottle due — Home Base',
+    htmlBody: '<div style="font-family:-apple-system,Segoe UI,Arial,sans-serif;font-size:15px;color:#2b1d00">' +
+      '<h2 style="margin:0 0 8px">🔥 Time to check the gas bottle</h2>' +
+      '<p>It has been <b>' + since + ' days</b> since the last change (' + last + '). ' +
+      'Your bottles usually last about <b>' + avg + ' days</b>.</p>' +
+      '<p style="color:#7a5a2a">When you swap it, open Home Base → Personal → Gas bottle and tap Save.</p></div>'
+  });
+  props.setProperty('gas_alerted', last);
+}
+
+function setupDailyCheck() {
+  ScriptApp.getProjectTriggers().forEach(tr => { if (tr.getHandlerFunction() === 'checkGasBottle') ScriptApp.deleteTrigger(tr); });
+  ScriptApp.newTrigger('checkGasBottle').timeBased().everyDays(1).atHour(8).create();
+  checkGasBottle();
+}

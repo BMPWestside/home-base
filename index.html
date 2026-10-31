@@ -110,6 +110,28 @@
   .gas .gh button{all:unset;cursor:pointer;flex:1}
   .gas .gh .ed{flex:none;opacity:.65;font-size:16px;letter-spacing:0;cursor:pointer;padding:4px 6px;border-radius:8px}
   .gas .gh .ed.add{font-size:20px;font-weight:800;opacity:.8;margin-right:2px}
+  .by{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;font-size:10px;font-weight:900;margin-left:7px;vertical-align:2px;background:rgba(255,255,255,.18);color:var(--ink)}
+  .by.D{background:#e86fa0;color:#fff}
+  .by.S{background:#4aa3e8;color:#fff}
+  .aislehead{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;opacity:.75;margin:14px 6px 7px}
+  .aislehead:first-child{margin-top:4px}
+  #dropzone{position:absolute;left:14px;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:30;padding:18px;border-radius:16px;text-align:center;font-weight:800;font-size:15px;
+    background:rgba(0,0,0,.55);color:#fff;border:2px dashed rgba(255,255,255,.5);transform:translateY(140%);transition:transform .2s ease, background .15s}
+  #dropzone.show{transform:none}
+  #dropzone.over{background:var(--acc);color:var(--onacc);border-color:transparent}
+  .here{display:block;margin:2px auto 8px;padding:7px 14px;border-radius:12px;font-weight:800;font-size:14px;background:rgba(0,0,0,.25);color:inherit}
+  .here.on{background:#2e9e62;color:#fff}
+  .shopban{display:flex;align-items:center;gap:10px;margin:0 14px 12px;padding:12px 14px;border-radius:14px;background:#2e9e62;color:#fff;font-weight:700;font-size:15px;animation:pop .25s ease}
+  .shopban span{flex:1}
+  .shopban button{background:rgba(255,255,255,.22);color:#fff;font-weight:800;padding:7px 12px;border-radius:10px;font-size:13px}
+  .chart{padding:6px 10px 2px}
+  .chart svg{width:100%;height:auto;display:block}
+  .hrows{padding:2px 14px 6px;font-size:14px;color:var(--ink);max-height:150px;overflow:auto}
+  .hrows div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .hrows span{color:var(--soft);font-weight:600}
+  .gas .big,.gas .stats{cursor:pointer}
+  .mvlist{display:flex;flex-wrap:wrap;gap:8px;padding:4px 10px 10px}
+  .mvlist button{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.1);color:var(--ink);font-weight:700;font-size:14px}
   .divider{height:1px;margin:4px 18px 14px;background:currentColor;opacity:.18}
   .gas{margin:0 14px 12px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.08);color:var(--ink)}
   .gas .gh{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
@@ -303,9 +325,9 @@
 <main id="view"></main>
 
 <section class="sheet" id="sheet">
-  <div class="sbar" style="height:30px"></div>
+  <div class="sbar" style="height:30px"></div><div id="dropzone">⇄ Drop here to move</div>
   <div class="stitle" id="stitle"></div>
-  <div class="smeta" id="smeta"></div>
+  <div class="smeta" id="smeta"></div><button class="here" id="hereBtn" style="display:none">📍 I'm here</button>
   <div class="sprog" id="sprog"><i></i></div>
   <div class="items" id="items"><div class="pull" id="ipull"><span>Pull to add</span></div><div id="islot"></div><div id="ilist"></div></div>
 </section>
@@ -367,7 +389,25 @@ const guessIcon = (title, tab) => { const t = title.toLowerCase(); const m = ICO
 
 const iconHTML = c => c.logo ? `<img class="lg" src="${c.logo}" alt="">` : `<span class="ic">${c.icon||""}</span>`;
 const uid = () => Math.random().toString(36).slice(2,10);
-const mkItem = t => ({id:uid(), text:t, done:false, bought:0, qty:1, note:""});
+function whoAmI(){ try { return (LOCAL && LOCAL.who) || "S"; } catch(e){ return "S"; } }
+const mkItem = t => ({id:uid(), text:t, done:false, bought:0, qty:1, note:"", by:whoAmI()});
+const AISLES = [
+  ["veg","🥦 Fruit & Veg", /\b(apple|banana|orange|mango|grape|berr|lemon|lime|avocado|tomato|potato|onion|garlic|ginger|carrot|capsicum|chilli|chili|spinach|lettuce|cabbage|cauli|broccoli|cucumber|zucchini|eggplant|brinjal|bean|pea|coriander|mint|curry leaves|okra|bhindi|pumpkin|corn|mushroom|herb|fruit|veg|salad|kiwi|melon|pear|plum|peach|cherry|methi|dill|palak|gourd)/i],
+  ["bakery","🍞 Bakery", /\b(bread|bun|roll|wrap|naan|roti|croissant|muffin|cake|bagel|loaf|tortilla|pita)/i],
+  ["dairy","🥛 Dairy & Eggs", /\b(milk|egg|butter|cheese|yog|yoghurt|yogurt|curd|cream|paneer|ghee|custard|dahi)/i],
+  ["meat","🥩 Meat & Fish", /\b(chicken|beef|lamb|goat|mutton|pork|mince|fish|prawn|salmon|tuna|sausage|bacon|ham|steak|meat)/i],
+  ["indian","🌶️ Spices & Indian", /\b(dal|daal|toor|moong|urad|chana|masala|turmeric|haldi|jeera|cumin|mustard seed|garam|hing|asafoetida|atta|besan|sooji|rava|poha|tamarind|jaggery|papad|pickle|achar|cardamom|elaichi|clove|cinnamon|spice|chilli powder|basmati|idli|dosa)/i],
+  ["pantry","🥫 Pantry", /\b(rice|pasta|noodle|flour|sugar|salt|oil|vinegar|sauce|ketchup|jam|honey|cereal|oats|tea|coffee|bean can|tin|canned|stock|spread|peanut|nut|lentil|soup|biscuit mix)/i],
+  ["frozen","❄️ Frozen", /\b(frozen|ice cream|icecream|peas frozen|fries|chips frozen|nuggets)/i],
+  ["drinks","🥤 Drinks", /\b(juice|water|soda|coke|cola|drink|beer|wine|lemonade|cordial|kombucha|sprite)/i],
+  ["snacks","🍪 Snacks", /\b(chips|crisps|chocolate|biscuit|cookie|snack|lolly|lollies|candy|popcorn|namkeen|mixture)/i],
+  ["household","🧻 Household", /\b(toilet|tissue|paper towel|detergent|soap powder|dishwash|cleaner|bleach|bin bag|garbage|foil|cling|sponge|batter|bulb|laundry|fabric)/i],
+  ["care","🧴 Personal care", /\b(shampoo|conditioner|soap|toothpaste|toothbrush|deodorant|razor|lotion|sunscreen|tampon|pad|floss|body wash|face wash)/i],
+  ["baby","👶 Baby & Pet", /\b(nappy|nappies|diaper|wipes|formula|baby|dog|cat|pet)/i],
+  ["other","🛒 Other", null]
+];
+const aisleOf = x => x.aisle || (AISLES.find(a => a[2] && a[2].test(x.text)) || AISLES[AISLES.length-1])[0];
+const aisleName = k => (AISLES.find(a => a[0] === k) || AISLES[AISLES.length-1])[1];
 const mk = (title, items=[], tab="shopping") => ({id:uid(), title, icon:guessIcon(title, tab), items: items.map(mkItem)});
 
 const DEFAULT = {
@@ -404,6 +444,7 @@ const decCfg = t => JSON.parse(decodeURIComponent(escape(atob(t))));
     if (cfg && cfg.u && cfg.k){
       const changed = LOCAL.url !== cfg.u || LOCAL.house !== cfg.k;
       LOCAL.url = cfg.u; LOCAL.house = cfg.k;
+      if (cfg.w === "S" || cfg.w === "D") LOCAL.who = cfg.w;
       if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
       LOCAL.offline = false;
       saveLocal();
@@ -460,6 +501,7 @@ function snapOf(){
   m.set("ord:trackers", (S.trackers||[]).map(t=>t.id).join(","));
   for (const t of (S.trackers||[])){ const { u, ...r } = t; m.set("t:"+t.id, JSON.stringify(r)); refs.set("t:"+t.id, t); }
   m.set("wed", String(S.lastWedReset||0));
+  m.set("shop", JSON.stringify(S.atShop||null));
   return { m, refs };
 }
 function stamp(){
@@ -471,7 +513,7 @@ function stamp(){
     const r = refs.get(k);
     if (k.startsWith("ord:")){ S.ord[k.slice(4)] = now; dh = true; }
     else if (k === "cord"){ S.cord = now; dw = true; }
-    else if (k === "wed"){ dh = true; }
+    else if (k === "wed" || k === "shop"){ dh = true; }
     else if (k.startsWith("io:")){ r.iu = now; dh = true; }
     else if (k.startsWith("k:")){ r.u = now; dw = true; }
     else { r.u = now; dh = true; }
@@ -527,6 +569,7 @@ function mergeHouse(R){
   S.trackers = mergeArr(S.trackers, R.trackers, (S.ord || {}).trackers, (R.ord || {}).trackers, del);
   ord.trackers = Math.max((S.ord || {}).trackers || 0, (R.ord || {}).trackers || 0);
   S.ord = ord; S.del = del;
+  S.atShop = (((S.atShop||{}).u)||0) >= (((R.atShop||{}).u)||0) ? S.atShop : R.atShop;
   S.lastWedReset = Math.max(S.lastWedReset || 0, R.lastWedReset || 0) || S.lastWedReset;
 }
 function adoptHouse(R){
@@ -534,6 +577,7 @@ function adoptHouse(R){
   S.tabs.personal = R.tabs && R.tabs.personal || [];
   S.trackers = R.trackers || [];
   S.ord = R.ord || {}; S.del = R.del || {};
+  S.atShop = R.atShop || null;
   S.lastWedReset = R.lastWedReset || S.lastWedReset;
 }
 function mergeWork(R){
@@ -541,7 +585,7 @@ function mergeWork(R){
   S.customers = mergeArr(S.customers, R.customers, S.cord, R.cord, cdel);
   S.cord = Math.max(S.cord || 0, R.cord || 0); S.cdel = cdel;
 }
-const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0 });
+const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
 const workData  = () => clone({ customers:S.customers, cord:S.cord || 0, cdel:S.cdel || {} });
 
 /* ---- talking to the Apps Script web app ---- */
@@ -571,7 +615,7 @@ function interacting(){
 function afterRemote(doc){
   try { localStorage.setItem(LS_KEY, JSON.stringify(S, strip)); } catch(e){}
   resnap();
-  if (S.tab !== "work"){ renderBands(); if (S.tab === "personal") renderTrackers(); }
+  if (S.tab !== "work"){ renderBands(); renderBanner(); if (S.tab === "personal") renderTrackers(); }
   if (openId){ if (findCard(openId)) renderSheet(); else closeCard(); }
 }
 async function pullDoc(doc){
@@ -704,8 +748,9 @@ function render(){
   if (S.tab !== "shopping" && S.tab !== "personal") S.tab = "shopping";
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
-  view.innerHTML = `${S.tab==="personal"?`<div id="trackers"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
+  view.innerHTML = `<div id="shopban"></div>${S.tab==="personal"?`<div id="trackers"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal") renderTrackers();
+  renderBanner();
   renderBands();
 }
 function renderBands(){
@@ -805,7 +850,7 @@ function renderTrackers(){
     return `<div class="gas" data-tid="${t.id}">
       <div class="gh"><button data-tedit="${t.id}">${t.icon||"⏱️"} ${esc(t.name)}</button>${ti===0?`<span class="ed add" data-tadd="1" aria-label="Add tracker">＋</span>`:""}<span class="ed" data-tedit="${t.id}">✎</span></div>
       <div class="gr"><span class="gl">${esc(t.label||"Done on")}:</span><input type="date" class="tdate" value="${last || isoToday()}" max="${isoToday()}"><button class="gs" data-tsave="${t.id}">Save</button></div>
-      ${last ? `<div class="big"><b>${since}</b><span>day${since===1?"":"s"} since last time</span></div>` : ""}
+      ${last ? `<div class="big"><b>${since}</b><span>day${since===1?"":"s"} since last time${ch.length>1?" ›":""}</span></div>` : ""}
       ${stats ? `<div class="stats">${stats}</div>` : ""}
       ${ch.length ? `<div class="hist">${ch.slice(-4).reverse().map(d=>`<button data-tdel="${t.id}|${d}">${fmtDate(d)} ✕</button>`).join("")}</div>` : ""}
     </div>`;
@@ -824,6 +869,7 @@ function renderTrackers(){
     undoToast("Removed " + fmtDate(d), () => { t.changes.push(d); t.changes.sort(); save(); renderTrackers(); });
   });
   host.querySelectorAll("[data-tedit]").forEach(b => b.onclick = () => editTracker(b.dataset.tedit));
+  host.querySelectorAll(".gas .big, .gas .stats").forEach(b => b.onclick = () => showTrackerHistory(b.closest(".gas").dataset.tid));
   host.querySelectorAll("[data-tadd]").forEach(b => b.onclick = () => editTracker(null));
 }
 function editTracker(id, sub){
@@ -876,23 +922,31 @@ function renderSheet(){
   document.getElementById("stitle").innerHTML = c.logo ? `<img class="lgbig" src="${c.logo}" alt="${esc(c.title)}">` : `${iconHTML(c)}${esc(c.title)}${c.shared?" 👥":""}`;
   const open = c.items.filter(x=>!x.done), done = c.items.filter(x=>x.done);
   document.getElementById("smeta").textContent = c.items.length ? `${open.length} to go · ${done.length} done` : "";
+  renderHere(c);
   const pr = document.getElementById("sprog");
   pr.style.display = c.items.length ? "" : "none";
   pr.firstElementChild.style.width = (c.items.length ? Math.round(done.length/c.items.length*100) : 0) + "%";
+  const grouped = S.aisles && S.tab === "shopping";
   const row = x => {
     if (x.id===confirmId) return `<div class="item confirm" data-iid="${x.id}"><div class="fg">
          <span class="q">Delete “${esc(x.text)}”?</span>
          <button class="yes" data-yes="${x.id}">Delete</button><button class="no" data-no="1">Cancel</button></div></div>`;
     const reg = (x.bought||0) >= REGULAR_MIN;
     const sub = [x.lastBought ? "Last bought " + ago(x.lastBought) : "", reg ? "↻ every Wed" : ""].filter(Boolean).join(" · ");
-    return `<div class="item ${x.done?"done":""}" data-iid="${x.id}">
+    return `<div class="item ${x.done?"done":""}" data-iid="${x.id}" data-g="${grouped && !x.done ? aisleOf(x) : ""}">
         <div class="bg"><span class="l">✓ Done</span><span class="r">↺ Undo</span></div>
-        <div class="fg"><div class="main"><div class="itxt">${esc(x.text)}</div>
+        <div class="fg"><div class="main"><div class="itxt">${esc(x.text)}${x.by?`<span class="by ${x.by}">${x.by}</span>`:""}</div>
         ${sub?`<div class="isub">${sub}</div>`:""}</div>
         <div class="stp"><button data-q="-1" aria-label="Less">−</button><span>${x.qty||1}</span><button data-q="1" aria-label="More">+</button></div>
         <span class="cnt ${x.bought?"":"zero"} ${reg?"reg":""}" title="Times ticked off">${x.bought||0}</span></div></div>`;
   };
-  let h = open.map(row).join("");
+  let h = "";
+  if (grouped){
+    for (const [k, name] of AISLES){
+      const g = open.filter(x => aisleOf(x) === k);
+      if (g.length) h += `<div class="aislehead">${name}</div>` + g.map(row).join("");
+    }
+  } else h = open.map(row).join("");
   if (done.length) h += `<div class="donehead">Done</div>` + done.map(row).join("");
   if (!c.items.length){
     if (!c._q || c._qFor !== openSeq) { c._q = QUOTES[(Math.random()*QUOTES.length)|0]; c._qFor = openSeq; }
@@ -902,7 +956,8 @@ function renderSheet(){
   ilist.innerHTML = h;
   ilist.querySelectorAll(".item:not(.confirm)").forEach(el => {
     attachSwipe(el, el.dataset.iid, c);
-    attachHold(el, ilist, el.classList.contains("done") ? ".item.done" : ".item:not(.done)", () => onItemsReordered(c));
+    const peerSel = el.classList.contains("done") ? ".item.done" : (el.dataset.g ? `.item[data-g="${el.dataset.g}"]:not(.done)` : ".item:not(.done)");
+    attachHold(el, ilist, peerSel, () => onItemsReordered(c), () => showMoveSheet(c.id, el.dataset.iid));
   });
   ilist.querySelectorAll(".stp button").forEach(b => b.onclick = e => {
     e.stopPropagation();
@@ -1016,6 +1071,104 @@ function attachSwipe(row, itemId, card){
   }
 }
 
+/* ================= move items ================= */
+function showMoveSheet(cardId, itemId){
+  const from = findCard(cardId); if (!from) return;
+  const it = from.items.find(x => x.id === itemId); if (!it){ renderSheet(); return; }
+  const lists = t => (S.tabs[t]||[]).filter(c => c.id !== cardId);
+  const btns = t => lists(t).map(c => `<button data-to="${t}|${c.id}">${c.logo?"":(c.icon||"")} ${esc(c.title)}</button>`).join("");
+  const grouped = S.aisles && S.tab === "shopping";
+  menu.innerHTML = `<div class="mt">Move “${esc(it.text)}” to</div>
+    ${lists("shopping").length ? `<div class="sl" style="padding:4px 14px">Shopping</div><div class="mvlist">${btns("shopping")}</div>` : ""}
+    ${lists("personal").length ? `<div class="sl" style="padding:4px 14px">Personal</div><div class="mvlist">${btns("personal")}</div>` : ""}
+    ${grouped && !it.done ? `<div class="sep"></div><div class="mt">Or change aisle</div><div class="mvlist">${AISLES.map(a=>`<button data-aisle="${a[0]}" style="${aisleOf(it)===a[0]?"outline:2px solid var(--acc)":""}">${a[1]}</button>`).join("")}</div>` : ""}
+    <button class="sdone" id="cx">Cancel</button>`;
+  menu.querySelectorAll("[data-to]").forEach(b => b.onclick = () => {
+    const [t, id] = b.dataset.to.split("|"), to = (S.tabs[t]||[]).find(c => c.id === id); if (!to) return;
+    const idx = from.items.indexOf(it);
+    from.items.splice(idx, 1);
+    const copy = Object.assign({}, it, { id: uid() });       // new id so the move syncs cleanly
+    to.items.unshift(copy);
+    save(); closeMenu(); renderSheet();
+    undoToast(`Moved to ${to.title}`, () => { to.items = to.items.filter(x => x !== copy); from.items.splice(Math.min(idx, from.items.length), 0, Object.assign({}, it, { id: uid() })); save(); renderSheet(); });
+  });
+  menu.querySelectorAll("[data-aisle]").forEach(b => b.onclick = () => { it.aisle = b.dataset.aisle; save(); closeMenu(); renderSheet(); });
+  menu.querySelector("#cx").onclick = () => { closeMenu(); renderSheet(); };
+  openMenu();
+}
+
+/* ================= I'm at the shop ================= */
+const SHOP_TTL = 3 * 3600e3;
+const shopActive = () => S.atShop && S.atShop.active && (Date.now() - S.atShop.at) < SHOP_TTL;
+function renderHere(c){
+  const b = document.getElementById("hereBtn"); if (!b) return;
+  if (S.tab !== "shopping"){ b.style.display = "none"; return; }
+  const mine = shopActive() && S.atShop.who === whoAmI() && S.atShop.listId === c.id;
+  b.style.display = "";
+  b.classList.toggle("on", !!mine);
+  b.textContent = mine ? "✓ Done shopping" : "📍 I'm here";
+  b.onclick = () => {
+    const now = Date.now();
+    S.atShop = mine ? Object.assign({}, S.atShop, { active:false, u:now })
+                    : { active:true, who:whoAmI(), listId:c.id, title:c.title, at:now, u:now };
+    save(); renderHere(c);
+    toast(mine ? "Marked done shopping" : `Letting the family know you're at ${c.title}`);
+  };
+}
+let lastBanner = "";
+function renderBanner(){
+  const host = document.getElementById("shopban"); if (!host) return;
+  if (!shopActive()){ host.innerHTML = ""; lastBanner = ""; return; }
+  const a = S.atShop, mins = Math.max(0, Math.round((Date.now() - a.at) / 6e4));
+  const when = mins < 1 ? "just now" : mins < 60 ? `${mins} min ago` : `${Math.round(mins/60)} h ago`;
+  const me = a.who === whoAmI();
+  host.innerHTML = `<div class="shopban"><span>${me ? `📍 You're at <b>${esc(a.title)}</b>` : `🛒 <b>${esc(a.who)}</b> is at <b>${esc(a.title)}</b> · ${when}`}</span>
+    ${me ? `<button id="sbDone">Done</button>` : `<button id="sbOpen">Add items</button>`}</div>`;
+  const key = a.who + a.at;
+  if (!me && key !== lastBanner){ try { navigator.vibrate && navigator.vibrate([30,60,30]); } catch(e){} }
+  lastBanner = key;
+  const op = host.querySelector("#sbOpen"), dn = host.querySelector("#sbDone");
+  if (op) op.onclick = () => { if (S.tab !== "shopping"){ S.tab = "shopping"; render(); } if (findCard(a.listId)) openCard(a.listId); };
+  if (dn) dn.onclick = () => { S.atShop = Object.assign({}, a, { active:false, u:Date.now() }); save(); renderBanner(); };
+}
+setInterval(() => { if (!openId) renderBanner(); }, 60000);
+
+/* ================= tracker history ================= */
+function showTrackerHistory(id){
+  const t = (S.trackers||[]).find(x => x.id === id); if (!t) return;
+  const ch = (t.changes||[]).slice().sort();
+  const gaps = ch.slice(1).map((d,i) => ({ d, days: dayNum(d) - dayNum(ch[i]) }));
+  const avg = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b.days,0)/gaps.length) : 0;
+  let chart = `<div class="note">Save at least two dates to see how long each one lasts.</div>`;
+  if (gaps.length){
+    const W = 320, H = 150, pad = 22, max = Math.max(...gaps.map(g=>g.days), avg) * 1.15;
+    const bw = Math.min(34, (W - pad*2) / gaps.length - 6);
+    const xs = i => pad + i * ((W - pad*2) / gaps.length) + ((W - pad*2) / gaps.length - bw) / 2;
+    const y = v => H - 20 - (v / max) * (H - 40);
+    chart = `<div class="chart"><svg viewBox="0 0 ${W} ${H}">
+      ${gaps.map((g,i)=>`<rect x="${xs(i)}" y="${y(g.days)}" width="${bw}" height="${H-20-y(g.days)}" rx="5" fill="var(--acc)" opacity="${i===gaps.length-1?1:.65}"/>
+        <text x="${xs(i)+bw/2}" y="${y(g.days)-5}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${g.days}</text>
+        <text x="${xs(i)+bw/2}" y="${H-5}" text-anchor="middle" font-size="9" fill="var(--soft)">${fmtDate(g.d).replace(/ \d{4}$/,"")}</text>`).join("")}
+      <line x1="${pad-8}" x2="${W-pad+8}" y1="${y(avg)}" y2="${y(avg)}" stroke="var(--ink)" stroke-dasharray="4 4" opacity=".5"/>
+      <text x="${W-pad+8}" y="${y(avg)-4}" text-anchor="end" font-size="10" fill="var(--soft)">avg ${avg}</text>
+    </svg></div>
+    <div class="note">Average ${avg} days · shortest ${Math.min(...gaps.map(g=>g.days))} · longest ${Math.max(...gaps.map(g=>g.days))}</div>`;
+  }
+  const rows = ch.slice().reverse().map((d, i, arr) => {
+    const prev = arr[i+1]; const days = prev ? dayNum(d) - dayNum(prev) : null;
+    return `<div>${fmtDate(d)}<span>${days!=null ? days + " days" : "first"}</span></div>`;
+  }).join("");
+  menu.innerHTML = `<div class="mt">${t.icon||"⏱️"} ${esc(t.name)} history</div>${chart}${rows ? `<div class="hrows">${rows}</div>` : ""}<button class="sdone" id="cx">Done</button>`;
+  menu.querySelector("#cx").onclick = closeMenu;
+  openMenu();
+}
+
+/* ================= text size ================= */
+function applyTextSize(){
+  const z = { normal:1, large:1.12, xl:1.25 }[S.textSize || "normal"] || 1;
+  document.body.style.zoom = z === 1 ? "" : String(z);
+}
+
 /* ================= confetti ================= */
 function confetti(){
   const cv = document.getElementById("confetti"), ctx = cv.getContext("2d");
@@ -1042,7 +1195,7 @@ const HOLD_MS = 380;
 window.__drag = false; window.__dragEnd = 0;
 document.addEventListener("touchmove", e => { if (window.__drag && e.cancelable) e.preventDefault(); }, {passive:false});
 
-function attachHold(el, container, sel, onDone){
+function attachHold(el, container, sel, onDone, onDrop){
   let timer = null, sx = 0, sy = 0;
   const cancelTimer = () => { clearTimeout(timer); timer = null; };
   const arm = (x, y, t) => {
@@ -1052,7 +1205,8 @@ function attachHold(el, container, sel, onDone){
     timer = setTimeout(() => { timer = null; startDrag(sy); }, HOLD_MS);
   };
   const early = (x, y) => { if (timer && (Math.abs(x-sx) > 8 || Math.abs(y-sy) > 8)) cancelTimer(); };
-  let startY = 0, baseTop = 0, dragging = false;
+  let startY = 0, baseTop = 0, dragging = false, overZone = false;
+  const zone = onDrop ? document.getElementById("dropzone") : null;
   const scroller = () => container === ilist ? itemsEl : null;
   const peers = () => [...container.querySelectorAll(":scope > " + sel)];
   function startDrag(y){
@@ -1060,6 +1214,7 @@ function attachHold(el, container, sel, onDone){
     startY = y; baseTop = el.offsetTop;
     el.classList.add("lifting");
     el.style.transition = "box-shadow .15s"; el.style.transform = "scale(1.03)";
+    if (zone){ zone.classList.add("show"); overZone = false; }
     try{ navigator.vibrate && navigator.vibrate(15); }catch(_){}
   }
   const flip = (node, before) => {
@@ -1069,8 +1224,15 @@ function attachHold(el, container, sel, onDone){
   };
   function moveDrag(y){
     if (!dragging) return;
+    if (zone){
+      const r = zone.getBoundingClientRect();
+      overZone = y >= r.top - 10;
+      zone.classList.toggle("over", overZone);
+      if (overZone){ el.style.transition = "none"; el.style.transform = `translateY(${baseTop + (y - startY) - el.offsetTop}px) scale(.95)`; el.style.opacity = ".7"; return; }
+      el.style.opacity = "";
+    }
     const sc = scroller();
-    if (sc){ if (y < 120) sc.scrollTop -= 10; else if (y > innerHeight - 80) sc.scrollTop += 10; }
+    if (sc){ if (y < 120) sc.scrollTop -= 10; else if (y > innerHeight - (zone ? 150 : 80) && !overZone) sc.scrollTop += 10; }
     else { if (y < 80) scrollBy(0,-10); else if (y > innerHeight - 80) scrollBy(0,10); }
     const want = baseTop + (y - startY);
     const list = peers(), i = list.indexOf(el), prev = list[i-1], next = list[i+1];
@@ -1085,8 +1247,10 @@ function attachHold(el, container, sel, onDone){
   function endDrag(){
     if (!dragging) return;
     dragging = false; window.__dragEnd = Date.now();
-    el.style.transition = "transform .18s ease"; el.style.transform = "";
-    setTimeout(() => { el.classList.remove("lifting"); window.__drag = false; onDone(); }, 190);
+    el.style.transition = "transform .18s ease"; el.style.transform = ""; el.style.opacity = "";
+    const dropped = zone && overZone;
+    if (zone){ zone.classList.remove("show","over"); }
+    setTimeout(() => { el.classList.remove("lifting"); window.__drag = false; if (dropped) onDrop(); else onDone(); }, 190);
   }
   el.addEventListener("touchstart", e => { if (e.touches.length === 1) arm(e.touches[0].clientX, e.touches[0].clientY, e.target); else cancelTimer(); }, {passive:true});
   el.addEventListener("touchmove", e => { const t = e.touches[0]; if (dragging) moveDrag(t.clientY); else early(t.clientX, t.clientY); }, {passive:true});
@@ -1293,7 +1457,9 @@ function showSettings(listId, sub){
   }
 
   let html = `<div class="mt">Themes</div>
-    <div class="sg2"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Personal</div>${themeSel("personal")}</div></div>`;
+    <div class="sg2"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Personal</div>${themeSel("personal")}</div></div>
+    <div class="sg2"><div><div class="sl">Text size</div><select class="set-sel" id="tsz"><option value="normal">Normal</option><option value="large" ${S.textSize==="large"?"selected":""}>Large</option><option value="xl" ${S.textSize==="xl"?"selected":""}>Extra large</option></select></div>
+      <div><div class="sl">Shopping by aisle</div><select class="set-sel" id="ais"><option value="0">Off</option><option value="1" ${S.aisles?"selected":""}>On</option></select></div></div>`;
   if (onLists && c){
     const regs = c.items.filter(x=>(x.bought||0)>=REGULAR_MIN).length;
     html += `<div class="sep"></div><div class="mt">List</div>
@@ -1313,6 +1479,8 @@ function showSettings(listId, sub){
   menu.innerHTML = html;
 
   menu.querySelectorAll("[data-theme]").forEach(sel => sel.onchange = () => { S.themes[sel.dataset.theme] = sel.value; save(); refreshAll(); });
+  menu.querySelector("#tsz").onchange = e => { S.textSize = e.target.value; save(); applyTextSize(); };
+  menu.querySelector("#ais").onchange = e => { S.aisles = e.target.value === "1"; save(); refreshAll(); };
   menu.querySelector("#cx").onclick = closeMenu;
   menu.querySelector("#bk").onclick = showBackup;
   menu.querySelector("#sy").onclick = () => showSetup(false);
@@ -1379,11 +1547,12 @@ function restoreData(d){
   ["shopping","personal"].forEach(t => (S.tabs[t]||[]).forEach(c => { delete c.shared; }));
   cleanup(); save(); render();
 }
-function refreshAll(){ applyTheme(); if (S.tab!=="work") renderBands(); if (openId) renderSheet(); }
+function refreshAll(){ applyTheme(); if (S.tab!=="work"){ renderBands(); renderBanner(); } if (openId) renderSheet(); }
 
+applyTextSize();
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
-const linkFor = () => appBase() + "?c=" + encodeURIComponent(encCfg({ u:LOCAL.url, k:LOCAL.house }));
+const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }));
 function pinOwnLink(){
   // keep this phone's settings in the address so "Add to Home Screen" carries them over
   if (LOCAL.url && LOCAL.house){ try { history.replaceState(null, "", linkFor()); } catch(e){} }
@@ -1406,6 +1575,7 @@ function showSetup(first){
     <form class="ed" id="sf" style="padding-top:0">
       <label>Apps Script web app URL</label><input id="sUrl" value="${esc(LOCAL.url||"")}" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" autocapitalize="off">
       <label>Household key</label><input id="sHouse" value="${esc(LOCAL.house||"")}" autocomplete="off" autocapitalize="off">
+      <label>This phone belongs to</label><select class="set-sel" id="sWho" style="width:100%;margin:0"><option value="S">S</option><option value="D" ${LOCAL.who==="D"?"selected":""}>D</option></select>
       <div class="acts"><button type="submit" class="save">${LOCAL.url ? "Save & sync" : "Connect"}</button></div>
     </form>
     ${LOCAL.url
@@ -1419,14 +1589,14 @@ function showSetup(first){
     if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)){ toast("Paste the Apps Script /exec URL"); return; }
     if (!house){ toast("Enter the household key"); return; }
     const changed = url !== LOCAL.url || house !== LOCAL.house;
-    LOCAL.url = url; LOCAL.house = house; LOCAL.offline = false;
+    LOCAL.url = url; LOCAL.house = house; LOCAL.offline = false; LOCAL.who = menu.querySelector("#sWho").value;
     if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
     saveLocal(); pinOwnLink(); closeMenu(); render(); toast("Connecting…");
     syncNow().then(() => toast(syncState.status === "ok" ? "Synced ✓" : "Couldn't connect — check the URL and key"));
   };
   const q = id => menu.querySelector(id);
   if (q("#sNow")) q("#sNow").onclick = async () => { await syncNow(); showSetup(false); };
-  if (q("#sWife")) q("#sWife").onclick = () => shareLink(linkFor(), "Home Base");
+  if (q("#sWife")) q("#sWife").onclick = () => shareLink(linkFor(LOCAL.who === "D" ? "S" : "D"), "Home Base");
   if (q("#sMine")) q("#sMine").onclick = () => shareLink(linkFor(), "Home Base");
   if (q("#sOff")) q("#sOff").onclick = () => { LOCAL.url = ""; LOCAL.synced = false; saveLocal(); try{ history.replaceState(null, "", appBase()); }catch(e){} setSync("off"); showSetup(false); toast("Disconnected — lists stay on this phone"); };
   if (q("#sSkip")) q("#sSkip").onclick = () => { LOCAL.offline = true; saveLocal(); closeMenu(); };
