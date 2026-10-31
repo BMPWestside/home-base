@@ -146,6 +146,9 @@
   .bempty .big{font-size:44px;margin-bottom:8px}
   .bempty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
   .bempty textarea{width:100%;height:80px;margin:12px 0 10px;border-radius:12px;border:0;padding:10px;background:rgba(255,255,255,.1);color:var(--ink);font-size:13px}
+  .bfix{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;padding:14px;border-radius:16px;background:rgba(255,90,78,.14);border:1px solid rgba(255,90,78,.35);font-size:13.5px;line-height:1.45;color:var(--ink)}
+  .bfix b{font-weight:800}
+  .bfix > b{font-size:15px}
   .bwhy{margin:8px 0;padding:9px 12px;border-radius:10px;background:rgba(255,165,58,.16);color:var(--ink);font-size:13px;font-weight:600}
   .rcard{padding:14px;margin-bottom:12px;border-radius:18px;background:var(--rowbg, rgba(255,255,255,.08))}
   .rh{display:flex;gap:12px;align-items:center}
@@ -1685,9 +1688,22 @@ const mLabel = k => { const [y,m] = k.split("-"); return MONS[+m-1] + " " + y; }
 function parseBillBellLink(text){
   // accepts the setup link from the BillBell email: …/billbell/#api=<url>&key=<key>
   try {
-    const t = String(text).trim(), h = t.includes("#") ? t.slice(t.indexOf("#")+1) : t;
+    let t = String(text).trim();
+    const m = t.match(/https?:\/\/\S+/); if (m) t = m[0];                 // pasted with other text around it
+    // Gmail sometimes wraps links: https://www.google.com/url?q=<real link>&…
+    for (let i = 0; i < 2; i++){
+      const w = t.match(/[?&](?:q|url)=([^&]+)/);
+      if (/google\.[a-z.]+\/url\?/.test(t) && w) t = decodeURIComponent(w[1]);
+    }
+    if (!t.includes("#") && /%23api/i.test(t)) t = decodeURIComponent(t);
+    const h = t.includes("#") ? t.slice(t.indexOf("#")+1) : t;
     const p = new URLSearchParams(h.replace(/^\?/, ""));
-    if (p.get("api") && p.get("key")) return { api: p.get("api"), key: p.get("key") };
+    let api = p.get("api"), key = p.get("key");
+    if (api && key){
+      api = api.trim().replace(/\/dev(\?.*)?$/, "/exec");                  // the editor's test address doesn't work on phones
+      if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(api)) return null;
+      return { api, key: key.trim() };
+    }
   } catch(e){}
   return null;
 }
@@ -1702,7 +1718,7 @@ function bbJsonp(params, timeoutMs){
     const done = () => { clearTimeout(timer); delete window[cb]; el.remove(); };
     const timer = setTimeout(() => { done(); reject(new Error("BillBell took too long to answer")); }, timeoutMs || 60000);
     window[cb] = data => { done(); data && data.error ? reject(new Error(data.error)) : resolve(data); };
-    el.onerror = () => { done(); reject(new Error("Couldn't reach BillBell")); };
+    el.onerror = () => { done(); reject(new Error(navigator.onLine === false ? "You're offline" : "Google sent back an error page instead of your bills")); };
     el.src = LOCAL.bbApi + (LOCAL.bbApi.includes("?") ? "&" : "?") + q.toString();
     document.head.appendChild(el);
   });
@@ -1738,7 +1754,7 @@ async function billsRefresh(spin){
     bbNormalise(data); BB.err = "";
     try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
     if (spin) toast("Bills up to date");
-  } catch(e){ BB.err = e.message; if (spin) toast(navigator.onLine === false ? "Offline — showing saved bills" : "BillBell: " + e.message); }
+  } catch(e){ BB.err = e.message; if (spin) toast(navigator.onLine === false ? "Offline — showing saved bills" : "Couldn't load bills"); }
   BB.loading = false;
   renderBillsSafe(); updateBillsBadge();
 }
@@ -1815,7 +1831,10 @@ function renderBills(){
       <button data-bv="review" class="${BB.view==="review"?"on":""}">Review${rv?`<i>${rv}</i>`:""}</button>
       <button id="bbAdd" aria-label="Add a bill">＋</button>
     </div>`;
-  if (BB.err && !BB.bills.length) h += `<div class="bwhy">${esc(BB.err)}</div>`;
+  if (BB.err) h += `<div class="bfix"><b>Couldn't load your bills</b><span>${esc(BB.err)}.</span>
+      <span>Usually this means the BillBell script needs a fresh deployment: open your <b>BillBell</b> project at script.google.com → <b>Deploy → Manage deployments</b> → ✎ Edit → Version <b>New version</b> → check <b>Who has access: Anyone</b> → Deploy. Then run <b>sendSetupLink</b> and paste the new link here.</span>
+      <div class="ra" style="justify-content:flex-start"><a class="pill" href="${esc(LOCAL.bbApi + (LOCAL.bbApi.includes("?") ? "&" : "?") + "action=data&key=" + encodeURIComponent(LOCAL.bbKey))}" target="_blank" rel="noopener">Test in Safari</a>
+      <button class="pill" id="bbRetry">Try again</button><button class="pill" id="bbRelink">Paste new link</button></div></div>`;
   h += BB.view === "paid" ? bbPaidHTML() : BB.view === "review" ? bbReviewHTML() : bbDueHTML();
   host.innerHTML = h;
   host.querySelectorAll("[data-bv]").forEach(b => b.onclick = () => { BB.view = b.dataset.bv; renderBills(); });
@@ -1823,6 +1842,8 @@ function renderBills(){
   host.querySelectorAll("[data-bill]").forEach(b => b.onclick = () => bbOpenBill(b.dataset.bill));
   host.querySelector("#bbAdd").onclick = bbOpenAdd;
   host.querySelector("#bbStats").onclick = bbOpenStats;
+  const rt = host.querySelector("#bbRetry"); if (rt) rt.onclick = () => billsRefresh(true);
+  const rl = host.querySelector("#bbRelink"); if (rl) rl.onclick = () => { LOCAL.bbApi = ""; LOCAL.bbKey = ""; saveLocal(); BB.err = ""; renderBills(); };
   if (BB.view === "review") bbBindReview(host);
 }
 function bbDueHTML(){
