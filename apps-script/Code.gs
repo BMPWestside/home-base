@@ -74,6 +74,7 @@ function checkGasBottle() {
   if (!data) return;
   const topic = NTFY_TOPIC || data.ntfy;
   if (!topic) { Logger.log('No ntfy topic yet — connect the Bills tab in Home Base, or set NTFY_TOPIC.'); return; }
+  try { checkDates_(data, topic); } catch (e) { Logger.log('Dates: ' + e.message); }
   const t = (data.trackers || []).find(x => /gas/i.test(x.name || '') || x.icon === '🔥');
   if (!t) return;
   const ch = (t.changes || []).slice().sort();
@@ -172,4 +173,30 @@ function bbAction_(action, body) {
     }
   } finally { lock.releaseLock(); }
   return { ok: true, data: bbData_() };
+}
+
+
+/* ---------- Important dates reminders (ntfy, 7 days before, the day before and on the day) ---------- */
+function checkDates_(data, topic) {
+  const props = PropertiesService.getScriptProperties();
+  const today = Utilities.formatDate(new Date(), 'Australia/Sydney', 'yyyy-MM-dd');
+  const day = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); };
+  (data.dates || []).forEach(dt => {
+    if (!dt.date) return;
+    const p = dt.date.split('-').map(Number), ty = Number(today.slice(0, 4));
+    let iso = dt.yearly === false ? dt.date : ty + '-' + String(p[1]).padStart(2, '0') + '-' + String(p[2]).padStart(2, '0');
+    if (dt.yearly !== false && iso < today) iso = (ty + 1) + iso.slice(4);
+    const left = day(iso) - day(today);
+    if ([7, 1, 0].indexOf(left) < 0) return;
+    const key = 'date_' + dt.id + '_' + iso + '_' + left;
+    if (props.getProperty(key)) return;
+    const years = dt.yearly !== false && p[0] > 1900 ? Number(iso.slice(0, 4)) - p[0] : 0;
+    const extra = years ? (dt.icon === '🎂' ? ' (turns ' + years + ')' : ' (' + years + ' years)') : '';
+    UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
+      method: 'post', muteHttpExceptions: true,
+      payload: (left === 0 ? 'Today' : left === 1 ? 'Tomorrow' : 'In a week') + ': ' + dt.name + extra,
+      headers: { Title: (left === 0 ? 'Today' : 'Coming up') + ' - Home Base', Tags: 'tada', Click: APP_URL }
+    });
+    props.setProperty(key, '1');
+  });
 }

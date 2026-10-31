@@ -228,6 +228,29 @@
   .day.blank{visibility:hidden}
   .day.past .dn{opacity:.5}
   .menu > button.brow{display:flex;align-items:center;gap:12px;width:calc(100% - 16px);margin:0 8px 8px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.07);text-align:left}
+  .pbills{display:flex;flex-wrap:wrap;gap:6px;margin:0 14px 12px;align-items:center}
+  .pbh{width:100%;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--soft);margin:0 2px 2px}
+  .pchip{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.24);color:var(--ink);font-size:13px;font-weight:700}
+  .pchip b{font-weight:900}
+  .pchip.urgent{background:rgba(255,90,78,.2)}
+  .bstat > span:first-child{display:block;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase}
+  .lock{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(180deg,var(--top),var(--bottom));color:var(--ink);padding-top:env(safe-area-inset-top)}
+  .lock.on{display:flex}
+  .lkicon{width:72px;height:72px;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .lkt{font-size:26px;font-weight:800;color:var(--acc)}
+  .lkmsg{font-size:15px;font-weight:600;color:var(--soft)}
+  .lkdots{display:flex;gap:14px;justify-content:center;margin-bottom:22px}
+  .lkdots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--acc)}
+  .lkdots i.f{background:var(--acc)}
+  .lkkeys{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+  .lkkeys button{height:72px;border-radius:50%;background:rgba(255,255,255,.1);color:var(--ink);font-size:26px;font-weight:800}
+  .lkkeys button:active{background:var(--acc);color:var(--onacc)}
+  .faceid{padding:14px 22px;border-radius:16px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:16px}
+  .lkuse{color:var(--soft);font-weight:700;font-size:14px;text-decoration:underline}
+  .shake{animation:lkshake .35s}
+  @keyframes lkshake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .acts4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:2px 8px 8px}
+  .acts4 button{padding:11px 2px;border-radius:12px;background:rgba(255,255,255,.1);font-size:13px;font-weight:700;color:var(--ink)}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -258,7 +281,8 @@
     background:rgba(0,0,0,.55);color:#fff;border:2px dashed rgba(255,255,255,.5);transform:translateY(calc(100% + 60px));visibility:hidden;opacity:0;pointer-events:none;transition:transform .2s ease, opacity .2s, background .15s, visibility 0s .2s}
   #dropzone.show{transform:none;visibility:visible;opacity:1;transition:transform .2s ease, opacity .2s, background .15s}
   #dropzone.over{background:var(--acc);color:var(--onacc);border-color:transparent}
-  .here{display:block;margin:2px auto 8px;padding:7px 14px;border-radius:12px;font-weight:800;font-size:14px;background:rgba(0,0,0,.25);color:inherit}
+  .srow{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:2px 12px 8px}
+  .here{display:block;margin:0;padding:7px 12px;border-radius:12px;font-weight:800;font-size:14px;background:rgba(0,0,0,.25);color:inherit}
   .here.on{background:#2e9e62;color:#fff}
   .shopban{display:flex;align-items:center;gap:10px;margin:0 14px 12px;padding:12px 14px;border-radius:14px;background:#2e9e62;color:#fff;font-weight:700;font-size:15px;animation:pop .25s ease}
   .shopban span{flex:1}
@@ -271,6 +295,25 @@
   .gas .big,.gas .stats{cursor:pointer}
   .mvlist{display:flex;flex-wrap:wrap;gap:8px;padding:4px 10px 10px}
   .mvlist button{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.1);color:var(--ink);font-weight:700;font-size:14px}
+  .wchip{display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--ink);font-size:13.5px;font-weight:700}
+  .wchip.on{background:var(--acc);color:var(--onacc)}
+  .hist2{max-height:55vh;overflow:auto;padding:0 10px}
+  .hday{padding:8px 4px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .hd{font-size:12.5px;font-weight:800;color:var(--soft)}
+  .dates .drow{display:flex;align-items:center;gap:12px;width:100%;padding:9px 0;text-align:left;color:var(--ink);border-top:1px solid rgba(255,255,255,.07)}
+  .dates .drow:first-of-type{margin-top:8px}
+  .dates .di{font-size:22px;width:30px;text-align:center}
+  .dates .dm{flex:1;min-width:0;display:flex;flex-direction:column}
+  .dates .dm b{font-size:15.5px}
+  .dates .dm span{font-size:12px;color:var(--soft);font-weight:600}
+  .dates .dd{font-size:13px;font-weight:800;color:var(--soft);white-space:nowrap}
+  .dates .dd.soon{color:var(--acc)}
+  .dmore{display:block;margin:6px auto 0;font-size:13px;font-weight:800;color:var(--acc)}
+  .today{margin:0 14px 12px;padding:10px 12px;border-radius:16px;background:rgba(0,0,0,.24)}
+  .today .th{font-size:11.5px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--soft);margin:0 2px 4px}
+  .today .trow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 2px;text-align:left;color:var(--ink);font-size:14.5px}
+  .today .trow + .trow{border-top:1px solid rgba(255,255,255,.07)}
+  .today .tt{flex:1;min-width:0}
   .divider{height:1px;margin:4px 18px 14px;background:currentColor;opacity:.18}
   .gas{margin:0 14px 12px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.08);color:var(--ink)}
   .gas .gh{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
@@ -467,7 +510,7 @@
 <section class="sheet" id="sheet">
   <div class="sbar" style="height:30px"></div><div id="dropzone">⇄ Drop here to move</div>
   <div class="stitle" id="stitle"></div>
-  <div class="smeta" id="smeta"></div><button class="here" id="hereBtn" style="display:none">📍 I'm here</button>
+  <div class="smeta" id="smeta"></div><div class="srow" id="srow"><button class="here" id="hereBtn">📍 I'm here</button><button class="here" id="wkBtn">⭐ Weekly</button><button class="here" id="histBtn">🕘 History</button></div>
   <div class="sprog" id="sprog"><i></i></div>
   <div class="items" id="items"><div class="pull" id="ipull"><span>Pull to add</span></div><div id="islot"></div><div id="ilist"></div></div>
 </section>
@@ -610,6 +653,7 @@ function cleanup(){
     c.items = c.items || [];
     c.items.forEach(x => { if (typeof x.bought!=="number") x.bought = 0; if (!x.qty) x.qty = 1; if (x.note==null) x.note = ""; });
   }));
+  if (!Array.isArray(S.dates)) S.dates = [];
   if (!Array.isArray(S.trackers)){
     S.trackers = [{id:uid(), name:"Gas bottle", label:"Changed on", icon:"🔥", changes:(S.gas && S.gas.changes) ? S.gas.changes.slice() : []}];
     delete S.gas;
@@ -640,6 +684,8 @@ function snapOf(){
       for (const x of (items||[])){ const { u, ...r } = x; m.set("i:"+x.id, JSON.stringify(r)); refs.set("i:"+x.id, x); }
     }
   }
+  m.set("ord:dates", (S.dates||[]).map(t=>t.id).join(","));
+  for (const t of (S.dates||[])){ const { u, ...r } = t; m.set("dt:"+t.id, JSON.stringify(r)); refs.set("dt:"+t.id, t); }
   m.set("ord:trackers", (S.trackers||[]).map(t=>t.id).join(","));
   for (const t of (S.trackers||[])){ const { u, ...r } = t; m.set("t:"+t.id, JSON.stringify(r)); refs.set("t:"+t.id, t); }
   m.set("wed", String(S.lastWedReset||0));
@@ -665,7 +711,7 @@ function stamp(){
     if (cur.has(k)) continue;
     const id = k.slice(k.indexOf(":")+1);
     if (k.startsWith("k:")){ S.cdel[id] = now; dw = true; }
-    else if (k.startsWith("c:") || k.startsWith("i:") || k.startsWith("t:")){ S.del[id] = now; dh = true; }
+    else if (k.startsWith("c:") || k.startsWith("i:") || k.startsWith("t:") || k.startsWith("dt:")){ S.del[id] = now; dh = true; }
   }
   SNAP = cur;
   if (dh) LOCAL.dirtyH = true;
@@ -711,6 +757,8 @@ function mergeHouse(R){
   }
   S.trackers = mergeArr(S.trackers, R.trackers, (S.ord || {}).trackers, (R.ord || {}).trackers, del);
   ord.trackers = Math.max((S.ord || {}).trackers || 0, (R.ord || {}).trackers || 0);
+  S.dates = mergeArr(S.dates, R.dates, (S.ord || {}).dates, (R.ord || {}).dates, del);
+  ord.dates = Math.max((S.ord || {}).dates || 0, (R.ord || {}).dates || 0);
   S.ord = ord; S.del = del;
   S.atShop = (((S.atShop||{}).u)||0) >= (((R.atShop||{}).u)||0) ? S.atShop : R.atShop;
   S.ntfyTopic = S.ntfyTopic || R.ntfy || "";
@@ -720,6 +768,7 @@ function adoptHouse(R){
   S.tabs.shopping = R.tabs && R.tabs.shopping || [];
   S.tabs.personal = R.tabs && R.tabs.personal || [];
   S.trackers = R.trackers || [];
+  S.dates = R.dates || [];
   S.ord = R.ord || {}; S.del = R.del || {};
   S.atShop = R.atShop || null;
   S.ntfyTopic = R.ntfy || S.ntfyTopic || "";
@@ -730,7 +779,7 @@ function mergeWork(R){
   S.customers = mergeArr(S.customers, R.customers, S.cord, R.cord, cdel);
   S.cord = Math.max(S.cord || 0, R.cord || 0); S.cdel = cdel;
 }
-const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null, ntfy:S.ntfyTopic || "" });
+const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null, ntfy:S.ntfyTopic || "" });
 const workData  = () => clone({ customers:S.customers, cord:S.cord || 0, cdel:S.cdel || {} });
 
 /* ---- talking to the Apps Script web app ---- */
@@ -760,7 +809,7 @@ function interacting(){
 function afterRemote(doc){
   try { localStorage.setItem(LS_KEY, JSON.stringify(S, strip)); } catch(e){}
   resnap();
-  if (S.tab !== "work"){ renderBands(); renderBanner(); if (S.tab === "personal") renderTrackers(); }
+  if (S.tab !== "work" && S.tab !== "bills"){ renderBands(); renderBanner(); if (S.tab === "personal"){ renderTrackers(); renderDates(); } if (S.tab === "shopping") renderToday(); }
   if (openId){ if (findCard(openId)) renderSheet(); else closeCard(); }
 }
 async function pullDoc(doc){
@@ -894,9 +943,10 @@ function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
   if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="bills"></div>`; renderBills(); return; }
-  view.innerHTML = `<div id="shopban"></div>${S.tab==="personal"?`<div id="trackers"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
-  if (S.tab==="personal") renderTrackers();
+  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div>`:""}${S.tab==="personal"?`<div id="trackers"></div><div id="dates"></div><div id="pbills"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
+  if (S.tab==="personal"){ renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
   renderBanner();
+  if (S.tab==="shopping") renderToday();
   renderBands();
 }
 function renderBands(){
@@ -1190,13 +1240,13 @@ function attachSwipe(row, itemId, card){
     if (dx > w*0.6){ confirmId = it.id; renderSheet(); return; }
     if (dx > 70){
       if (it.done) return;
-      markDone(it); save();
+      markDone(it); logHistory(C(), it.text, true); save();
       const allDone = C().items.length && C().items.every(y=>y.done);
       setTimeout(() => { renderSheet(); if (allDone) confetti(); }, 150); return;
     }
     if (dx < -70){
       if (!it.done) return;
-      const rev = markUndone(it); save(); setTimeout(renderSheet, 150);
+      const rev = markUndone(it); if (rev) logHistory(C(), it.text, false); save(); setTimeout(renderSheet, 150);
       if (rev) toast("Undone — not counted");
     }
   };
@@ -1248,7 +1298,14 @@ const SHOP_TTL = 3 * 3600e3;
 const shopActive = () => S.atShop && S.atShop.active && (Date.now() - S.atShop.at) < SHOP_TTL;
 function renderHere(c){
   const b = document.getElementById("hereBtn"); if (!b) return;
-  if (S.tab !== "shopping"){ b.style.display = "none"; return; }
+  const row = document.getElementById("srow");
+  if (S.tab !== "shopping"){ row.style.display = "none"; return; }
+  row.style.display = "";
+  const wk = document.getElementById("wkBtn"), hs = document.getElementById("histBtn");
+  wk.textContent = c.template && c.template.length ? `⭐ Weekly (${c.template.length})` : "⭐ Weekly";
+  wk.onclick = () => showWeekly(c.id);
+  hs.style.display = c.hist && c.hist.length ? "" : "none";
+  hs.onclick = () => showHistory(c.id);
   const mine = shopActive() && S.atShop.who === whoAmI() && S.atShop.listId === c.id;
   b.style.display = "";
   b.classList.toggle("on", !!mine);
@@ -1258,6 +1315,7 @@ function renderHere(c){
     S.atShop = mine ? Object.assign({}, S.atShop, { active:false, u:now })
                     : { active:true, who:whoAmI(), listId:c.id, title:c.title, at:now, u:now };
     save(); renderHere(c);
+    if (!mine) notifyFamily(`${whoAmI()} is at ${c.title}`, "Open Home Base to add anything you need.", "shopping_cart");
     toast(mine ? "Marked done shopping" : `Letting the family know you're at ${c.title}`);
   };
 }
@@ -1278,6 +1336,163 @@ function renderBanner(){
   if (dn) dn.onclick = () => { S.atShop = Object.assign({}, a, { active:false, u:Date.now() }); save(); renderBanner(); };
 }
 setInterval(() => { if (!openId) renderBanner(); }, 60000);
+
+/* ================= ntfy family alerts ================= */
+function notifyFamily(title, message, tags){
+  const topic = S.ntfyTopic; if (!topic) return;
+  // JSON to the ntfy root needs no special headers, so the browser sends it straight away
+  try { fetch("https://ntfy.sh/", { method:"POST", body: JSON.stringify({ topic, title, message, tags: [tags || "bell"], click: location.origin + location.pathname }) }).catch(()=>{}); } catch(e){}
+}
+
+/* ================= weekly shop template ================= */
+function showWeekly(cardId){
+  const c = findCard(cardId); if (!c) return;
+  const tpl = c.template || [];
+  const cur = [...new Set(c.items.map(x => x.text))];
+  if (!tpl.length){
+    menu.innerHTML = `<div class="mt">⭐ Weekly shop</div>
+      <div class="note">Save the ${cur.length} item${cur.length===1?"":"s"} in this list as your usual weekly shop. Next time, one tap puts them all back on the list.</div>
+      ${cur.length ? `<div class="mvlist">${cur.map(t => `<span class="wchip">${esc(t)}</span>`).join("")}</div>` : ""}
+      <div class="acts2"><button id="cx">Cancel</button><button id="wSave" style="background:var(--acc);color:var(--onacc)" ${cur.length ? "" : "disabled"}>Save as weekly</button></div>`;
+    menu.querySelector("#cx").onclick = closeMenu;
+    menu.querySelector("#wSave").onclick = () => { c.template = cur; save(); closeMenu(); renderSheet(); toast("Weekly shop saved ⭐"); };
+  } else {
+    const have = new Set(c.items.filter(x => !x.done).map(x => x.text.toLowerCase()));
+    const missing = tpl.filter(t => !have.has(t.toLowerCase()));
+    menu.innerHTML = `<div class="mt">⭐ Weekly shop · ${tpl.length} items</div>
+      <div class="mvlist">${tpl.map(t => `<span class="wchip ${have.has(t.toLowerCase()) ? "on" : ""}">${esc(t)}</span>`).join("")}</div>
+      <button class="sdone" id="wFill" ${missing.length ? "" : "disabled style='opacity:.5'"}>${missing.length ? `Add ${missing.length} item${missing.length===1?"":"s"} to the list` : "Everything's already on the list"}</button>
+      <div class="acts2"><button id="wUpd">Save current list as weekly</button><button id="wClr" class="danger">Remove weekly</button></div>
+      <button class="mb" id="cx">Close</button>`;
+    menu.querySelector("#cx").onclick = closeMenu;
+    menu.querySelector("#wFill").onclick = () => {
+      if (!missing.length) return;
+      missing.slice().reverse().forEach(t => {
+        const ex = c.items.find(x => x.text.toLowerCase() === t.toLowerCase());
+        if (ex){ ex.done = false; ex.counted = false; c.items = [ex, ...c.items.filter(x => x !== ex)]; }
+        else c.items.unshift(mkItem(t));
+      });
+      save(); closeMenu(); renderSheet(); toast(`Added ${missing.length} weekly item${missing.length===1?"":"s"}`);
+    };
+    menu.querySelector("#wUpd").onclick = () => { c.template = cur; save(); showWeekly(cardId); toast("Weekly shop updated"); };
+    menu.querySelector("#wClr").onclick = () => { delete c.template; save(); closeMenu(); renderSheet(); };
+  }
+  openMenu();
+}
+
+/* ================= shopping history ================= */
+function logHistory(card, text, add){
+  if (!card || S.tab !== "shopping") return;
+  const d = isoToday();
+  card.hist = card.hist || [];
+  let day = card.hist.find(h => h.d === d);
+  if (add){
+    if (!day){ day = { d, items: [] }; card.hist.unshift(day); }
+    if (!day.items.includes(text)) day.items.push(text);
+    card.hist = card.hist.slice(0, 15);
+  } else if (day){
+    day.items = day.items.filter(t => t !== text);
+    if (!day.items.length) card.hist = card.hist.filter(h => h !== day);
+  }
+}
+function showHistory(cardId){
+  const c = findCard(cardId); if (!c) return;
+  const hist = c.hist || [];
+  const open = new Set(c.items.filter(x => !x.done).map(x => x.text.toLowerCase()));
+  menu.innerHTML = `<div class="mt">🕘 ${esc(c.title)} history</div>
+    <div class="note">Tap an item to put it back on the list.</div>
+    <div class="hist2">${hist.map(h => `<div class="hday"><div class="hd">${fmtDate(h.d).replace(/ \d{4}$/,"")} · ${ago(dOf2(h.d))} · ${h.items.length} item${h.items.length===1?"":"s"}</div>
+      <div class="mvlist" style="padding:4px 0 0">${h.items.map(t => `<button class="wchip ${open.has(t.toLowerCase()) ? "on" : ""}" data-add="${esc(t)}">${esc(t)}</button>`).join("")}</div></div>`).join("") || `<div class="note">Nothing bought yet.</div>`}</div>
+    <button class="sdone" id="cx">Done</button>`;
+  menu.querySelector("#cx").onclick = closeMenu;
+  menu.querySelectorAll("[data-add]").forEach(b => b.onclick = () => {
+    const t = b.dataset.add, ex = c.items.find(x => x.text.toLowerCase() === t.toLowerCase());
+    if (ex && !ex.done) { toast("Already on the list"); return; }
+    if (ex){ ex.done = false; ex.counted = false; c.items = [ex, ...c.items.filter(x => x !== ex)]; } else c.items.unshift(mkItem(t));
+    b.classList.add("on"); save(); renderSheet(); toast(`${t} added`);
+  });
+  openMenu();
+}
+const dOf2 = iso => { const [y,m,d] = iso.split("-").map(Number); return new Date(y, m-1, d).getTime(); };
+
+/* ================= important dates ================= */
+const DATE_ICONS = ["🎂","💍","🎉","🎓","❤️","🕯️","🏠","✈️","🚗","🩺","📅","🎁"];
+function nextOccurrence(dt){
+  const [y, m, d] = dt.date.split("-").map(Number), today = isoToday();
+  if (!dt.yearly) return { iso: dt.date, days: dayNum(dt.date) - dayNum(today), years: null };
+  const ty = Number(today.slice(0,4));
+  let iso = `${ty}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  if (iso < today) iso = `${ty+1}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  return { iso, days: dayNum(iso) - dayNum(today), years: y > 1900 ? Number(iso.slice(0,4)) - y : null };
+}
+function renderDates(){
+  const host = document.getElementById("dates"); if (!host) return;
+  const list = (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0).sort((a,b) => a.days - b.days);
+  const show = list.slice(0, S._allDates ? 99 : 3);
+  host.innerHTML = `<div class="gas dates"><div class="gh"><button data-dadd="1">🎉 Important dates</button><span class="ed add" data-dadd="1">＋</span></div>
+    ${show.map(x => `<button class="drow" data-did="${x.dt.id}"><span class="di">${x.dt.icon||"📅"}</span><span class="dm"><b>${esc(x.dt.name)}</b><span>${fmtDate(x.iso)}${x.years ? ` · ${x.dt.icon==="🎂" ? "turns " + x.years : x.years + " years"}` : ""}</span></span><span class="dd ${x.days<=7?"soon":""}">${x.days===0?"Today 🎉":x.days===1?"Tomorrow":x.days+" days"}</span></button>`).join("") ||
+      `<div class="stats" style="margin-top:8px">Add birthdays, anniversaries and other dates — you'll get an ntfy reminder a week before and on the day.</div>`}
+    ${list.length > 3 ? `<button class="dmore" id="dMore">${S._allDates ? "Show less" : `Show all ${list.length}`}</button>` : ""}</div>`;
+  host.querySelectorAll("[data-dadd]").forEach(b => b.onclick = () => editDate(null));
+  host.querySelectorAll("[data-did]").forEach(b => b.onclick = () => editDate(b.dataset.did));
+  const mo = host.querySelector("#dMore"); if (mo) mo.onclick = () => { S._allDates = !S._allDates; renderDates(); };
+}
+function editDate(id){
+  const dt = id ? S.dates.find(x => x.id === id) : null;
+  let icon = dt ? (dt.icon||"📅") : "🎂";
+  menu.innerHTML = `<div class="mt">${dt ? "Edit date" : "New important date"}</div>
+    <form class="ed" id="df" style="padding-top:0">
+      <label>What is it?</label><input id="dName" value="${esc(dt ? dt.name : "")}" placeholder="e.g. Mum's birthday" autocomplete="off">
+      <label>Date</label><input id="dDate" type="date" value="${dt ? dt.date : ""}">
+      <label>Repeats</label><select class="set-sel" id="dRep" style="width:100%;margin:0"><option value="1">Every year</option><option value="0" ${dt && !dt.yearly ? "selected" : ""}>Just once</option></select>
+      <label>Icon</label><div class="emojis" style="padding:0">${DATE_ICONS.map(e => `<button type="button" class="${e===icon?"on":""}" data-e="${e}">${e}</button>`).join("")}</div>
+      <div class="acts">${dt ? `<button type="button" class="del" id="dDel">Delete</button>` : ""}<button type="submit" class="save">${dt ? "Save" : "Add"}</button></div>
+    </form>`;
+  menu.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { icon = b.dataset.e; menu.querySelectorAll("[data-e]").forEach(x => x.classList.toggle("on", x === b)); });
+  menu.querySelector("#df").onsubmit = e => {
+    e.preventDefault();
+    const name = menu.querySelector("#dName").value.trim(), date = menu.querySelector("#dDate").value, yearly = menu.querySelector("#dRep").value === "1";
+    if (!name){ menu.querySelector("#dName").focus(); return; }
+    if (!date){ toast("Pick the date"); return; }
+    if (dt) Object.assign(dt, { name, date, yearly, icon }); else S.dates.push({ id:uid(), name, date, yearly, icon });
+    save(); closeMenu(); renderDates();
+  };
+  const del = menu.querySelector("#dDel");
+  if (del) del.onclick = () => { const idx = S.dates.indexOf(dt); S.dates.splice(idx,1); save(); closeMenu(); renderDates();
+    undoToast("Deleted " + dt.name, () => { S.dates.splice(idx,0,dt); save(); renderDates(); }); };
+  openMenu();
+  if (!dt) setTimeout(() => menu.querySelector("#dName").focus(), 60);
+}
+
+/* ================= Today card (top of Shopping) ================= */
+function todayRows(){
+  const rows = [];
+  if (typeof BB !== "undefined" && typeof bbUnpaid === "function"){
+    bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
+      const d = daysTo(b.dueDate);
+      rows.push({ k:"bill", icon:"💸", html:`<b>${esc(bbProv(b.provider).name)}</b> ${money(b.amount)} · ${d < 0 ? `${-d} days overdue` : d === 0 ? "due today" : d === 1 ? "due tomorrow" : `due in ${d} days`}`, pid:b.provider });
+    });
+  }
+  const gas = (S.trackers||[]).find(t => /gas/i.test(t.name||"") || t.icon === "🔥");
+  if (gas && (gas.changes||[]).length){
+    const ch = gas.changes.slice().sort(), last = ch[ch.length-1], since = dayNum(isoToday()) - dayNum(last);
+    const gaps = ch.slice(1).map((d,i) => dayNum(d) - dayNum(ch[i])), avg = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length) : null;
+    rows.push({ k:"gas", icon:"🔥", html:`Gas bottle · <b>${since} days</b>${avg ? ` (usually ${avg})` : ""}${avg && since >= avg ? " · ⚠️ due" : ""}` });
+  }
+  const up = (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 7).sort((a,b) => a.days - b.days)[0];
+  if (up) rows.push({ k:"date", icon: up.dt.icon || "📅", html:`<b>${esc(up.dt.name)}</b> · ${up.days === 0 ? "today 🎉" : up.days === 1 ? "tomorrow" : `in ${up.days} days`}` });
+  return rows;
+}
+function renderToday(){
+  const host = document.getElementById("today"); if (!host) return;
+  const rows = todayRows();
+  if (!rows.length){ host.innerHTML = ""; return; }
+  host.innerHTML = `<div class="today"><div class="th">Today</div>${rows.map(r => `<button class="trow" data-k="${r.k}"${r.pid ? ` data-pid="${esc(r.pid)}"` : ""}><span>${r.icon}</span><span class="tt">${r.html}</span></button>`).join("")}</div>`;
+  host.querySelectorAll(".trow").forEach(b => b.onclick = () => {
+    if (b.dataset.k === "bill"){ S.tab = "bills"; save(); render(); setTimeout(() => typeof bbOpenProvider === "function" && bbOpenProvider(b.dataset.pid), 50); }
+    else { S.tab = "personal"; save(); render(); }
+  });
+}
 
 /* ================= tracker history ================= */
 function showTrackerHistory(id){
@@ -1621,7 +1836,7 @@ function showSettings(listId, sub){
         <button data-a="delete" class="danger">🗑 Delete list</button>
       </div>`;
   }
-  html += `<div class="acts3"><button id="sy">🔄 Sync</button><button id="bk">⬇︎ Backup</button><button id="rs">⬆︎ Restore</button></div><button class="sdone" id="cx">Done</button>`;
+  html += `<div class="acts4"><button id="sy">🔄 Sync</button><button id="lkS">🔒 Lock</button><button id="bk">⬇︎ Backup</button><button id="rs">⬆︎ Restore</button></div><button class="sdone" id="cx">Done</button>`;
   menu.innerHTML = html;
 
   menu.querySelectorAll("[data-theme]").forEach(sel => sel.onchange = () => { S.themes[sel.dataset.theme] = sel.value; save(); refreshAll(); });
@@ -1630,6 +1845,7 @@ function showSettings(listId, sub){
   menu.querySelector("#cx").onclick = closeMenu;
   menu.querySelector("#bk").onclick = showBackup;
   menu.querySelector("#sy").onclick = () => showSetup(false);
+  menu.querySelector("#lkS").onclick = showLockSettings;
   menu.querySelector("#rs").onclick = showRestore;
   if (onLists && c){
     menu.querySelector("#listSel").onchange = e => showSettings(e.target.value);
@@ -1834,6 +2050,8 @@ async function billsRefresh(spin){
 }
 function bbTyping(){ const a = document.activeElement; return (a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && a.closest("#bills")) || document.getElementById("menu").classList.contains("on"); }
 function renderBillsSafe(){
+  if (S.tab === "personal" && !bbTyping()) renderPersonalBills();
+  if (S.tab === "shopping" && !bbTyping()) renderToday();
   if (S.tab === "bills"){ if (!bbTyping()) renderBills(); else setTimeout(renderBillsSafe, 1500); }
   updateBillsBadge();
 }
@@ -1963,7 +2181,7 @@ function renderBills(){
   h += BB.view === "paid" ? bbPaidHTML() : BB.view === "review" ? bbReviewHTML() : bbDueHTML();
   host.innerHTML = h;
   host.querySelectorAll("[data-bv]").forEach(b => b.onclick = () => { BB.view = b.dataset.bv; renderBills(); });
-  host.querySelectorAll("[data-prov]").forEach(b => b.onclick = () => bbOpenProvider(b.dataset.prov));
+  host.querySelectorAll("[data-prov]").forEach(b => { if (b.classList.contains("btile")) bbAttachHold(b); else b.onclick = () => bbOpenProvider(b.dataset.prov); });
   host.querySelectorAll("[data-bill]").forEach(b => b.onclick = () => bbOpenBill(b.dataset.bill));
   host.querySelector("#bbAdd").onclick = bbOpenAdd;
   host.querySelector("#bbStats").onclick = bbOpenStats;
@@ -2181,31 +2399,185 @@ async function bbUpload(file){
   await bbRun(() => bbCall("upload", { data, mime, name: file.name || "bill.jpg" }), "Added — check it in Review");
   BB.view = "review"; renderBills();
 }
+const BBSTAT = { mode:"12m", fy:null };
+const fyOf = k => { const [y,m] = k.split("-").map(Number); return m >= 7 ? y : y - 1; };
 function bbOpenStats(){
-  const bills = bbSpend(), keys = [];
-  let [y, m] = mKey(isoToday()).split("-").map(Number);
+  const bills = bbSpend();
+  const months = [...new Set(bills.map(bbMonth).filter(Boolean))].sort().reverse();
+  const fys = [...new Set(months.map(fyOf))].sort().reverse();
+  if (BBSTAT.fy === null) BBSTAT.fy = fys[0] != null ? fys[0] : fyOf(mKey(isoToday()));
+  const keys = [];
+  let [y, m] = (BBSTAT.mode === "fy" ? (BBSTAT.fy + 1) + "-06" : mKey(isoToday())).split("-").map(Number);
   for (let i = 0; i < 12; i++){ keys.unshift(y + "-" + String(m).padStart(2,"0")); m--; if (!m){ m = 12; y--; } }
   const per = keys.map(kk => bills.filter(b => bbMonth(b) === kk).reduce((s,b)=>s+b.amount, 0));
   const inRange = bills.filter(b => keys.includes(bbMonth(b))), total = inRange.reduce((s,b)=>s+b.amount, 0);
-  const months = Math.max(1, per.filter(v => v > 0).length);
-  const byCat = {}; inRange.forEach(b => { const c = b.category || bbProv(b.provider).category; byCat[c] = (byCat[c]||0) + b.amount; });
+  const nm = Math.max(1, per.filter(v => v > 0).length);
+  const byCat = {}, byProv = {};
+  inRange.forEach(b => { const c = b.category || bbProv(b.provider).category; byCat[c] = (byCat[c]||0) + b.amount;
+    (byProv[b.provider] = byProv[b.provider] || { sum:0, n:0 }); byProv[b.provider].sum += b.amount; byProv[b.provider].n++; });
   const cats = Object.entries(byCat).sort((a,b) => b[1]-a[1]);
+  const provs = Object.entries(byProv).sort((a,b) => b[1].sum - a[1].sum);
   const W = 320, H = 150, max = Math.max(1, ...per) * 1.15, bw = (W - 20) / 12 - 6;
   const yv = v => H - 22 - (v / max) * (H - 40);
-  const chart = `<svg viewBox="0 0 ${W} ${H}">${per.map((v,i) => `<rect x="${10 + i*((W-20)/12) + 3}" y="${yv(v)}" width="${bw}" height="${H-22-yv(v)}" rx="4" fill="var(--acc)" opacity="${i===11?1:.6}"/>
+  const chart = `<svg viewBox="0 0 ${W} ${H}">${per.map((v,i) => `<rect x="${10 + i*((W-20)/12) + 3}" y="${yv(v)}" width="${bw}" height="${H-22-yv(v)}" rx="4" fill="var(--acc)" opacity="${i===11 && BBSTAT.mode !== "fy" ? 1 : .65}"/>
     <text x="${10 + i*((W-20)/12) + 3 + bw/2}" y="${H-7}" text-anchor="middle" font-size="9" fill="var(--soft)">${MONS[+keys[i].slice(5)-1][0]}</text>`).join("")}</svg>`;
-  menu.innerHTML = `<div class="mt">Spending · last 12 months</div>
-    <div class="bstat"><b>${money(total)}</b><span>${inRange.length} bill${inRange.length===1?"":"s"} · about ${money(total/months)} a month</span></div>
+  const label = BBSTAT.mode === "fy" ? `Tax year ${BBSTAT.fy}–${String(BBSTAT.fy+1).slice(2)} (Jul–Jun)` : "Last 12 months";
+  menu.innerHTML = `<div class="tseg"><button data-sm="12m" class="${BBSTAT.mode==="12m"?"on":""}">12 months</button><button data-sm="fy" class="${BBSTAT.mode==="fy"?"on":""}">Tax year</button></div>
+    ${BBSTAT.mode === "fy" ? `<select class="set-sel" id="fySel">${(fys.length ? fys : [BBSTAT.fy]).map(f => `<option value="${f}" ${f===BBSTAT.fy?"selected":""}>FY ${f}–${String(f+1).slice(2)}</option>`).join("")}</select>` : ""}
+    <div class="bstat"><span>${label}</span><b>${money(total)}</b><span>${inRange.length} bill${inRange.length===1?"":"s"} · about ${money(total/nm)} a month</span></div>
     <div class="chart">${chart}</div>
     <div class="mt">By category</div>
-    <div class="bcats">${cats.map(([c,v]) => `<div><span><i style="background:${BB_CAT_COL[c]||"#8A94AD"}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${total ? v/total*100 : 0}%;background:${BB_CAT_COL[c]||"#8A94AD"}"></em></div>`).join("") || `<div class="note">No bills yet.</div>`}</div>
-    <button class="sdone" id="cx">Done</button>`;
+    <div class="bcats">${cats.map(([c,v]) => `<div><span><i style="background:${BB_CAT_COL[c]||"#8A94AD"}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${total ? v/total*100 : 0}%;background:${BB_CAT_COL[c]||"#8A94AD"}"></em></div>`).join("") || `<div class="note">No bills in this period.</div>`}</div>
+    ${provs.length ? `<div class="mt">By provider</div><div class="bcats">${provs.map(([id, v]) => { const pp = bbProv(id); return `<div><span><i style="background:${esc(pp.colour||"#8A94AD")}"></i>${esc(pp.name)}</span><b>${money0(v.sum)}</b><span style="grid-column:1/-1;font-size:11.5px;color:var(--soft);font-weight:600">${v.n} bill${v.n>1?"s":""} · average ${money(v.sum/v.n)}</span></div>`; }).join("")}</div>` : ""}
+    <div class="acts2"><button id="csvBtn">⬇︎ Export CSV</button><button id="cx">Done</button></div>`;
+  menu.querySelectorAll("[data-sm]").forEach(b => b.onclick = () => { BBSTAT.mode = b.dataset.sm; bbOpenStats(); });
+  const fs = menu.querySelector("#fySel"); if (fs) fs.onchange = () => { BBSTAT.fy = Number(fs.value); bbOpenStats(); };
+  menu.querySelector("#csvBtn").onclick = () => bbExportCsv(BBSTAT.mode === "fy" ? keys : null);
   menu.querySelector("#cx").onclick = closeMenu;
   openMenu();
 }
+async function bbExportCsv(keys){
+  const cols = ["provider","category","amount","dueDate","issueDate","status","paidDate","invoiceNo","accountNo","period","autopay"];
+  const list = BB.bills.filter(b => b.status !== "ignored" && (!keys || keys.includes(bbMonth(b)))).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1);
+  const rows = [["Provider","Category","Amount","Due date","Issue date","Status","Paid date","Invoice","Account","Period","Auto-debit"]]
+    .concat(list.map(b => cols.map(c => c === "provider" ? bbProv(b.provider).name : c === "category" ? (b.category || bbProv(b.provider).category) : c === "amount" ? b.amount.toFixed(2) : c === "autopay" ? (b.autopay ? "yes" : "") : (b[c] == null ? "" : b[c]))));
+  const csv = rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g,'""') + '"' : v).join(",")).join("\n");
+  const name = "home-base-bills-" + (keys ? "FY" + keys[0].slice(0,4) + "-" + keys[11].slice(2,4) : isoToday()) + ".csv";
+  try {
+    const file = new File([csv], name, { type:"text/csv" });
+    if (navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:name }); return; }
+  } catch(e){ if (e && e.name === "AbortError") return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv" })); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); toast("CSV saved");
+}
+
+/* ---- quick pay: hold a tile ---- */
+function bbQuickPay(pid){
+  const p = bbProv(pid);
+  const b = bbUnpaid().filter(x => x.provider === pid).sort((a,c) => (a.dueDate||"") < (c.dueDate||"") ? -1 : 1)[0];
+  if (!b){ bbOpenProvider(pid); return; }
+  const w = bbWhen(b);
+  menu.innerHTML = `<div class="bsh">${bbAv(p,"sm")}<div><b>${esc(p.name)} · ${money(b.amount)}</b><span>${w.t}</span></div></div>
+    ${b.billerCode ? `<div class="bcard"><div class="bpay"><div><span>Biller code</span><b>${esc(b.billerCode)}</b></div><button data-copy="${esc(b.billerCode)}" data-what="Biller code">Copy</button>
+      ${b.bpayRef ? `<div><span>Reference</span><b>${esc(b.bpayRef)}</b></div><button data-copy="${esc(b.bpayRef)}" data-what="Reference">Copy</button>` : ""}</div>
+      <button class="sdone" style="margin:10px 0 0;width:100%" id="copyBoth">Copy biller code, reference & amount</button></div>` : `<div class="note">No BPAY details on this bill.</div>`}
+    <div class="acts2">${p.payUrl && !b.autopay ? `<a class="pill" style="text-align:center;padding:12px" href="${esc(p.payUrl)}" target="_blank" rel="noopener">↗ Pay online</a>` : ""}<button data-paid="${esc(b.id)}" style="background:var(--acc);color:var(--onacc)">✓ Mark paid</button></div>
+    <button class="sdone" id="cx" style="background:rgba(255,255,255,.1);color:var(--ink)">Close</button>`;
+  bbBindSheet();
+  const cb = menu.querySelector("#copyBoth");
+  if (cb) cb.onclick = async () => {
+    const txt = `Biller code: ${b.billerCode}${b.bpayRef ? "\nReference: " + b.bpayRef : ""}\nAmount: ${money(b.amount)}`;
+    try { await navigator.clipboard.writeText(txt); toast("Copied — paste it in your banking app"); } catch(e){ toast(txt.replace(/\n/g, " · ")); }
+  };
+  openMenu();
+}
+function bbAttachHold(tile){
+  let t = null, held = false;
+  const start = () => { held = false; clearTimeout(t); t = setTimeout(() => { held = true; try{ navigator.vibrate && navigator.vibrate(15); }catch(_){} bbQuickPay(tile.dataset.prov); }, 450); };
+  const stop = () => clearTimeout(t);
+  tile.addEventListener("touchstart", start, { passive:true });
+  tile.addEventListener("touchmove", stop, { passive:true });
+  tile.addEventListener("touchend", e => { stop(); if (held){ e.preventDefault(); } });
+  tile.addEventListener("contextmenu", e => { e.preventDefault(); bbQuickPay(tile.dataset.prov); });
+  tile.onclick = e => { if (held){ held = false; return; } bbOpenProvider(tile.dataset.prov); };
+}
+
+/* ---- upcoming bills on the Personal tab ---- */
+function renderPersonalBills(){
+  const host = document.getElementById("pbills"); if (!host) return;
+  const soon = bbUnpaid().filter(b => b.dueDate && daysTo(b.dueDate) <= 7).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1);
+  if (!bbOn() || !soon.length){ host.innerHTML = ""; return; }
+  host.innerHTML = `<div class="pbills"><span class="pbh">💸 Bills this week</span>${soon.map(b => { const p = bbProv(b.provider), d = daysTo(b.dueDate);
+    const when = d < 0 ? `${-d}d overdue` : d === 0 ? "today" : d === 1 ? "tomorrow" : DOWS[dOf(b.dueDate).getDay()];
+    return `<button class="pchip ${bbState(b)}" data-pb="${esc(p.id)}"><i class="bdot ${bbState(b)}"></i>${esc(p.name)} <b>${money0(b.amount)}</b> · ${when}</button>`; }).join("")}</div>`;
+  host.querySelectorAll("[data-pb]").forEach(x => x.onclick = () => { S.tab = "bills"; save(); render(); setTimeout(() => bbOpenProvider(x.dataset.pb), 50); });
+}
+
 setInterval(() => { if (S.tab === "bills" && !document.hidden && !bbTyping()) billsRefresh(false); }, 90000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && S.tab === "bills") billsRefresh(false); });
-setTimeout(() => { updateBillsBadge(); if (bbOn()) billsRefresh(false); }, 600);
+setTimeout(() => { updateBillsBadge(); if (S.tab === "personal") renderPersonalBills(); if (bbOn()) billsRefresh(false); }, 600);
+
+/* ================= app lock: PIN + Face ID (per phone) ================= */
+const LK = { entry:"", mode:"unlock", first:"" };
+const lkGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+const lkSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch(e){} };
+async function lkSha(s){ const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("homebase:" + s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,"0")).join(""); }
+(function lockMarkup(){
+  const d = document.createElement("div");
+  d.className = "lock"; d.id = "lock";
+  d.innerHTML = `<img src="icons/icon-192.png" alt="" class="lkicon"><div class="lkt">Home Base</div><div class="lkmsg" id="lkMsg">Enter your PIN</div>
+    <button class="faceid" id="lkBio" hidden>🔓 Unlock with Face ID</button>
+    <div id="lkPad"><div class="lkdots" id="lkDots"><i></i><i></i><i></i><i></i></div>
+    <div class="lkkeys">${[1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(k => k === "" ? "<span></span>" : `<button data-k="${k}">${k}</button>`).join("")}</div></div>
+    <button class="lkuse" id="lkUse" hidden>Use PIN instead</button>`;
+  document.body.appendChild(d);
+})();
+const $lk = id => document.getElementById(id);
+function lkDraw(){ document.querySelectorAll("#lkDots i").forEach((d, i) => d.classList.toggle("f", i < LK.entry.length)); }
+$lk("lock").addEventListener("click", async e => {
+  const k = e.target.dataset && e.target.dataset.k; if (k === undefined) return;
+  if (k === "⌫") LK.entry = LK.entry.slice(0, -1); else if (LK.entry.length < 4) LK.entry += k;
+  lkDraw();
+  if (LK.entry.length < 4) return;
+  const v = LK.entry; LK.entry = "";
+  if (LK.mode === "unlock"){
+    if (await lkSha(v) === lkGet("hb_pin")) $lk("lock").classList.remove("on");
+    else { $lk("lkDots").classList.add("shake"); setTimeout(() => { $lk("lkDots").classList.remove("shake"); lkDraw(); }, 350); }
+  } else if (LK.mode === "set1"){ LK.first = v; LK.mode = "set2"; $lk("lkMsg").textContent = "Enter it again"; lkDraw(); }
+  else if (v === LK.first){ lkSet("hb_pin", await lkSha(v)); $lk("lock").classList.remove("on"); toast("PIN set 🔒"); }
+  else { LK.mode = "set1"; $lk("lkMsg").textContent = "Didn't match — choose a PIN"; lkDraw(); }
+});
+function lkPad(on){ $lk("lkPad").hidden = !on; $lk("lkUse").hidden = on || !lkGet("hb_bio"); $lk("lkBio").hidden = !lkGet("hb_bio") || (on && LK.mode !== "unlock"); }
+function appLock(){
+  if (!lkGet("hb_pin")) return;
+  if ($lk("lock").classList.contains("on") && LK.mode === "unlock") return;
+  LK.mode = "unlock"; LK.entry = ""; lkDraw();
+  $lk("lock").classList.add("on");
+  if (lkGet("hb_bio")){ $lk("lkMsg").textContent = "Locked"; lkPad(false); lkUnlockBio(true); }
+  else { $lk("lkMsg").textContent = "Enter your PIN"; lkPad(true); }
+}
+$lk("lkUse").onclick = () => { $lk("lkMsg").textContent = "Enter your PIN"; lkPad(true); };
+const lkRand = n => crypto.getRandomValues(new Uint8Array(n));
+const lkB64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const lkUnb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function lkEnableBio(){
+  try {
+    if (!window.PublicKeyCredential || !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())) return toast("Face ID isn't available on this phone");
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: lkRand(32), rp: { name:"Home Base" },
+      user: { id: lkRand(16), name:"Home Base", displayName:"Home Base app lock" },
+      pubKeyCredParams: [{ type:"public-key", alg:-7 }, { type:"public-key", alg:-257 }],
+      authenticatorSelection: { authenticatorAttachment:"platform", userVerification:"required", residentKey:"discouraged" }, timeout:60000 } });
+    lkSet("hb_bio", lkB64(cred.rawId)); closeMenu(); toast("Face ID turned on");
+  } catch(e){ toast(e.name === "NotAllowedError" ? "Face ID wasn't set up" : "Face ID isn't available here"); }
+}
+let lkBusy = false;
+async function lkUnlockBio(auto){
+  if (lkBusy) return; lkBusy = true;
+  try {
+    await navigator.credentials.get({ publicKey: { challenge: lkRand(32), allowCredentials: [{ type:"public-key", id: lkUnb64(lkGet("hb_bio")) }], userVerification:"required", timeout:60000 } });
+    $lk("lock").classList.remove("on");
+  } catch(e){ $lk("lkMsg").textContent = auto ? "Tap to unlock with Face ID" : "Face ID didn't work. Try again or use your PIN."; }
+  finally { lkBusy = false; }
+}
+$lk("lkBio").onclick = () => lkUnlockBio(false);
+function lkSetPin(){ closeMenu(); LK.mode = "set1"; LK.entry = ""; $lk("lkMsg").textContent = "Choose a 4-digit PIN"; lkDraw(); $lk("lock").classList.add("on"); $lk("lkPad").hidden = false; $lk("lkUse").hidden = true; $lk("lkBio").hidden = true; }
+function showLockSettings(){
+  const pin = !!lkGet("hb_pin"), bio = !!lkGet("hb_bio");
+  menu.innerHTML = `<div class="mt">🔒 App lock</div>
+    <div class="note">Locks Home Base on this phone when you open it, and after 2 minutes away. Your wife's phone has its own setting.</div>
+    <button class="mb" id="lkA">${pin ? "Change PIN" : "Set a 4-digit PIN"}</button>
+    ${pin ? `<button class="mb" id="lkB">${bio ? "Turn off Face ID" : "Use Face ID to unlock"}</button><button class="mb danger" id="lkC">Remove app lock</button>` : ""}
+    <button class="sdone" id="cx">Done</button>`;
+  menu.querySelector("#lkA").onclick = lkSetPin;
+  const b = menu.querySelector("#lkB"); if (b) b.onclick = () => { if (bio){ lkSet("hb_bio", null); closeMenu(); toast("Face ID turned off"); } else lkEnableBio(); };
+  const c = menu.querySelector("#lkC"); if (c) c.onclick = () => { lkSet("hb_pin", null); lkSet("hb_bio", null); closeMenu(); toast("App lock removed"); };
+  menu.querySelector("#cx").onclick = closeMenu;
+  openMenu();
+}
+let lkHiddenAt = 0;
+document.addEventListener("visibilitychange", () => { if (document.hidden) lkHiddenAt = Date.now(); else if (Date.now() - lkHiddenAt > 120000) appLock(); });
+appLock();
 
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
