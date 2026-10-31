@@ -315,20 +315,24 @@
   #bands.fit{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border-radius:0}
   .pbars{margin:0 14px 10px;padding:8px 12px 6px;border-radius:16px;background:rgba(0,0,0,.24)}
   .pbars .th{font-size:11px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--soft);margin:0 2px 2px}
-  .pbar{display:flex;align-items:center;gap:10px;width:100%;padding:6px 2px;text-align:left;color:var(--ink)}
-  .pbar .pi{width:20px;text-align:center;font-size:15px;flex:none}
-  .pbar .pm{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
-  .pbar .pl{display:flex;align-items:baseline;gap:6px;font-size:13.5px;min-width:0}
-  .pbar .pl b{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pbar .pa{font-weight:700;opacity:.85;white-space:nowrap}
-  .pbar .pw{margin-left:auto;font-size:12px;font-weight:800;color:var(--soft);white-space:nowrap}
-  .pbar .pt{height:4px;border-radius:3px;background:rgba(255,255,255,.13);overflow:hidden}
-  .pbar .pt i{display:block;height:100%;border-radius:3px;background:#3ccf7a;transition:width .4s}
-  .pbar.warm .pt i{background:#f2c14e}
-  .pbar.hot .pt i{background:#ff9f43}
-  .pbar.late .pt i{background:#ff5a4e}
-  .pbar.auto .pt i{background:#6aa8ff}
-  .pbar.late .pw,.pbar.hot .pw{color:#ff8a80}
+  .pbars{background:none;padding:0;margin:0 14px 10px}
+  .pbars .th{margin:0 4px 6px}
+  .pbar{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;margin-bottom:7px;border-radius:999px;text-align:left;color:#fff;
+    background:linear-gradient(90deg,rgba(255,255,255,.10),rgba(255,255,255,.06));border:1.5px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+  .pbar .pn{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
+  .pbar .pk{font-size:15px;font-weight:900;white-space:nowrap;color:#f7cf4a;text-shadow:0 0 10px rgba(247,207,74,.45)}
+  .pbar .pt{flex:1;min-width:36px;height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+  .pbar .pt i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#f3b53c,#f9e273);transition:width .4s}
+  .pbar .pv{font-size:14px;font-weight:600;white-space:nowrap;color:rgba(225,225,255,.82)}
+  .pbar.hot .pk{color:#ffab5e;text-shadow:0 0 10px rgba(255,150,70,.45)}
+  .pbar.hot .pt i{background:linear-gradient(90deg,#ff8a3d,#ffc46b)}
+  .pbar.late .pk{color:#ff7a6e;text-shadow:0 0 10px rgba(255,90,78,.5)}
+  .pbar.late .pt i{background:linear-gradient(90deg,#ff4d4d,#ff9a7a)}
+  .pbar.auto .pk{color:#8cc0ff;text-shadow:0 0 10px rgba(106,168,255,.45)}
+  .pbar.auto .pt i{background:linear-gradient(90deg,#4f8dff,#9fd0ff)}
+  .seg3{display:flex;gap:6px}
+  .seg3 button{flex:1;padding:10px 2px;border-radius:12px;background:rgba(255,255,255,.08);font-size:12.5px;white-space:nowrap;font-weight:700;color:var(--ink)}
+  .seg3 button.on{background:var(--acc);color:var(--onacc)}
   .today .th{font-size:11.5px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--soft);margin:0 2px 4px}
   .today .trow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 2px;text-align:left;color:var(--ink);font-size:14.5px}
   .today .trow + .trow{border-top:1px solid rgba(255,255,255,.07)}
@@ -1436,6 +1440,10 @@ function showHistory(cardId){
 const dOf2 = iso => { const [y,m,d] = iso.split("-").map(Number); return new Date(y, m-1, d).getTime(); };
 
 /* ================= important dates ================= */
+const DATE_TYPES = { birthday:{ icon:"🎂", label:"Birthday", ask:"Date of birth", ph:"e.g. Mum" }, anniversary:{ icon:"💍", label:"Anniversary", ask:"Date it happened (e.g. wedding day)", ph:"e.g. Our wedding" }, other:{ icon:"📅", label:"Other", ask:"Date", ph:"e.g. Car rego" } };
+const dateType = dt => dt.type || (dt.icon === "🎂" ? "birthday" : dt.icon === "💍" ? "anniversary" : "other");
+const ordN = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th","st","nd","rd"][n % 10] || "th");
+function dateExtra(dt, years){ if (!years) return ""; const t = dateType(dt); return t === "birthday" ? "turns " + years : t === "anniversary" ? ordN(years) + " anniversary" : years + " years"; }
 const DATE_ICONS = ["🎂","💍","🎉","🎓","❤️","🕯️","🏠","✈️","🚗","🩺","📅","🎁"];
 function nextOccurrence(dt){
   const [y, m, d] = dt.date.split("-").map(Number), today = isoToday();
@@ -1447,56 +1455,79 @@ function nextOccurrence(dt){
 }
 function renderDates(){
   const host = document.getElementById("dates"); if (!host) return;
-  const list = (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0).sort((a,b) => a.days - b.days);
-  const show = list.slice(0, S._allDates ? 99 : 3);
-  host.innerHTML = `<div class="gas dates"><div class="gh"><button data-dadd="1">🎉 Important dates</button><span class="ed add" data-dadd="1">＋</span></div>
-    ${show.map(x => `<button class="drow" data-did="${x.dt.id}"><span class="di">${x.dt.icon||"📅"}</span><span class="dm"><b>${esc(x.dt.name)}</b><span>${fmtDate(x.iso)}${x.years ? ` · ${x.dt.icon==="🎂" ? "turns " + x.years : x.years + " years"}` : ""}</span></span><span class="dd ${x.days<=7?"soon":""}">${x.days===0?"Today 🎉":x.days===1?"Tomorrow":x.days+" days"}</span></button>`).join("") ||
-      `<div class="stats" style="margin-top:8px">Add birthdays, anniversaries and other dates — you'll get an ntfy reminder a week before and on the day.</div>`}
-    ${list.length > 3 ? `<button class="dmore" id="dMore">${S._allDates ? "Show less" : `Show all ${list.length}`}</button>` : ""}</div>`;
+  const all = (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0).sort((a,b) => a.days - b.days);
+  const soon = all.filter(x => x.days <= 7);
+  const show = S._allDates ? all : soon;
+  const row = x => `<button class="drow" data-did="${x.dt.id}"><span class="di">${x.dt.icon||"📅"}</span><span class="dm"><b>${esc(x.dt.name)}</b><span>${fmtDate(x.iso)}${x.years ? " · " + dateExtra(x.dt, x.years) : ""}</span></span><span class="dd ${x.days<=7?"soon":""}">${x.days===0?"Today 🎉":x.days===1?"Tomorrow":x.days+" days"}</span></button>`;
+  let body = show.map(row).join("");
+  if (!all.length) body = `<div class="stats" style="margin-top:8px">Add birthdays and anniversaries. They show here in the week before, and ntfy reminds you 3 days before.</div>`;
+  else if (!show.length) body = `<div class="stats" style="margin-top:8px">Nothing in the next 7 days.</div>`;
+  const more = all.length > soon.length ? `<button class="dmore" id="dMore">${S._allDates ? "Show only this week" : `See all dates (${all.length})`}</button>` : "";
+  host.innerHTML = `<div class="gas dates"><div class="gh"><button data-dadd="1">🎉 Important dates</button><span class="ed add" data-dadd="1">＋</span></div>${body}${more}</div>`;
   host.querySelectorAll("[data-dadd]").forEach(b => b.onclick = () => editDate(null));
   host.querySelectorAll("[data-did]").forEach(b => b.onclick = () => editDate(b.dataset.did));
   const mo = host.querySelector("#dMore"); if (mo) mo.onclick = () => { S._allDates = !S._allDates; renderDates(); };
 }
 function editDate(id){
   const dt = id ? S.dates.find(x => x.id === id) : null;
-  let icon = dt ? (dt.icon||"📅") : "🎂";
+  let type = dt ? dateType(dt) : "birthday", icon = dt ? (dt.icon||DATE_TYPES[type].icon) : DATE_TYPES[type].icon;
   menu.innerHTML = `<div class="mt">${dt ? "Edit date" : "New important date"}</div>
     <form class="ed" id="df" style="padding-top:0">
-      <label>What is it?</label><input id="dName" value="${esc(dt ? dt.name : "")}" placeholder="e.g. Mum's birthday" autocomplete="off">
-      <label>Date</label><input id="dDate" type="date" value="${dt ? dt.date : ""}">
-      <label>Repeats</label><select class="set-sel" id="dRep" style="width:100%;margin:0"><option value="1">Every year</option><option value="0" ${dt && !dt.yearly ? "selected" : ""}>Just once</option></select>
+      <label>Type</label><div class="seg3" id="dType">${Object.keys(DATE_TYPES).map(k => `<button type="button" data-t="${k}" class="${k===type?"on":""}">${DATE_TYPES[k].icon} ${DATE_TYPES[k].label}</button>`).join("")}</div>
+      <label>Name</label><input id="dName" value="${esc(dt ? dt.name : "")}" placeholder="${DATE_TYPES[type].ph}" autocomplete="off">
+      <label id="dAsk">${DATE_TYPES[type].ask}</label><input id="dDate" type="date" value="${dt ? dt.date : ""}" max="${type==="other" ? "" : isoToday()}">
+      <div id="dRepW" style="${type==="other" ? "" : "display:none"}"><label>Repeats</label><select class="set-sel" id="dRep" style="width:100%;margin:0"><option value="1">Every year</option><option value="0" ${dt && !dt.yearly ? "selected" : ""}>Just once</option></select></div>
+      <div class="stats" id="dHint" style="margin:8px 2px 0"></div>
       <label>Icon</label><div class="emojis" style="padding:0">${DATE_ICONS.map(e => `<button type="button" class="${e===icon?"on":""}" data-e="${e}">${e}</button>`).join("")}</div>
       <div class="acts">${dt ? `<button type="button" class="del" id="dDel">Delete</button>` : ""}<button type="submit" class="save">${dt ? "Save" : "Add"}</button></div>
     </form>`;
-  menu.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { icon = b.dataset.e; menu.querySelectorAll("[data-e]").forEach(x => x.classList.toggle("on", x === b)); });
-  menu.querySelector("#df").onsubmit = e => {
+  const $ = q => menu.querySelector(q);
+  const hint = () => {
+    const v = $("#dDate").value; if (!v){ $("#dHint").textContent = ""; return; }
+    const tmp = { date:v, yearly: type !== "other" || $("#dRep").value === "1", type, icon };
+    const n = nextOccurrence(tmp);
+    $("#dHint").textContent = n.days < 0 ? "This date has passed." : `Next: ${fmtDate(n.iso)}${n.years ? " · " + dateExtra(tmp, n.years) : ""} · ${n.days === 0 ? "today" : n.days === 1 ? "tomorrow" : "in " + n.days + " days"}`;
+  };
+  const setIcon = e => { icon = e; menu.querySelectorAll("[data-e]").forEach(x => x.classList.toggle("on", x.dataset.e === e)); };
+  menu.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+    type = b.dataset.t; menu.querySelectorAll("[data-t]").forEach(x => x.classList.toggle("on", x === b));
+    $("#dAsk").textContent = DATE_TYPES[type].ask; $("#dName").placeholder = DATE_TYPES[type].ph;
+    $("#dRepW").style.display = type === "other" ? "" : "none"; $("#dDate").max = type === "other" ? "" : isoToday();
+    setIcon(DATE_TYPES[type].icon); hint();
+  });
+  menu.querySelectorAll("[data-e]").forEach(b => b.onclick = () => setIcon(b.dataset.e));
+  $("#dDate").oninput = hint; $("#dRep").onchange = hint; hint();
+  $("#df").onsubmit = e => {
     e.preventDefault();
-    const name = menu.querySelector("#dName").value.trim(), date = menu.querySelector("#dDate").value, yearly = menu.querySelector("#dRep").value === "1";
-    if (!name){ menu.querySelector("#dName").focus(); return; }
+    const name = $("#dName").value.trim(), date = $("#dDate").value, yearly = type !== "other" || $("#dRep").value === "1";
+    if (!name){ $("#dName").focus(); return; }
     if (!date){ toast("Pick the date"); return; }
-    if (dt) Object.assign(dt, { name, date, yearly, icon }); else S.dates.push({ id:uid(), name, date, yearly, icon });
+    if (type !== "other" && date > isoToday()){ toast(type === "birthday" ? "Enter the date they were born" : "Enter the date it happened"); return; }
+    if (dt) Object.assign(dt, { name, date, yearly, icon, type }); else S.dates.push({ id:uid(), name, date, yearly, icon, type });
     save(); closeMenu(); renderDates();
   };
-  const del = menu.querySelector("#dDel");
+  const del = $("#dDel");
   if (del) del.onclick = () => { const idx = S.dates.indexOf(dt); S.dates.splice(idx,1); save(); closeMenu(); renderDates();
     undoToast("Deleted " + dt.name, () => { S.dates.splice(idx,0,dt); save(); renderDates(); }); };
   openMenu();
-  if (!dt) setTimeout(() => menu.querySelector("#dName").focus(), 60);
+  if (!dt) setTimeout(() => $("#dName").focus(), 60);
 }
 
 /* ================= Today card (top of Shopping) ================= */
 function pbarRow(o){
-  const pct = Math.max(4, Math.min(100, Math.round(o.pct)));
-  return `<button class="pbar ${o.tone||""}" ${o.attrs||""}><span class="pi">${o.icon}</span><span class="pm"><span class="pl"><b>${o.name}</b>${o.amt ? `<span class="pa">${o.amt}</span>` : ""}<span class="pw">${o.when}</span></span><span class="pt"><i style="width:${pct}%"></i></span></span></button>`;
+  const pct = Math.max(5, Math.min(100, Math.round(o.pct)));
+  return `<button class="pbar ${o.tone||""}" ${o.attrs||""}><span class="pn">${o.name}</span><span class="pk">${o.key}</span><span class="pt"><i style="width:${pct}%"></i></span><span class="pv">${o.val||""}</span></button>`;
 }
-function pTone(pct, late){ return late ? "late" : pct >= 85 ? "hot" : pct >= 55 ? "warm" : ""; }
+function pTone(pct, late){ return late ? "late" : pct >= 85 ? "hot" : ""; }
+function dKey(d){ return d < 0 ? `${-d}d late` : d === 0 ? "Today" : `${d}d`; }
+function fmtShort(iso){ const [y,m,d] = iso.split("-").map(Number); return d + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]; }
 function dueWords(d){ return d < 0 ? `${-d} day${d<-1?"s":""} overdue` : d === 0 ? "today" : d === 1 ? "tomorrow" : `in ${d} days`; }
 function todayRows(){
   const rows = [];
   if (typeof BB !== "undefined" && typeof bbUnpaid === "function"){
     bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 7).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
       const d = daysTo(b.dueDate), pct = d < 0 ? 100 : (7 - d) / 7 * 100;
-      rows.push({ k:"bill", pid:b.provider, icon:"💸", name:esc(bbProv(b.provider).name), amt:money0(b.amount), when:dueWords(d), pct, tone:pTone(pct, d <= 0) });
+      rows.push({ k:"bill", pid:b.provider, name:esc(bbProv(b.provider).name), key:dKey(d), val:money0(b.amount), pct, tone:pTone(pct, d <= 0) });
     });
   }
   const gas = (S.trackers||[]).find(t => /gas/i.test(t.name||"") || t.icon === "🔥");
@@ -1504,11 +1535,11 @@ function todayRows(){
     const ch = gas.changes.slice().sort(), last = ch[ch.length-1], since = dayNum(isoToday()) - dayNum(last);
     const gaps = ch.slice(1).map((d,i) => dayNum(d) - dayNum(ch[i])), avg = gaps.length ? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length) : null;
     const pct = avg ? since / avg * 100 : 50;
-    rows.push({ k:"gas", icon:"🔥", name:"Gas bottle", when: avg ? `${since} of ~${avg} days${since >= avg ? " · due" : ""}` : `${since} days`, pct, tone:pTone(pct, avg && since >= avg) });
+    rows.push({ k:"gas", name:"Gas", key: avg ? `${Math.round(pct)}%` : `${since}d`, val: avg ? `${since}/${avg}d` : "", pct, tone:pTone(pct, avg && since >= avg) });
   }
-  (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 14).sort((a,b) => a.days - b.days).slice(0,2).forEach(up => {
-    const pct = (14 - up.days) / 14 * 100;
-    rows.push({ k:"date", icon: up.dt.icon || "📅", name:esc(up.dt.name), when: up.days === 0 ? "today 🎉" : dueWords(up.days), pct, tone: up.days <= 1 ? "hot" : up.days <= 7 ? "warm" : "" });
+  (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 7).sort((a,b) => a.days - b.days).slice(0,2).forEach(up => {
+    const pct = (7 - up.days) / 7 * 100;
+    rows.push({ k:"date", name:(up.dt.icon || "📅") + " " + esc(up.dt.name), key:dKey(up.days), val:fmtShort(up.iso), pct, tone: up.days <= 1 ? "hot" : "" });
   });
   return rows;
 }
@@ -2249,7 +2280,7 @@ function bbDueHTML(){
   let nx = dated.filter(x => daysTo(x.dueDate) <= 14).slice(0, 5); if (!nx.length) nx = dated.slice(0, 1);
   if (nx.length) h += `<div class="pbars bnextbars"><div class="th">Next</div>${nx.map(b => { const p = bbProv(b.provider), d = daysTo(b.dueDate), w = bbWhen(b);
     const pct = d < 0 ? 100 : Math.max(0, (14 - d) / 14 * 100);
-    return pbarRow({ icon:`<span class="bdot ${bbState(b)}"></span>`, name:esc(p.name), amt:money(b.amount), when:w.t, pct, tone: b.autopay && d >= 0 ? "auto" : pTone(pct, d <= 0), attrs:`data-prov="${esc(p.id)}"` }); }).join("")}</div>`;
+    void w; return pbarRow({ name:esc(p.name), key:dKey(d), val:money(b.amount), pct, tone: b.autopay && d >= 0 ? "auto" : pTone(pct, d <= 0), attrs:`data-prov="${esc(p.id)}"` }); }).join("")}</div>`;
   h += bbCalHTML();
   const latest = {};
   BB.bills.filter(b => b.status === "due" || b.status === "paid").forEach(b => { const kk = b.dueDate || b.paidDate || ""; if (!latest[b.provider] || kk > latest[b.provider]) latest[b.provider] = kk; });

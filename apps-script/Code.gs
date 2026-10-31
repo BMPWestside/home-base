@@ -187,15 +187,16 @@ function checkDates_(data, topic) {
     let iso = dt.yearly === false ? dt.date : ty + '-' + String(p[1]).padStart(2, '0') + '-' + String(p[2]).padStart(2, '0');
     if (dt.yearly !== false && iso < today) iso = (ty + 1) + iso.slice(4);
     const left = day(iso) - day(today);
-    if ([7, 1, 0].indexOf(left) < 0) return;
+    if (left !== 3) return;                                      // one reminder, 3 days before
     const key = 'date_' + dt.id + '_' + iso + '_' + left;
     if (props.getProperty(key)) return;
     const years = dt.yearly !== false && p[0] > 1900 ? Number(iso.slice(0, 4)) - p[0] : 0;
-    const extra = years ? (dt.icon === '🎂' ? ' (turns ' + years + ')' : ' (' + years + ' years)') : '';
+    const kind = dt.type || (dt.icon === '🎂' ? 'birthday' : dt.icon === '💍' ? 'anniversary' : 'other');
+    const extra = years ? (kind === 'birthday' ? ' (turns ' + years + ')' : kind === 'anniversary' ? ' (' + years + ' years)' : ' (' + years + ' years)') : '';
     UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
       method: 'post', muteHttpExceptions: true,
-      payload: (left === 0 ? 'Today' : left === 1 ? 'Tomorrow' : 'In a week') + ': ' + dt.name + extra,
-      headers: { Title: (left === 0 ? 'Today' : 'Coming up') + ' - Home Base', Tags: 'tada', Click: APP_URL }
+      payload: 'In 3 days: ' + dt.name + extra,
+      headers: { Title: 'Coming up - Home Base', Tags: 'tada', Click: APP_URL }
     });
     props.setProperty(key, '1');
   });
