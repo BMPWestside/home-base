@@ -96,7 +96,7 @@
   .sg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px}
   .sg3 .set-sel{width:calc(100% - 8px);margin:2px 4px 4px;padding:11px 26px 11px 10px;font-size:14px;background-position:right 9px center}
   #bills{padding:0 14px 30px;color:var(--ink)}
-  .bsum{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px;margin-bottom:12px}
+  .bsum{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px;margin-bottom:12px}
   .bsum > *{background:rgba(0,0,0,.22);border-radius:16px;padding:12px 10px;text-align:center;display:flex;flex-direction:column;gap:2px;color:var(--ink)}
   .bsum b{font-size:22px;font-weight:800;color:var(--acc)}
   .bsum span{font-size:12px;font-weight:700;color:var(--soft)}
@@ -109,13 +109,19 @@
   .bav img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:6px;box-sizing:border-box}
   .bav.sm{width:40px;height:40px;border-radius:12px;font-size:14px}
   .bav.sm img{padding:4px}
-  .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .btile{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px 12px;border-radius:18px;background:var(--rowbg, rgba(255,255,255,.08));color:var(--ink);animation:pop .2s ease}
+  .bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .btile{position:relative;display:grid;place-items:center;padding:10px 0 16px;border-radius:16px;background:var(--rowbg, rgba(255,255,255,.08));color:var(--ink);animation:pop .3s ease both;animation-delay:calc(var(--i,0) * 35ms)}
+  .btile .bav{width:50px;height:50px;border-radius:14px;font-size:16px}
+  .btile .bav img{padding:3px}
+  .bcat{position:absolute;left:7px;bottom:4px;width:13px;height:13px;color:var(--soft);opacity:.8}
+  .bcat svg{width:100%;height:100%;display:block}
+  .btile > .bdot.urgent{animation:bpulse 1.8s ease-out infinite}
+  @keyframes bpulse{0%{box-shadow:0 0 0 0 rgba(255,90,78,.6)}70%{box-shadow:0 0 0 7px rgba(255,90,78,0)}100%{box-shadow:0 0 0 0 rgba(255,90,78,0)}}
   .btile:active{transform:scale(.97)}
   .btile .bn{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .btile .bl{font-size:11.5px;font-weight:700;color:var(--soft)}
   .btile .bl.urgent{color:#ff8a80}
-  .btile > .bdot{position:absolute;top:9px;right:9px}
+  .btile > .bdot{position:absolute;top:6px;right:6px}
   .bdot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
   .bdot.urgent{background:#ff5a4e;box-shadow:0 0 0 3px rgba(255,90,78,.25)}
   .bdot.due{background:#ffa53a}
@@ -194,6 +200,33 @@
   .bcats div span{display:flex;align-items:center;gap:7px;font-weight:700}
   .bcats div span i{width:10px;height:10px;border-radius:3px}
   .bcats em{grid-column:1/-1;display:block;height:6px;border-radius:4px}
+  .bring{flex-direction:row !important;align-items:center;justify-content:center;gap:8px !important;text-align:left !important}
+  .bring svg{width:30px;height:30px;flex:none;transform:rotate(-90deg)}
+  .bring .rt{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+  .bring .rt b{font-size:18px !important}
+  .bring .rt span{font-size:11px !important;white-space:nowrap}
+  .bring .rt .up{color:#FF9B8A !important}
+  .bring .rt .down{color:#8FE3B0 !important}
+  .bcal{background:rgba(0,0,0,.22);border-radius:16px;padding:8px 10px 10px;margin-bottom:12px}
+  .calh{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+  .calh .t{flex:1;font-size:11.5px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--soft)}
+  .calh button{font-size:12.5px;font-weight:800;color:var(--acc);padding:5px 9px;border-radius:8px;background:rgba(255,255,255,.08)}
+  .calh .nav{width:30px;padding:5px 0}
+  .strip{display:grid;grid-template-columns:repeat(14,1fr);gap:2px}
+  .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .mhead{text-align:center;font-size:10px;font-weight:800;color:var(--soft)}
+  .day{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0 5px;border-radius:9px;min-width:0;color:var(--ink)}
+  .day .wd{font-size:9.5px;color:var(--soft);font-weight:800}
+  .day .dn{font-size:13px;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+  .day .ds{display:flex;gap:2px;height:6px}
+  .day .ds i{width:6px;height:6px;box-shadow:none}
+  .day.today{background:var(--acc);color:var(--onacc)}
+  .day.today .wd{color:var(--onacc)}
+  .day.has{cursor:pointer}
+  .day.has:active{background:rgba(255,255,255,.12)}
+  .day.blank{visibility:hidden}
+  .day.past .dn{opacity:.5}
+  .menu > button.brow{display:flex;align-items:center;gap:12px;width:calc(100% - 16px);margin:0 8px 8px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.07);text-align:left}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -1845,6 +1878,58 @@ function updateBillsBadge(){
   t.innerHTML = "Bills" + (urgent ? `<i class="tbadge">${urgent}</i>` : "");
 }
 
+const BB_CAT_ICON = {
+  "Electricity":'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  "Gas":'<path d="M12 22a7 7 0 0 0 7-7c0-4-3-6.5-4.5-10-1 2.2-2 3.2-3.2 3.4C11.3 6 10.6 4 9.5 2.5 7 6 5 9 5 15a7 7 0 0 0 7 7z"/>',
+  "Internet":'<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/>',
+  "Telecommunications":'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18h2"/>',
+  "Council Rates":'<path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-5h4v5"/>',
+  "Water":'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  "Insurance":'<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/>',
+  "Rego":'<path d="M5 17h14v-5l-2-5H7l-2 5zM5 12h14"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/>',
+  "Strata":'<path d="M5 21V4h10v17M15 9h4v12M8 8h1M11 8h1M8 12h1M11 12h1M8 16h1M11 16h1M3 21h18"/>',
+  "Subscriptions":'<path d="M4 7h16v12H4zM8 3h8M6 5h12"/>'
+};
+const bbCatIcon = c => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${BB_CAT_ICON[c] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
+function bbRingHTML(){
+  const k = mKey(isoToday()), [y, m] = k.split("-").map(Number);
+  const prevK = m === 1 ? (y-1) + "-12" : y + "-" + String(m-1).padStart(2,"0");
+  const sum = key => bbSpend().filter(b => bbMonth(b) === key).reduce((s,b)=>s+b.amount, 0);
+  const cur = sum(k), prev = sum(prevK), C = 2 * Math.PI * 15;
+  const frac = prev ? Math.min(cur/prev, 1) : (cur ? 1 : 0);
+  const pct = prev ? Math.round((cur - prev) / prev * 100) : 0;
+  const trend = prev ? `<span class="${pct > 0 ? "up" : "down"}">${MONS[m-1]} ${pct > 0 ? "▲" : "▼"}${Math.abs(pct)}%</span>` : `<span>${MONS[m-1]} so far</span>`;
+  return `<button id="bbStats" class="bring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="5"/>${frac > 0 ? `<circle cx="18" cy="18" r="15" fill="none" stroke="${pct > 0 ? "#FF9B8A" : "var(--acc)"}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(frac*C).toFixed(1)} ${C.toFixed(1)}"/>` : ""}</svg><span class="rt"><b>${money0(cur)}</b>${trend}</span></button>`;
+}
+const BBCAL = { month: null };    // null = next 2 weeks, else "YYYY-MM"
+const addDays = (iso, n) => { const d = dOf(iso); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); };
+function bbDayBills(iso){ return BB.bills.filter(b => (b.status === "due" || b.status === "paid") && b.dueDate === iso); }
+function bbDayCell(iso, wd){
+  const d = dOf(iso), bills = bbDayBills(iso), t = isoToday();
+  const cls = ["day", iso === t ? "today" : "", iso < t ? "past" : "", bills.length ? "has" : ""].join(" ");
+  return `<div class="${cls}"${bills.length ? ` data-day="${iso}"` : ""}>${wd ? `<span class="wd">${DOWS[d.getDay()][0]}</span>` : ""}<span class="dn">${d.getDate()}</span><span class="ds">${bills.slice(0,3).map(b => `<i class="bdot ${bbState(b)}"></i>`).join("")}</span></div>`;
+}
+function bbCalHTML(){
+  if (!BBCAL.month){
+    let cells = ""; for (let i = 0; i < 14; i++) cells += bbDayCell(addDays(isoToday(), i), true);
+    return `<div class="bcal"><div class="calh"><span class="t">Next 2 weeks</span><button data-cal="month">Month</button></div><div class="strip">${cells}</div></div>`;
+  }
+  const [y, m] = BBCAL.month.split("-").map(Number);
+  const lead = (new Date(y, m-1, 1).getDay() + 6) % 7, days = new Date(y, m, 0).getDate();
+  let cells = ["M","T","W","T","F","S","S"].map(x => `<span class="mhead">${x}</span>`).join("");
+  for (let i = 0; i < lead; i++) cells += `<div class="day blank"></div>`;
+  for (let d = 1; d <= days; d++) cells += bbDayCell(`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
+  return `<div class="bcal"><div class="calh"><button class="nav" data-cal="prev">‹</button><span class="t" style="text-align:center">${MONS[m-1]} ${y}</span><button class="nav" data-cal="next">›</button><button data-cal="strip">2 weeks</button></div><div class="mgrid">${cells}</div></div>`;
+}
+function bbOpenDay(iso){
+  const bills = bbDayBills(iso);
+  menu.innerHTML = `<div class="mt">${niceD(iso)}</div>` + bills.map(b => { const p = bbProv(b.provider);
+    return `<button class="brow" data-prov="${esc(p.id)}">${bbAv(p,"sm")}<span class="mid"><b>${esc(p.name)}</b><span>${b.status === "paid" ? "Paid " + niceD(b.paidDate) : bbWhen(b).t}</span></span><span class="r">${money(b.amount)}</span></button>`; }).join("") + `<button class="sdone" id="cx">Close</button>`;
+  menu.querySelectorAll("[data-prov]").forEach(x => x.onclick = () => bbOpenProvider(x.dataset.prov));
+  menu.querySelector("#cx").onclick = closeMenu;
+  openMenu();
+}
+
 /* ---- render ---- */
 function renderBills(){
   const host = document.getElementById("bills"); if (!host) return;
@@ -1863,7 +1948,7 @@ function renderBills(){
   let h = `<div class="bsum">
       <div><b>${u.length}</b><span>to pay</span></div>
       <div><b>${money0(total)}</b><span>total due</span></div>
-      <button id="bbStats"><b>${money0(cur)}</b><span>${MONS[new Date().getMonth()]} spend ›</span></button>
+      ${bbRingHTML()}
     </div>
     <div class="bseg">
       <button data-bv="due" class="${BB.view==="due"?"on":""}">Due</button>
@@ -1881,6 +1966,14 @@ function renderBills(){
   host.querySelectorAll("[data-bill]").forEach(b => b.onclick = () => bbOpenBill(b.dataset.bill));
   host.querySelector("#bbAdd").onclick = bbOpenAdd;
   host.querySelector("#bbStats").onclick = bbOpenStats;
+  host.querySelectorAll("[data-cal]").forEach(c => c.onclick = () => {
+    const v = c.dataset.cal;
+    if (v === "strip") BBCAL.month = null;
+    else if (v === "month") BBCAL.month = mKey(isoToday());
+    else { let [y, m] = BBCAL.month.split("-").map(Number); m += v === "next" ? 1 : -1; if (!m){ m = 12; y--; } if (m > 12){ m = 1; y++; } BBCAL.month = y + "-" + String(m).padStart(2,"0"); }
+    renderBills();
+  });
+  host.querySelectorAll("[data-day]").forEach(d => d.onclick = () => bbOpenDay(d.dataset.day));
   const rt = host.querySelector("#bbRetry"); if (rt) rt.onclick = () => billsRefresh(true);
   const rl = host.querySelector("#bbRelink"); if (rl) rl.onclick = () => { LOCAL.bbApi = ""; LOCAL.bbKey = ""; saveLocal(); BB.err = ""; renderBills(); };
   if (BB.view === "review") bbBindReview(host);
@@ -1892,6 +1985,7 @@ function bbDueHTML(){
   const next = u.filter(x => x.dueDate).sort((a,c) => a.dueDate < c.dueDate ? -1 : 1)[0];
   if (next){ const p = bbProv(next.provider), w = bbWhen(next);
     h += `<button class="bnext" data-prov="${esc(p.id)}"><span class="bdot ${bbState(next)}"></span><span class="lbl">Next</span><b>${esc(p.name)}</b><span class="amt">${money(next.amount)}</span><span class="w ${w.c}">${w.t}</span></button>`; }
+  h += bbCalHTML();
   const latest = {};
   BB.bills.filter(b => b.status === "due" || b.status === "paid").forEach(b => { const kk = b.dueDate || b.paidDate || ""; if (!latest[b.provider] || kk > latest[b.provider]) latest[b.provider] = kk; });
   const ids = Object.keys(latest);
@@ -1901,11 +1995,10 @@ function bbDueHTML(){
   const rank = { urgent:0, due:1, auto:2, paid:3 };
   const nextDue = id => (u.filter(b => b.provider === id).map(b => b.dueDate).sort()[0]) || "9999";
   const tiles = ids.map(id => ({ p: bbProv(id), st: stateOf(id) })).sort((a,b) => rank[a.st]-rank[b.st] || (nextDue(a.p.id) < nextDue(b.p.id) ? -1 : 1) || a.p.name.localeCompare(b.p.name));
-  h += `<div class="bgrid">` + tiles.map(t => {
-    const open = u.filter(b => b.provider === t.p.id).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1)[0];
-    const line = open ? `${money0(open.amount)} · ${bbWhen(open).t.replace("due ","")}` : "paid";
-    return `<button class="btile" data-prov="${esc(t.p.id)}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bn">${esc(t.p.name)}</span><span class="bl ${t.st}">${line}</span></button>`;
-  }).join("") + `</div>
+  const label = { urgent:"due within 3 days or overdue", due:"to pay", auto:"auto-debit coming", paid:"paid" };
+  h += `<div class="bgrid">` + tiles.map((t, i) =>
+    `<button class="btile" style="--i:${i}" data-prov="${esc(t.p.id)}" aria-label="${esc(t.p.name)}, ${label[t.st]}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bcat" title="${esc(t.p.category)}">${bbCatIcon(t.p.category)}</span></button>`
+  ).join("") + `</div>
   <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>`;
   return h;
 }
