@@ -90,6 +90,108 @@
   .sg2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
   .sg2 .set-sel{width:calc(100% - 12px);margin:2px 6px 4px}
   .sl{font-size:12px;font-weight:700;color:var(--soft);padding:0 10px 2px}
+  /* ---- Bills tab ---- */
+  .tab{position:relative}
+  .tbadge{position:absolute;top:4px;right:10px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5483f;color:#fff;font-size:11px;font-weight:900;font-style:normal;display:grid;place-items:center}
+  .sg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px}
+  .sg3 .set-sel{width:calc(100% - 8px);margin:2px 4px 4px;padding:11px 26px 11px 10px;font-size:14px;background-position:right 9px center}
+  #bills{padding:0 14px 30px;color:var(--ink)}
+  .bsum{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:8px;margin-bottom:12px}
+  .bsum > *{background:rgba(0,0,0,.22);border-radius:16px;padding:12px 10px;text-align:center;display:flex;flex-direction:column;gap:2px;color:var(--ink)}
+  .bsum b{font-size:22px;font-weight:800;color:var(--acc)}
+  .bsum span{font-size:12px;font-weight:700;color:var(--soft)}
+  .bseg{display:flex;gap:6px;padding:4px;border-radius:14px;background:rgba(0,0,0,.25);margin-bottom:14px}
+  .bseg button{flex:1;position:relative;padding:10px 0;border-radius:10px;font-weight:800;font-size:15px;color:var(--soft)}
+  .bseg button.on{background:var(--acc);color:var(--onacc)}
+  .bseg #bbAdd{flex:0 0 46px;font-size:22px;color:var(--ink)}
+  .bseg i{position:absolute;top:3px;right:8px;min-width:17px;height:17px;border-radius:9px;background:#e5483f;color:#fff;font-size:10px;font-style:normal;display:grid;place-items:center;padding:0 4px}
+  .bav{position:relative;flex:none;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;overflow:hidden;color:#fff;font-weight:900;font-size:18px}
+  .bav img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:6px;box-sizing:border-box}
+  .bav.sm{width:40px;height:40px;border-radius:12px;font-size:14px}
+  .bav.sm img{padding:4px}
+  .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .btile{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px 12px;border-radius:18px;background:var(--rowbg, rgba(255,255,255,.08));color:var(--ink);animation:pop .2s ease}
+  .btile:active{transform:scale(.97)}
+  .btile .bn{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .btile .bl{font-size:11.5px;font-weight:700;color:var(--soft)}
+  .btile .bl.urgent{color:#ff8a80}
+  .btile > .bdot{position:absolute;top:9px;right:9px}
+  .bdot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+  .bdot.urgent{background:#ff5a4e;box-shadow:0 0 0 3px rgba(255,90,78,.25)}
+  .bdot.due{background:#ffa53a}
+  .bdot.auto{background:#4aa3e8}
+  .bdot.paid{background:#3ccf7a}
+  .blegend{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:14px 0 4px;font-size:12px;font-weight:700;color:var(--soft)}
+  .blegend span{display:flex;align-items:center;gap:5px}
+  .bnext{display:flex;align-items:center;gap:8px;width:100%;padding:13px 14px;margin-bottom:12px;border-radius:16px;background:rgba(0,0,0,.22);color:var(--ink);font-size:15px;text-align:left}
+  .bnext .lbl{font-size:11px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--soft)}
+  .bnext b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bnext .amt{font-weight:800}
+  .bnext .w{font-size:12px;font-weight:800;color:var(--soft)}
+  .bnext .w.late,.bnext .w.soon{color:#ff8a80}
+  .balert{display:flex;gap:12px;align-items:center;padding:12px 14px;margin-bottom:10px;border-radius:16px;background:rgba(255,165,58,.16);border:1px solid rgba(255,165,58,.35)}
+  .balert b{display:block;font-size:15px}
+  .balert span{font-size:12.5px;color:var(--soft);font-weight:600}
+  .bmonth{display:flex;justify-content:space-between;margin:16px 6px 8px;font-size:12px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--soft)}
+  .brow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;margin-bottom:7px;border-radius:14px;background:var(--rowbg, rgba(255,255,255,.08));color:var(--ink);text-align:left}
+  .brow .mid{flex:1;min-width:0;display:flex;flex-direction:column}
+  .brow .mid b{font-size:15.5px}
+  .brow .mid span{font-size:12px;color:var(--soft);font-weight:600}
+  .brow .r{font-weight:800}
+  .chip{font-style:normal;display:inline-block;margin-left:6px;padding:2px 8px;border-radius:8px;font-size:11.5px;font-weight:800;background:rgba(255,255,255,.14);color:var(--ink)}
+  .chip.ok,.chip.auto{background:rgba(60,207,122,.2);color:#7ee2a6}
+  .chip.late{background:rgba(255,90,78,.22);color:#ff9a90}
+  .chip.soon{background:rgba(255,165,58,.22);color:#ffc27a}
+  .bempty{text-align:center;padding:36px 20px;color:var(--soft);font-weight:600}
+  .bempty .big{font-size:44px;margin-bottom:8px}
+  .bempty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+  .bempty textarea{width:100%;height:80px;margin:12px 0 10px;border-radius:12px;border:0;padding:10px;background:rgba(255,255,255,.1);color:var(--ink);font-size:13px}
+  .bwhy{margin:8px 0;padding:9px 12px;border-radius:10px;background:rgba(255,165,58,.16);color:var(--ink);font-size:13px;font-weight:600}
+  .rcard{padding:14px;margin-bottom:12px;border-radius:18px;background:var(--rowbg, rgba(255,255,255,.08))}
+  .rh{display:flex;gap:12px;align-items:center}
+  .rh b{display:block;font-size:16px}
+  .rh span{font-size:12px;color:var(--soft);font-weight:600}
+  .rf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:10px}
+  .rf label,.rf input,.rf select{min-width:0;width:100%;box-sizing:border-box}
+  #bills{overflow-x:hidden}
+  .rf label,.newprov label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:800;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
+  .rf .full,.newprov{grid-column:1/-1}
+  .newprov{display:grid;gap:8px;margin:6px 0}
+  .newprov[hidden]{display:none}
+  .rf input,.rf select,.newprov input,.newprov select{background:rgba(255,255,255,.1);border:0;color:var(--ink);border-radius:10px;padding:11px;font-size:15px;outline:none;text-transform:none;letter-spacing:0;font-weight:600}
+  .rf select option,.newprov select option{color:#000}
+  .ra{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:flex-end}
+  .ra .pill{text-decoration:none}
+  .pill.red{background:rgba(255,80,70,.18);color:#ff8c84}
+  .bsh{display:flex;gap:12px;align-items:center;padding:10px 10px 6px}
+  .bsh b{display:block;font-size:18px;color:var(--ink)}
+  .bsh span{font-size:12.5px;color:var(--soft);font-weight:600}
+  .bcard{margin:8px;padding:14px;border-radius:16px;background:rgba(255,255,255,.07);color:var(--ink)}
+  .bch{display:flex;justify-content:space-between;align-items:center}
+  .bch .amt{font-size:28px;font-weight:800}
+  .bcard dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0 0;font-size:14px}
+  .bcard dt{color:var(--soft);font-weight:700}
+  .bcard dd{margin:0;font-weight:600;text-align:right}
+  .bpay{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;margin-top:12px;padding:12px;border-radius:12px;background:rgba(0,0,0,.25)}
+  .bpay span{display:block;font-size:11px;color:var(--soft);font-weight:800;text-transform:uppercase}
+  .bpay b{font-size:17px;letter-spacing:.5px}
+  .bpay button{padding:7px 12px;border-radius:9px;background:rgba(255,255,255,.14);font-weight:800;font-size:13px;color:var(--ink)}
+  .bhist{margin:8px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.05)}
+  .bhist .bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:22px}
+  .bhist .bars div{flex:1;position:relative;border-radius:6px 6px 3px 3px;background:var(--acc);opacity:.55}
+  .bhist .bars div.cur{opacity:1}
+  .bhist .bars em{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;font-style:normal;font-weight:700;color:var(--soft);white-space:nowrap}
+  .bhist .labs{display:flex;gap:6px;margin-top:4px}
+  .bhist .labs span{flex:1;text-align:center;font-size:10px;color:var(--soft)}
+  .bstat{padding:0 14px}
+  .bstat b{display:block;font-size:30px;font-weight:800;color:var(--acc)}
+  .bstat span{font-size:13px;color:var(--soft);font-weight:600}
+  .bcats{padding:0 14px 8px}
+  .bcats div{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin-bottom:10px;font-size:14px;color:var(--ink)}
+  .bcats div span{display:flex;align-items:center;gap:7px;font-weight:700}
+  .bcats div span i{width:10px;height:10px;border-radius:3px}
+  .bcats em{grid-column:1/-1;display:block;height:6px;border-radius:4px}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -320,6 +422,7 @@
 <nav class="tabs" id="tabs">
   <button class="tab" data-tab="shopping">Shopping</button>
   <button class="tab" data-tab="personal">Personal</button>
+  <button class="tab" data-tab="bills">Bills</button>
 </nav>
 
 <main id="view"></main>
@@ -343,6 +446,7 @@ const QUICK_MS = 30000;   // undo within 30s = that tick doesn't count
 const REGULAR_MIN = 3;    // count more than 2 = comes back every Wednesday
 
 const THEMES = {
+  navy:    { name:"Navy Gold", top:"#13204a", bottom:"#070d22", acc:"#f2c14e", soft:"#aeb9d9", ink:"#f4f6ff", onacc:"#1b2440", menu:"#121c3f", a:"#24356f", b:"#0b1430", fa:"#f6cf6a", fb:"#dfe6ff", row:"rgba(200,215,255,.08)" },
   sunset:  { name:"Sunset",   top:"#5a1c12", bottom:"#240c0a", acc:"#ffb35c", soft:"#f0c39a", ink:"#fff4e6", onacc:"#3a1505", menu:"#3a170e", a:"#b4461f", b:"#3a1410", fa:"#ffd08a", fb:"#ffe6cc", row:"rgba(255,200,150,.10)" },
   emerald: { name:"Emerald",  top:"#0d3b2e", bottom:"#061a14", acc:"#e9c46a", soft:"#b9d8c6", ink:"#f1fff7", onacc:"#1d2a12", menu:"#0f2e25", a:"#1f6b4f", b:"#0a2a20", fa:"#f2d38a", fb:"#d8f3e4", row:"rgba(200,255,220,.08)" },
   berry:   { name:"Berry",    top:"#4a0f3a", bottom:"#1d0618", acc:"#ff7eb6", soft:"#f0b5d2", ink:"#fff0f7", onacc:"#3d0626", menu:"#3a0c2e", a:"#8e1f6b", b:"#2a0a24", fa:"#ffc2dd", fb:"#ffe3f0", row:"rgba(255,180,220,.09)" },
@@ -445,6 +549,7 @@ const decCfg = t => JSON.parse(decodeURIComponent(escape(atob(t))));
       const changed = LOCAL.url !== cfg.u || LOCAL.house !== cfg.k;
       LOCAL.url = cfg.u; LOCAL.house = cfg.k;
       if (cfg.w === "S" || cfg.w === "D") LOCAL.who = cfg.w;
+      if (cfg.b && cfg.b.u && cfg.b.k){ LOCAL.bbApi = cfg.b.u; LOCAL.bbKey = cfg.b.k; }
       if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
       LOCAL.offline = false;
       saveLocal();
@@ -460,7 +565,7 @@ try { const raw = localStorage.getItem(LS_KEY); if (raw) S = Object.assign(S, JS
 const SEED_CUSTOMERS = [];   // customers come from your backup / sync, not the public code
 function cleanup(){
   S.customers = [];
-  S.themes = Object.assign({shopping:"sunset", personal:"teal"}, S.themes||{});
+  S.themes = Object.assign({shopping:"sunset", personal:"teal", bills:"navy"}, S.themes||{});
   if (!THEMES[S.themes.shopping]) S.themes.shopping = "sunset";
   if (!THEMES[S.themes.personal]) S.themes.personal = "teal";
   ["shopping","personal"].forEach(t => (S.tabs[t]||[]).forEach(c => {
@@ -472,7 +577,7 @@ function cleanup(){
     S.trackers = [{id:uid(), name:"Gas bottle", label:"Changed on", icon:"🔥", changes:(S.gas && S.gas.changes) ? S.gas.changes.slice() : []}];
     delete S.gas;
   }
-  S.ord = S.ord || {}; S.del = S.del || {}; S.cdel = S.cdel || {};
+  S.ord = S.ord || {}; S.del = S.del || {}; S.cdel = S.cdel || {}; S.tabs.bills = [];
   if (!S.seededChep && !isWife()){
     const have = new Set(S.customers.map(c=>c.name.trim().toLowerCase()));
     SEED_CUSTOMERS.forEach(([name,acct])=>{ if(!have.has(name.toLowerCase())) S.customers.push({id:uid(),name,acct}); });
@@ -502,6 +607,7 @@ function snapOf(){
   for (const t of (S.trackers||[])){ const { u, ...r } = t; m.set("t:"+t.id, JSON.stringify(r)); refs.set("t:"+t.id, t); }
   m.set("wed", String(S.lastWedReset||0));
   m.set("shop", JSON.stringify(S.atShop||null));
+  m.set("ntfy", S.ntfyTopic || "");
   return { m, refs };
 }
 function stamp(){
@@ -513,7 +619,7 @@ function stamp(){
     const r = refs.get(k);
     if (k.startsWith("ord:")){ S.ord[k.slice(4)] = now; dh = true; }
     else if (k === "cord"){ S.cord = now; dw = true; }
-    else if (k === "wed" || k === "shop"){ dh = true; }
+    else if (k === "wed" || k === "shop" || k === "ntfy"){ dh = true; }
     else if (k.startsWith("io:")){ r.iu = now; dh = true; }
     else if (k.startsWith("k:")){ r.u = now; dw = true; }
     else { r.u = now; dh = true; }
@@ -570,6 +676,7 @@ function mergeHouse(R){
   ord.trackers = Math.max((S.ord || {}).trackers || 0, (R.ord || {}).trackers || 0);
   S.ord = ord; S.del = del;
   S.atShop = (((S.atShop||{}).u)||0) >= (((R.atShop||{}).u)||0) ? S.atShop : R.atShop;
+  S.ntfyTopic = S.ntfyTopic || R.ntfy || "";
   S.lastWedReset = Math.max(S.lastWedReset || 0, R.lastWedReset || 0) || S.lastWedReset;
 }
 function adoptHouse(R){
@@ -578,6 +685,7 @@ function adoptHouse(R){
   S.trackers = R.trackers || [];
   S.ord = R.ord || {}; S.del = R.del || {};
   S.atShop = R.atShop || null;
+  S.ntfyTopic = R.ntfy || S.ntfyTopic || "";
   S.lastWedReset = R.lastWedReset || S.lastWedReset;
 }
 function mergeWork(R){
@@ -585,7 +693,7 @@ function mergeWork(R){
   S.customers = mergeArr(S.customers, R.customers, S.cord, R.cord, cdel);
   S.cord = Math.max(S.cord || 0, R.cord || 0); S.cdel = cdel;
 }
-const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
+const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null, ntfy:S.ntfyTopic || "" });
 const workData  = () => clone({ customers:S.customers, cord:S.cord || 0, cdel:S.cdel || {} });
 
 /* ---- talking to the Apps Script web app ---- */
@@ -745,9 +853,10 @@ function applyTheme(){
 /* ================= main view ================= */
 const view = document.getElementById("view");
 function render(){
-  if (S.tab !== "shopping" && S.tab !== "personal") S.tab = "shopping";
+  if (S.tab !== "shopping" && S.tab !== "personal" && S.tab !== "bills") S.tab = "shopping";
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
+  if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="bills"></div>`; renderBills(); return; }
   view.innerHTML = `<div id="shopban"></div>${S.tab==="personal"?`<div id="trackers"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal") renderTrackers();
   renderBanner();
@@ -1325,7 +1434,7 @@ function setupPull(target, atTop, getInd, trigger, exclude){
     if (ev.cancelable) ev.preventDefault();
     d = Math.min(130, (dy-12)*0.55);
     ind.style.height = d+"px";
-    ind.firstElementChild.textContent = d>=60 ? "Release to add" : "Pull to add";
+    ind.firstElementChild.textContent = S.tab === "bills" && !openId ? (d>=60 ? "Release to refresh" : "Pull to refresh") : (d>=60 ? "Release to add" : "Pull to add");
   };
   const end = () => { if (pulling){ reset(); if (d>=60) trigger(); } sy=null; pulling=false; };
   target.addEventListener("touchstart", e => { if (e.touches.length===1) begin(e.touches[0].clientX, e.touches[0].clientY, e.target); else sy=null; }, {passive:true});
@@ -1341,7 +1450,7 @@ function setupPull(target, atTop, getInd, trigger, exclude){
   });
 }
 // listen on the whole page so pulling works even when a tab has no lists yet
-setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0, () => document.getElementById("mpull"), () => openAdder("card"), "#sheet,#menu,#scrim");
+setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0, () => document.getElementById("mpull"), () => S.tab === "bills" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
 setupPull(itemsEl, () => itemsEl.scrollTop<=0, () => document.getElementById("ipull"), () => openAdder("item"));
 
 /* ================= pinch in / tap title to close ================= */
@@ -1438,7 +1547,7 @@ function resizeLogo(file){
 })();
 
 function showSettings(listId, sub){
-  const onLists = S.tab !== "work";
+  const onLists = S.tab !== "work" && S.tab !== "bills";
   const list = onLists ? cards() : [];
   let c = list.find(x=>x.id===listId) || list[0] || null;
   const themeSel = tab => `<select class="set-sel" data-theme="${tab}">${Object.entries(THEMES).map(([k,t])=>`<option value="${k}" ${S.themes[tab]===k?"selected":""}>${t.name}</option>`).join("")}</select>`;
@@ -1457,7 +1566,7 @@ function showSettings(listId, sub){
   }
 
   let html = `<div class="mt">Themes</div>
-    <div class="sg2"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Personal</div>${themeSel("personal")}</div></div>
+    <div class="sg3"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Personal</div>${themeSel("personal")}</div><div><div class="sl">Bills</div>${themeSel("bills")}</div></div>
     <div class="sg2"><div><div class="sl">Text size</div><select class="set-sel" id="tsz"><option value="normal">Normal</option><option value="large" ${S.textSize==="large"?"selected":""}>Large</option><option value="xl" ${S.textSize==="xl"?"selected":""}>Extra large</option></select></div>
       <div><div class="sl">Shopping by aisle</div><select class="set-sel" id="ais"><option value="0">Off</option><option value="1" ${S.aisles?"selected":""}>On</option></select></div></div>`;
   if (onLists && c){
@@ -1550,9 +1659,403 @@ function restoreData(d){
 function refreshAll(){ applyTheme(); if (S.tab!=="work"){ renderBands(); renderBanner(); } if (openId) renderSheet(); }
 
 applyTextSize();
+/* ================= Bills tab (BillBell inside Home Base) =================
+ * Bills keep coming from the BillBell scanner (Apps Script in sm466991234@gmail.com),
+ * which reads the "Billbell" Gmail label and sends ntfy reminders.
+ * Home Base just shows them and sends your changes back.
+ */
+const BB = { bills:[], providers:[], settings:{}, view:"due", loading:false, err:"", at:0 };
+const BB_CACHE = "hb_bills_cache";
+const BB_CATS = ["Electricity","Gas","Water","Internet","Telecommunications","Council Rates","Insurance","Rego","Strata","Subscriptions","Other"];
+const BB_CAT_COL = {"Insurance":"#8E44AD","Rego":"#D9822B","Strata":"#6D4C41","Subscriptions":"#B03A5B","Electricity":"#E2A93B","Gas":"#2E9D62","Internet":"#139C9F","Telecommunications":"#5B6BD6","Council Rates":"#C0563A","Water":"#3A8FD9","Other":"#8A94AD"};
+const BB_PCOL = ["#5B6BD6","#139C9F","#C0563A","#2E7D32","#8E44AD","#D9822B","#0077C8","#B03A5B","#3A7D7B","#6D4C41"];
+const MONS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DOWS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+const bbOn = () => !!(LOCAL.bbApi && LOCAL.bbKey);
+const money = n => "$" + Number(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const money0 = n => "$" + Math.round(Number(n||0)).toLocaleString("en-AU");
+const dOf = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const daysTo = s => dayNum(s) - dayNum(isoToday());
+const niceD = s => { if (!s) return "—"; const d = dOf(s); return DOWS[d.getDay()] + " " + d.getDate() + " " + MONS[d.getMonth()]; };
+const niceY = s => { if (!s) return "—"; const d = dOf(s); return d.getDate() + " " + MONS[d.getMonth()] + " " + d.getFullYear(); };
+const mKey = s => s ? s.slice(0,7) : "";
+const mLabel = k => { const [y,m] = k.split("-"); return MONS[+m-1] + " " + y; };
+
+function parseBillBellLink(text){
+  // accepts the setup link from the BillBell email: …/billbell/#api=<url>&key=<key>
+  try {
+    const t = String(text).trim(), h = t.includes("#") ? t.slice(t.indexOf("#")+1) : t;
+    const p = new URLSearchParams(h.replace(/^\?/, ""));
+    if (p.get("api") && p.get("key")) return { api: p.get("api"), key: p.get("key") };
+  } catch(e){}
+  return null;
+}
+
+/* ---- talking to the BillBell scanner (JSONP, which iPhone Safari always allows) ---- */
+let bbN = 0;
+function bbJsonp(params, timeoutMs){
+  return new Promise((resolve, reject) => {
+    const cb = "__hbb" + Date.now().toString(36) + (bbN++);
+    const q = new URLSearchParams(Object.assign({}, params, { key: LOCAL.bbKey, callback: cb, t: Date.now() }));
+    const el = document.createElement("script");
+    const done = () => { clearTimeout(timer); delete window[cb]; el.remove(); };
+    const timer = setTimeout(() => { done(); reject(new Error("BillBell took too long to answer")); }, timeoutMs || 60000);
+    window[cb] = data => { done(); data && data.error ? reject(new Error(data.error)) : resolve(data); };
+    el.onerror = () => { done(); reject(new Error("Couldn't reach BillBell")); };
+    el.src = LOCAL.bbApi + (LOCAL.bbApi.includes("?") ? "&" : "?") + q.toString();
+    document.head.appendChild(el);
+  });
+}
+function bbNormalise(data){
+  BB.providers = (data.providers||[]).map(p => Object.assign({}, p, { cycle: Number(p.cycle)||0 }));
+  BB.bills = (data.bills||[]).map(b => Object.assign({}, b, { amount: Number(b.amount)||0, autopay: String(b.autopay) === "true" }));
+  BB.settings = data.settings || {};
+  BB.at = Date.now();
+  // share the ntfy topic with the sync script so the gas bottle alert goes to the same place
+  if (BB.settings.ntfyTopic && S.ntfyTopic !== BB.settings.ntfyTopic && typeof save === "function"){ S.ntfyTopic = BB.settings.ntfyTopic; setTimeout(save, 0); }
+}
+try { const c = localStorage.getItem(BB_CACHE); if (c) bbNormalise(JSON.parse(c)); } catch(e){}
+async function bbCall(action, payload){
+  let data;
+  const big = JSON.stringify(payload||{}).length > 1500;
+  if (action === "upload" || big){
+    await fetch(LOCAL.bbApi, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ key: LOCAL.bbKey, action }, payload)) });
+    data = await bbJsonp({ action:"data" });
+  } else data = await bbJsonp({ action, payload: JSON.stringify(payload||{}) }, action === "scan" ? 300000 : 60000);
+  bbNormalise(data);
+  try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
+  renderBillsSafe();
+}
+async function bbRun(fn, ok){
+  try { await fn(); if (ok) toast(ok); } catch(e){ toast("BillBell: " + e.message); billsRefresh(false); }
+}
+async function billsRefresh(spin){
+  if (!bbOn() || BB.loading) return;
+  BB.loading = true;
+  try {
+    const data = await bbJsonp({ action:"data" });
+    bbNormalise(data); BB.err = "";
+    try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
+    if (spin) toast("Bills up to date");
+  } catch(e){ BB.err = e.message; if (spin) toast(navigator.onLine === false ? "Offline — showing saved bills" : "BillBell: " + e.message); }
+  BB.loading = false;
+  renderBillsSafe(); updateBillsBadge();
+}
+function bbTyping(){ const a = document.activeElement; return (a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && a.closest("#bills")) || document.getElementById("menu").classList.contains("on"); }
+function renderBillsSafe(){
+  if (S.tab === "bills"){ if (!bbTyping()) renderBills(); else setTimeout(renderBillsSafe, 1500); }
+  updateBillsBadge();
+}
+const bbUpdate = (id, patch) => bbCall("update", { id, patch });
+
+/* ---- derived ---- */
+const bbProv = id => BB.providers.find(p => p.id === id) || { id, name: id === "unknown" ? "Unknown" : id, category:"Other", colour:"#8A94AD", short:"?" };
+const bbInit = p => p.short || String(p.name||"?").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const bbLogo = p => p.logo || (p.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(p.domain)}&sz=128` : "");
+const bbAv = (p, cls) => { const u = bbLogo(p);
+  return `<span class="bav ${cls||""}" style="background:${esc(p.colour||"#8A94AD")}"><b>${esc(bbInit(p))}</b>${u ? `<img src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer" onload="if(this.naturalWidth<48&&!this.dataset.c)this.remove()" onerror="this.remove()"${p.logo?' data-c="1"':""}>` : ""}</span>`; };
+const bbUnpaid = () => BB.bills.filter(b => b.status === "due");
+const bbPaid = () => BB.bills.filter(b => b.status === "paid");
+const bbReview = () => BB.bills.filter(b => b.status === "review");
+const bbSpend = () => BB.bills.filter(b => (b.status === "due" || b.status === "paid") && b.amount > 0);
+const bbMonth = b => mKey(b.dueDate || b.issueDate || b.paidDate);
+function bbWhen(b){
+  if (!b.dueDate) return { t:"no due date", c:"" };
+  const d = daysTo(b.dueDate);
+  if (b.autopay && d >= 0) return { t: d === 0 ? "auto-debit today" : `auto-debit in ${d} day${d>1?"s":""}`, c:"auto" };
+  if (d < 0) return { t: `${-d} day${d<-1?"s":""} overdue`, c:"late" };
+  if (d === 0) return { t:"due today", c:"late" };
+  if (d === 1) return { t:"due tomorrow", c:"soon" };
+  return { t:`due in ${d} days`, c: d <= 2 ? "soon" : "" };
+}
+function bbState(b){ if (b.status === "paid") return "paid"; if (b.autopay) return "auto"; if (b.dueDate && daysTo(b.dueDate) <= 3) return "urgent"; return "due"; }
+function bbMissing(){
+  const out = [];
+  BB.providers.forEach(p => {
+    if (String(p.active) === "false" || !(p.cycle > 0)) return;
+    const dates = BB.bills.filter(b => b.provider === p.id && b.status !== "ignored").map(b => b.issueDate || b.dueDate).filter(Boolean).sort();
+    if (!dates.length) return;
+    const gaps = []; for (let i = 1; i < dates.length; i++){ const g = dayNum(dates[i]) - dayNum(dates[i-1]); if (g > 5) gaps.push(g); }
+    let every = p.cycle; if (gaps.length >= 2){ gaps.sort((a,b)=>a-b); every = Math.round(gaps[Math.floor(gaps.length/2)]); }
+    const last = dates[dates.length-1], late = -daysTo(last) - every;
+    if (late > 5) out.push({ p, late, last, every });
+  });
+  return out;
+}
+function updateBillsBadge(){
+  const t = document.querySelector('.tab[data-tab="bills"]'); if (!t) return;
+  const urgent = bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).length + bbReview().length;
+  t.innerHTML = "Bills" + (urgent ? `<i class="tbadge">${urgent}</i>` : "");
+}
+
+/* ---- render ---- */
+function renderBills(){
+  const host = document.getElementById("bills"); if (!host) return;
+  if (!bbOn()){
+    host.innerHTML = `<div class="bempty"><div class="big">🔔</div><b>Connect BillBell</b><p>Paste the setup link from your “BillBell setup link” email so your bills show here.</p>
+      <textarea id="bbLink" placeholder="https://bmpwestside.github.io/billbell/#api=…&key=…"></textarea><button class="pill c" id="bbConnect">Connect</button></div>`;
+    host.querySelector("#bbConnect").onclick = () => {
+      const cfg = parseBillBellLink(host.querySelector("#bbLink").value);
+      if (!cfg){ toast("That doesn't look like the BillBell setup link"); return; }
+      LOCAL.bbApi = cfg.api; LOCAL.bbKey = cfg.key; saveLocal(); pinOwnLink(); renderBills(); billsRefresh(true);
+    };
+    return;
+  }
+  const u = bbUnpaid(), total = u.reduce((s,b)=>s+b.amount, 0), rv = bbReview().length;
+  const k = mKey(isoToday()), cur = bbSpend().filter(b => bbMonth(b) === k).reduce((s,b)=>s+b.amount, 0);
+  let h = `<div class="bsum">
+      <div><b>${u.length}</b><span>to pay</span></div>
+      <div><b>${money0(total)}</b><span>total due</span></div>
+      <button id="bbStats"><b>${money0(cur)}</b><span>${MONS[new Date().getMonth()]} spend ›</span></button>
+    </div>
+    <div class="bseg">
+      <button data-bv="due" class="${BB.view==="due"?"on":""}">Due</button>
+      <button data-bv="paid" class="${BB.view==="paid"?"on":""}">Paid</button>
+      <button data-bv="review" class="${BB.view==="review"?"on":""}">Review${rv?`<i>${rv}</i>`:""}</button>
+      <button id="bbAdd" aria-label="Add a bill">＋</button>
+    </div>`;
+  if (BB.err && !BB.bills.length) h += `<div class="bwhy">${esc(BB.err)}</div>`;
+  h += BB.view === "paid" ? bbPaidHTML() : BB.view === "review" ? bbReviewHTML() : bbDueHTML();
+  host.innerHTML = h;
+  host.querySelectorAll("[data-bv]").forEach(b => b.onclick = () => { BB.view = b.dataset.bv; renderBills(); });
+  host.querySelectorAll("[data-prov]").forEach(b => b.onclick = () => bbOpenProvider(b.dataset.prov));
+  host.querySelectorAll("[data-bill]").forEach(b => b.onclick = () => bbOpenBill(b.dataset.bill));
+  host.querySelector("#bbAdd").onclick = bbOpenAdd;
+  host.querySelector("#bbStats").onclick = bbOpenStats;
+  if (BB.view === "review") bbBindReview(host);
+}
+function bbDueHTML(){
+  let h = "";
+  bbMissing().forEach(m => { h += `<div class="balert">${bbAv(m.p,"sm")}<div><b>${esc(m.p.name)} hasn't arrived</b><span>${m.late} days later than usual · last ${niceD(m.last)}</span></div></div>`; });
+  const u = bbUnpaid();
+  const next = u.filter(x => x.dueDate).sort((a,c) => a.dueDate < c.dueDate ? -1 : 1)[0];
+  if (next){ const p = bbProv(next.provider), w = bbWhen(next);
+    h += `<button class="bnext" data-prov="${esc(p.id)}"><span class="bdot ${bbState(next)}"></span><span class="lbl">Next</span><b>${esc(p.name)}</b><span class="amt">${money(next.amount)}</span><span class="w ${w.c}">${w.t}</span></button>`; }
+  const latest = {};
+  BB.bills.filter(b => b.status === "due" || b.status === "paid").forEach(b => { const kk = b.dueDate || b.paidDate || ""; if (!latest[b.provider] || kk > latest[b.provider]) latest[b.provider] = kk; });
+  const ids = Object.keys(latest);
+  if (!ids.length) return h + `<div class="bempty"><div class="big">🔔</div>Your bills will appear here as they arrive in Gmail.</div>`;
+  const stateOf = id => { const open = u.filter(b => b.provider === id), man = open.filter(b => !b.autopay);
+    if (man.some(b => b.dueDate && daysTo(b.dueDate) <= 3)) return "urgent"; if (man.length) return "due"; if (open.length) return "auto"; return "paid"; };
+  const rank = { urgent:0, due:1, auto:2, paid:3 };
+  const nextDue = id => (u.filter(b => b.provider === id).map(b => b.dueDate).sort()[0]) || "9999";
+  const tiles = ids.map(id => ({ p: bbProv(id), st: stateOf(id) })).sort((a,b) => rank[a.st]-rank[b.st] || (nextDue(a.p.id) < nextDue(b.p.id) ? -1 : 1) || a.p.name.localeCompare(b.p.name));
+  h += `<div class="bgrid">` + tiles.map(t => {
+    const open = u.filter(b => b.provider === t.p.id).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1)[0];
+    const line = open ? `${money0(open.amount)} · ${bbWhen(open).t.replace("due ","")}` : "paid";
+    return `<button class="btile" data-prov="${esc(t.p.id)}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bn">${esc(t.p.name)}</span><span class="bl ${t.st}">${line}</span></button>`;
+  }).join("") + `</div>
+  <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>`;
+  return h;
+}
+function bbPaidHTML(){
+  const list = bbPaid().sort((a,b) => (b.paidDate||b.dueDate||"") > (a.paidDate||a.dueDate||"") ? 1 : -1);
+  if (!list.length) return `<div class="bempty"><div class="big">🧾</div>Paid bills will show here.</div>`;
+  const by = {};
+  list.forEach(b => { const kk = mKey(b.paidDate || b.dueDate) || "Unknown"; (by[kk] = by[kk] || []).push(b); });
+  return Object.keys(by).slice(0,18).map(kk => {
+    const items = by[kk], tot = items.reduce((s,b)=>s+b.amount, 0);
+    return `<div class="bmonth"><span>${kk === "Unknown" ? kk : mLabel(kk)}</span><span>${money(tot)}</span></div>` +
+      items.map(b => { const p = bbProv(b.provider);
+        return `<button class="brow" data-bill="${esc(b.id)}">${bbAv(p,"sm")}<span class="mid"><b>${esc(p.name)}${b.autopay?'<i class="chip">auto</i>':""}</b><span>Paid ${niceD(b.paidDate)}${b.period ? " · " + esc(b.period) : ""}</span></span><span class="r">${money(b.amount)}</span></button>`; }).join("");
+  }).join("");
+}
+const bbProvOptions = sel => BB.providers.map(p => `<option value="${esc(p.id)}"${p.id===sel?" selected":""}>${esc(p.name)} — ${esc(p.category)}</option>`).join("") +
+  (sel === "unknown" || !sel ? '<option value="unknown" selected>Choose provider…</option>' : "") + '<option value="__new">+ New provider…</option>';
+const bbNewProv = () => `<div class="newprov" hidden><label>New provider name<input name="pname" placeholder="e.g. Apple" autocomplete="off"></label>
+  <label>Category<select name="pcat">${BB_CATS.map(c=>`<option>${c}</option>`).join("")}</select></label></div>`;
+const bbDrafts = {};
+function bbReviewHTML(){
+  const list = bbReview();
+  if (!list.length) return `<div class="bempty"><div class="big">✅</div>Nothing to check. When BillBell isn't sure about a bill, it waits here.</div>`;
+  return list.map(b => { const p = bbProv(b.provider);
+    return `<div class="rcard" data-id="${esc(b.id)}">
+      <div class="rh">${bbAv(p,"sm")}<div><b>${esc(p.name)}</b><span>${esc(p.category)}${b.invoiceNo ? " · #" + esc(b.invoiceNo) : ""}</span></div></div>
+      ${b.reason ? `<div class="bwhy">${esc(b.reason)}</div>` : ""}
+      <div class="rf">
+        <label class="full">Provider<select name="provider" data-newprov>${bbProvOptions(b.provider)}</select></label>${bbNewProv()}
+        <label>Amount ($)<input name="amount" inputmode="decimal" value="${b.amount ? b.amount.toFixed(2) : ""}"></label>
+        <label>Due date<input name="dueDate" type="date" value="${esc(b.dueDate||"")}"></label>
+        <label class="full">Status<select name="status"><option value="due">Still to pay</option><option value="paid">Already paid</option></select></label>
+      </div>
+      <div class="ra">${b.fileUrl || b.emailUrl ? `<a class="pill" href="${esc(b.fileUrl || b.emailUrl)}" target="_blank" rel="noopener">View</a>` : ""}
+        <button class="pill red" data-ra="ignore">Not a bill</button><button class="pill c" data-ra="confirm">✓ Confirm</button></div></div>`; }).join("");
+}
+function bbProviderFromForm(box, pid){
+  const name = box.querySelector("[name=pname]").value.trim() || bbProv(pid).name;
+  const category = box.querySelector("[name=pcat]").value, words = name.split(/\s+/);
+  const id = pid === "__new" ? (name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "provider-" + Date.now().toString(36)) : pid;
+  const existing = BB.providers.find(p => p.id === id);
+  return Object.assign({ id, name, category, short: (words.length > 1 ? words[0][0] + words[1][0] : name.slice(0,2)).toUpperCase() },
+    existing ? {} : { match: name.toLowerCase().replace(/[^a-z0-9 ]/g,""), colour: BB_PCOL[id.length % BB_PCOL.length], cycle: 30, active:"true" });
+}
+function bbBindNewProv(root){
+  root.querySelectorAll("[data-newprov]").forEach(sel => sel.onchange = () => {
+    const nf = sel.closest(".rcard, .ed").querySelector(".newprov"); if (nf){ nf.hidden = sel.value !== "__new"; if (!nf.hidden) nf.querySelector("[name=pname]").focus(); }
+  });
+}
+function bbBindReview(host){
+  bbBindNewProv(host);
+  host.querySelectorAll(".rcard").forEach(card => {
+    const d = bbDrafts[card.dataset.id];
+    if (d) Object.entries(d).forEach(([k,v]) => { const el = card.querySelector(`[name="${k}"]`); if (el) el.value = v; });
+    const nf = card.querySelector(".newprov"), sel = card.querySelector("[data-newprov]"); if (nf && sel) nf.hidden = sel.value !== "__new";
+    card.addEventListener("input", e => { if (e.target.name) (bbDrafts[card.dataset.id] = bbDrafts[card.dataset.id] || {})[e.target.name] = e.target.value; });
+    card.addEventListener("change", e => { if (e.target.name) (bbDrafts[card.dataset.id] = bbDrafts[card.dataset.id] || {})[e.target.name] = e.target.value; });
+  });
+  host.querySelectorAll("[data-ra]").forEach(btn => btn.onclick = () => {
+    const card = btn.closest(".rcard"), id = card.dataset.id;
+    if (btn.dataset.ra === "ignore"){ delete bbDrafts[id]; bbRun(() => bbUpdate(id, { status:"ignored" }), "Removed"); return; }
+    const g = n => card.querySelector(`[name=${n}]`).value;
+    const amount = parseFloat(g("amount").replace(/[$,]/g,""));
+    if (!(amount > 0)) return toast("Enter the amount");
+    if (g("provider") === "unknown") return toast("Choose the provider");
+    if (g("provider") === "__new" && !card.querySelector("[name=pname]").value.trim()) return toast("Type the new provider's name");
+    if (!g("dueDate")) return toast("Enter the due date");
+    const st = g("status");
+    bbRun(async () => {
+      let pid = g("provider"), category;
+      if (pid === "__new"){ const np = bbProviderFromForm(card, pid); pid = np.id; category = np.category; await bbCall("provider", { provider: np }); }
+      delete bbDrafts[id];
+      await bbUpdate(id, Object.assign({ provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: st === "paid" ? isoToday() : "", reason:"" }, category ? { category } : {}));
+    }, "Confirmed");
+  });
+}
+
+/* ---- sheets ---- */
+function bbBillCard(b){
+  const p = bbProv(b.provider), w = bbWhen(b);
+  const chip = b.status === "paid" ? `<i class="chip ok">Paid ${niceD(b.paidDate)}</i>` : `<i class="chip ${w.c}">${w.t}</i>`;
+  let h = `<div class="bcard"><div class="bch"><span class="amt">${money(b.amount)}</span>${chip}</div>`;
+  if (b.flags) h += `<div class="bwhy">▲ ${esc(b.flags)} — worth a look.</div>`;
+  h += `<dl><dt>Due</dt><dd>${niceY(b.dueDate)}</dd>`;
+  if (b.period) h += `<dt>Period</dt><dd>${esc(b.period)}</dd>`;
+  if (b.issueDate) h += `<dt>Issued</dt><dd>${niceY(b.issueDate)}</dd>`;
+  if (b.invoiceNo) h += `<dt>Invoice</dt><dd>${esc(b.invoiceNo)}</dd>`;
+  if (b.accountNo) h += `<dt>Account</dt><dd>${esc(b.accountNo)}</dd>`;
+  if (b.autopay) h += `<dt>Payment</dt><dd>Automatic debit</dd>`;
+  h += `</dl>`;
+  if (b.billerCode && b.status !== "paid") h += `<div class="bpay"><div><span>BPAY biller code</span><b>${esc(b.billerCode)}</b></div><button data-copy="${esc(b.billerCode)}" data-what="Biller code">Copy</button>${b.bpayRef ? `<div><span>Reference</span><b>${esc(b.bpayRef)}</b></div><button data-copy="${esc(b.bpayRef)}" data-what="Reference">Copy</button>` : ""}</div>`;
+  h += `<div class="ra">`;
+  if (b.fileUrl || b.emailUrl) h += `<a class="pill" href="${esc(b.fileUrl || b.emailUrl)}" target="_blank" rel="noopener">📄 Bill</a>`;
+  if (b.status !== "paid"){
+    if (p.payUrl && !b.autopay) h += `<a class="pill" href="${esc(p.payUrl)}" target="_blank" rel="noopener">↗ Pay</a>`;
+    h += `<button class="pill c" data-paid="${esc(b.id)}">✓ Mark paid</button>`;
+  } else h += `<button class="pill" data-unpaid="${esc(b.id)}">Mark unpaid</button>`;
+  return h + `</div></div>`;
+}
+function bbHistory(pid){
+  const hist = BB.bills.filter(b => b.provider === pid && (b.status === "paid" || b.status === "due") && b.amount > 0).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1).slice(-8);
+  if (hist.length < 2) return "";
+  const max = Math.max(...hist.map(b=>b.amount)), avg = hist.reduce((s,b)=>s+b.amount, 0) / hist.length;
+  return `<div class="bhist"><div class="sl">Recent bills · average ${money(avg)}</div><div class="bars">${hist.map(b => `<div class="${b.status==="due"?"cur":""}" style="height:${Math.max(8, b.amount/max*100)}%"><em>${money0(b.amount)}</em></div>`).join("")}</div>
+    <div class="labs">${hist.map(b => `<span>${b.dueDate ? MONS[dOf(b.dueDate).getMonth()] : ""}</span>`).join("")}</div></div>`;
+}
+function bbBindSheet(){
+  menu.querySelectorAll("[data-copy]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(b.dataset.copy); toast(b.dataset.what + " copied"); } catch(e){ toast(b.dataset.copy); } });
+  menu.querySelectorAll("[data-paid]").forEach(b => b.onclick = () => bbMarkPaid(b.dataset.paid));
+  menu.querySelectorAll("[data-unpaid]").forEach(b => b.onclick = () => { closeMenu(); bbRun(() => bbUpdate(b.dataset.unpaid, { status:"due", paidDate:"" }), "Moved back to Due"); });
+  const x = menu.querySelector("#cx"); if (x) x.onclick = closeMenu;
+}
+function bbMarkPaid(id){
+  closeMenu();
+  const b = BB.bills.find(x => x.id === id); if (b){ b.status = "paid"; b.paidDate = isoToday(); renderBills(); }   // show it straight away
+  bbRun(() => bbUpdate(id, { status:"paid", paidDate: isoToday() }));
+  undoToast("Marked as paid", () => bbRun(() => bbUpdate(id, { status:"due", paidDate:"" }), "Moved back to Due"));
+}
+function bbOpenProvider(pid){
+  const p = bbProv(pid);
+  const list = bbUnpaid().filter(b => b.provider === pid).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1);
+  const lastPaid = bbPaid().filter(b => b.provider === pid).sort((a,b) => (a.paidDate||"") < (b.paidDate||"") ? 1 : -1)[0];
+  menu.innerHTML = `<div class="bsh">${bbAv(p,"sm")}<div><b>${esc(p.name)}</b><span>${esc(p.category)}</span></div></div>` +
+    (list.length ? list.map(bbBillCard).join("") : (lastPaid ? bbBillCard(lastPaid) : `<div class="bempty">No bills yet.</div>`)) +
+    bbHistory(pid) + `<button class="sdone" id="cx">Close</button>`;
+  bbBindSheet(); openMenu();
+}
+function bbOpenBill(id){
+  const b = BB.bills.find(x => x.id === id); if (!b) return;
+  const p = bbProv(b.provider);
+  menu.innerHTML = `<div class="bsh">${bbAv(p,"sm")}<div><b>${esc(p.name)}</b><span>${esc(p.category)}</span></div></div>` + bbBillCard(b) + bbHistory(b.provider) + `<button class="sdone" id="cx">Close</button>`;
+  bbBindSheet(); openMenu();
+}
+function bbOpenAdd(){
+  menu.innerHTML = `<div class="mt">Add a bill</div>
+    <div class="note">Snap a paper bill or pick a PDF — BillBell reads it into Review for you to check.</div>
+    <label class="sdone" style="cursor:pointer">📷 Take photo / choose file<input id="bbFile" type="file" accept="image/*,application/pdf" hidden></label>
+    <div class="sep"></div><div class="mt">Or type it in</div>
+    <form class="ed" id="bbMan" style="padding-top:0">
+      <label>Provider</label><select class="set-sel" style="width:100%;margin:0" name="provider" data-newprov>${bbProvOptions("")}</select>${bbNewProv()}
+      <div class="sg2" style="gap:8px"><div><label>Amount ($)</label><input name="amount" inputmode="decimal" placeholder="0.00"></div><div><label>Due date</label><input name="dueDate" type="date" value="${new Date(Date.now()+14*864e5).toISOString().slice(0,10)}"></div></div>
+      <label>Status</label><select class="set-sel" style="width:100%;margin:0" name="status"><option value="due">Still to pay</option><option value="paid">Already paid</option></select>
+      <div class="acts"><button type="button" class="del" style="background:rgba(255,255,255,.1);color:var(--ink)" id="cx">Cancel</button><button type="submit" class="save">Add bill</button></div>
+    </form>`;
+  bbBindNewProv(menu);
+  menu.querySelector("#cx").onclick = closeMenu;
+  menu.querySelector("#bbFile").onchange = e => { const f = e.target.files && e.target.files[0]; if (f) bbUpload(f); };
+  menu.querySelector("#bbMan").onsubmit = e => {
+    e.preventDefault();
+    const f = e.target, g = n => f.querySelector(`[name=${n}]`).value;
+    const amount = parseFloat(g("amount").replace(/[$,]/g,""));
+    if (g("provider") === "unknown") return toast("Choose the provider");
+    if (g("provider") === "__new" && !f.querySelector("[name=pname]").value.trim()) return toast("Type the new provider's name");
+    if (!(amount > 0)) return toast("Enter the amount");
+    if (!g("dueDate")) return toast("Enter the due date");
+    const st = g("status");
+    closeMenu();
+    bbRun(async () => {
+      let pid = g("provider");
+      if (pid === "__new"){ const np = bbProviderFromForm(f, pid); pid = np.id; await bbCall("provider", { provider: np }); }
+      await bbCall("add", { bill: { provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: st === "paid" ? isoToday() : "" } });
+    }, "Bill added");
+  };
+  openMenu();
+}
+async function bbUpload(file){
+  if (file.size > 12e6) return toast("That file is too big (max 12 MB)");
+  closeMenu(); toast("Reading your bill…");
+  let mime = file.type || "application/pdf", data;
+  try {
+    if (/^image\//.test(mime)){
+      const img = await createImageBitmap(file);
+      const sc = Math.min(1, 2000 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = img.width*sc; c.height = img.height*sc;
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      data = c.toDataURL("image/jpeg", .85).split(",")[1]; mime = "image/jpeg";
+    } else data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.onerror = rej; r.readAsDataURL(file); });
+  } catch(e){ toast("Couldn't read that file"); return; }
+  await bbRun(() => bbCall("upload", { data, mime, name: file.name || "bill.jpg" }), "Added — check it in Review");
+  BB.view = "review"; renderBills();
+}
+function bbOpenStats(){
+  const bills = bbSpend(), keys = [];
+  let [y, m] = mKey(isoToday()).split("-").map(Number);
+  for (let i = 0; i < 12; i++){ keys.unshift(y + "-" + String(m).padStart(2,"0")); m--; if (!m){ m = 12; y--; } }
+  const per = keys.map(kk => bills.filter(b => bbMonth(b) === kk).reduce((s,b)=>s+b.amount, 0));
+  const inRange = bills.filter(b => keys.includes(bbMonth(b))), total = inRange.reduce((s,b)=>s+b.amount, 0);
+  const months = Math.max(1, per.filter(v => v > 0).length);
+  const byCat = {}; inRange.forEach(b => { const c = b.category || bbProv(b.provider).category; byCat[c] = (byCat[c]||0) + b.amount; });
+  const cats = Object.entries(byCat).sort((a,b) => b[1]-a[1]);
+  const W = 320, H = 150, max = Math.max(1, ...per) * 1.15, bw = (W - 20) / 12 - 6;
+  const yv = v => H - 22 - (v / max) * (H - 40);
+  const chart = `<svg viewBox="0 0 ${W} ${H}">${per.map((v,i) => `<rect x="${10 + i*((W-20)/12) + 3}" y="${yv(v)}" width="${bw}" height="${H-22-yv(v)}" rx="4" fill="var(--acc)" opacity="${i===11?1:.6}"/>
+    <text x="${10 + i*((W-20)/12) + 3 + bw/2}" y="${H-7}" text-anchor="middle" font-size="9" fill="var(--soft)">${MONS[+keys[i].slice(5)-1][0]}</text>`).join("")}</svg>`;
+  menu.innerHTML = `<div class="mt">Spending · last 12 months</div>
+    <div class="bstat"><b>${money(total)}</b><span>${inRange.length} bill${inRange.length===1?"":"s"} · about ${money(total/months)} a month</span></div>
+    <div class="chart">${chart}</div>
+    <div class="mt">By category</div>
+    <div class="bcats">${cats.map(([c,v]) => `<div><span><i style="background:${BB_CAT_COL[c]||"#8A94AD"}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${total ? v/total*100 : 0}%;background:${BB_CAT_COL[c]||"#8A94AD"}"></em></div>`).join("") || `<div class="note">No bills yet.</div>`}</div>
+    <button class="sdone" id="cx">Done</button>`;
+  menu.querySelector("#cx").onclick = closeMenu;
+  openMenu();
+}
+setInterval(() => { if (S.tab === "bills" && !document.hidden && !bbTyping()) billsRefresh(false); }, 90000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && S.tab === "bills") billsRefresh(false); });
+setTimeout(() => { updateBillsBadge(); if (bbOn()) billsRefresh(false); }, 600);
+
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
-const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }));
+const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg(Object.assign({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }, LOCAL.bbApi ? { b:{ u:LOCAL.bbApi, k:LOCAL.bbKey } } : {})));
 function pinOwnLink(){
   // keep this phone's settings in the address so "Add to Home Screen" carries them over
   if (LOCAL.url && LOCAL.house){ try { history.replaceState(null, "", linkFor()); } catch(e){} }
@@ -1575,6 +2078,7 @@ function showSetup(first){
     <form class="ed" id="sf" style="padding-top:0">
       <label>Apps Script web app URL</label><input id="sUrl" value="${esc(LOCAL.url||"")}" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" autocapitalize="off">
       <label>Household key</label><input id="sHouse" value="${esc(LOCAL.house||"")}" autocomplete="off" autocapitalize="off">
+      <label>BillBell setup link ${LOCAL.bbApi ? "(connected ✓)" : "(for the Bills tab)"}</label><input id="sBB" placeholder="${LOCAL.bbApi ? "Paste a new link only to change it" : "From your “BillBell setup link” email"}" autocomplete="off" autocapitalize="off">
       <label>This phone belongs to</label><select class="set-sel" id="sWho" style="width:100%;margin:0"><option value="S">S</option><option value="D" ${LOCAL.who==="D"?"selected":""}>D</option></select>
       <div class="acts"><button type="submit" class="save">${LOCAL.url ? "Save & sync" : "Connect"}</button></div>
     </form>
@@ -1589,6 +2093,8 @@ function showSetup(first){
     if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)){ toast("Paste the Apps Script /exec URL"); return; }
     if (!house){ toast("Enter the household key"); return; }
     const changed = url !== LOCAL.url || house !== LOCAL.house;
+    const bbTxt = menu.querySelector("#sBB").value.trim();
+    if (bbTxt){ const bc = parseBillBellLink(bbTxt); if (!bc){ toast("That BillBell link doesn't look right"); return; } LOCAL.bbApi = bc.api; LOCAL.bbKey = bc.key; setTimeout(() => billsRefresh(false), 300); }
     LOCAL.url = url; LOCAL.house = house; LOCAL.offline = false; LOCAL.who = menu.querySelector("#sWho").value;
     if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
     saveLocal(); pinOwnLink(); closeMenu(); render(); toast("Connecting…");

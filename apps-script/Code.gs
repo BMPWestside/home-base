@@ -57,43 +57,52 @@ function handle_(p) {
 }
 
 
-/* ---------- Daily gas bottle check (email) ----------
+/* ---------- Daily gas bottle check (ntfy) ----------
  * Run setupDailyCheck() once from the editor (select it in the toolbar, press Run, allow access).
- * Every morning around 8am it checks the Gas bottle tracker and emails you once when the
- * bottle reaches its average life. Add more addresses below if you like (comma separated).
+ * Every morning around 8am it checks the Gas bottle tracker and sends one ntfy alert when the
+ * bottle reaches its average life. It uses the same ntfy topic as BillBell (Home Base picks it
+ * up automatically once the Bills tab is connected). To use a different topic, put it below.
  */
-const ALERT_EMAILS = '';
+const NTFY_TOPIC = '';
+const APP_URL = 'https://bmpwestside.github.io/home-base/';
 
 function checkGasBottle() {
   const props = PropertiesService.getScriptProperties();
   const data = read_('house', Number(props.getProperty('ver_house') || 0));
   if (!data) return;
+  const topic = NTFY_TOPIC || data.ntfy;
+  if (!topic) { Logger.log('No ntfy topic yet — connect the Bills tab in Home Base, or set NTFY_TOPIC.'); return; }
   const t = (data.trackers || []).find(x => /gas/i.test(x.name || '') || x.icon === '🔥');
   if (!t) return;
   const ch = (t.changes || []).slice().sort();
   if (ch.length < 2) return;                                   // need one full bottle to know the average
   const day = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); };
-  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  const today = Utilities.formatDate(new Date(), 'Australia/Sydney', 'yyyy-MM-dd');
   const gaps = ch.slice(1).map((d, i) => day(d) - day(ch[i]));
   const avg = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
   const last = ch[ch.length - 1], since = day(today) - day(last);
   if (since < avg) return;
   if (props.getProperty('gas_alerted') === last) return;      // only once per bottle
-  const to = [Session.getEffectiveUser().getEmail()].concat(ALERT_EMAILS.split(',').map(s => s.trim()).filter(Boolean)).join(',');
-  MailApp.sendEmail({
-    to: to,
-    subject: '🔥 Gas bottle due — Home Base',
-    htmlBody: '<div style="font-family:-apple-system,Segoe UI,Arial,sans-serif;font-size:15px;color:#2b1d00">' +
-      '<h2 style="margin:0 0 8px">🔥 Time to check the gas bottle</h2>' +
-      '<p>It has been <b>' + since + ' days</b> since the last change (' + last + '). ' +
-      'Your bottles usually last about <b>' + avg + ' days</b>.</p>' +
-      '<p style="color:#7a5a2a">When you swap it, open Home Base → Personal → Gas bottle and tap Save.</p></div>'
+  UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
+    method: 'post', muteHttpExceptions: true,
+    payload: since + ' days since the last change. Your bottles usually last about ' + avg + ' days.',
+    headers: { Title: 'Gas bottle due - Home Base', Tags: 'fire', Click: APP_URL }
   });
   props.setProperty('gas_alerted', last);
 }
 
+/** Sends a test alert so you can check ntfy is working. */
+function testGasAlert() {
+  const props = PropertiesService.getScriptProperties();
+  const data = read_('house', Number(props.getProperty('ver_house') || 0)) || {};
+  const topic = NTFY_TOPIC || data.ntfy;
+  if (!topic) { Logger.log('No ntfy topic yet.'); return; }
+  UrlFetchApp.fetch('https://ntfy.sh/' + topic, { method: 'post', payload: 'Gas bottle alerts are working.', headers: { Title: 'Home Base test', Tags: 'white_check_mark', Click: APP_URL } });
+  Logger.log('Test sent to ' + topic);
+}
+
 function setupDailyCheck() {
   ScriptApp.getProjectTriggers().forEach(tr => { if (tr.getHandlerFunction() === 'checkGasBottle') ScriptApp.deleteTrigger(tr); });
-  ScriptApp.newTrigger('checkGasBottle').timeBased().everyDays(1).atHour(8).create();
+  ScriptApp.newTrigger('checkGasBottle').timeBased().everyDays(1).atHour(8).inTimezone('Australia/Sydney').create();
   checkGasBottle();
 }
