@@ -1675,7 +1675,9 @@ const BB_PCOL = ["#5B6BD6","#139C9F","#C0563A","#2E7D32","#8E44AD","#D9822B","#0
 const MONS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const DOWS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-const bbOn = () => !!(LOCAL.bbApi && LOCAL.bbKey);
+const bbLinked = () => !!(LOCAL.bbApi && LOCAL.bbKey);
+const hbBills = () => !!(LOCAL.url && LOCAL.house) && !BB.noHB;       // bills through the Home Base sync script
+const bbOn = () => hbBills() || bbLinked();
 const money = n => "$" + Number(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 const money0 = n => "$" + Math.round(Number(n||0)).toLocaleString("en-AU");
 const dOf = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
@@ -1753,13 +1755,30 @@ function bbNormalise(data){
   if (BB.settings.ntfyTopic && S.ntfyTopic !== BB.settings.ntfyTopic && typeof save === "function"){ S.ntfyTopic = BB.settings.ntfyTopic; setTimeout(save, 0); }
 }
 try { const c = localStorage.getItem(BB_CACHE); if (c) bbNormalise(JSON.parse(c)); } catch(e){}
+// Bills come through the Home Base sync script (it reads the BillBell Data sheet); the BillBell link is the fallback.
+async function bbFetch(action, payload, timeoutMs){
+  if (hbBills()){
+    try {
+      const r = await api(action === "data" ? { op:"bills", doc:"house", key:LOCAL.house } : { op:"billAction", doc:"house", key:LOCAL.house, action, payload: JSON.stringify(payload||{}) });
+      if (r && r.ok) return r.data;
+      if (r && /unknown op/i.test(r.error || "")) { BB.noHB = true; }           // sync script not updated yet
+      else throw new Error(r && r.error || "No answer");
+    } catch(e){ if (!bbLinked() || BB.noHB === false) throw e; }
+  }
+  if (!bbLinked()) throw new Error("Update your Home Base sync script (see the steps) or paste the BillBell link");
+  return bbGet(action === "data" ? { action:"data" } : { action, payload: JSON.stringify(payload||{}) }, timeoutMs);
+}
 async function bbCall(action, payload){
   let data;
   const big = JSON.stringify(payload||{}).length > 1500;
-  if (action === "upload" || big){
+  if (action === "upload"){
+    if (!bbLinked()) throw new Error("reading photos needs the BillBell link — paste it in ⚙︎ → Sync");
     await fetch(LOCAL.bbApi, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ key: LOCAL.bbKey, action }, payload)) });
-    data = await bbGet({ action:"data" });
-  } else data = await bbGet({ action, payload: JSON.stringify(payload||{}) }, action === "scan" ? 300000 : 60000);
+    data = await bbFetch("data");
+  } else if (big && !hbBills()){
+    await fetch(LOCAL.bbApi, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ key: LOCAL.bbKey, action }, payload)) });
+    data = await bbFetch("data");
+  } else data = await bbFetch(action, payload, action === "scan" ? 300000 : 60000);
   bbNormalise(data);
   try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
   renderBillsSafe();
@@ -1771,7 +1790,7 @@ async function billsRefresh(spin){
   if (!bbOn() || BB.loading) return;
   BB.loading = true;
   try {
-    const data = await bbGet({ action:"data" });
+    const data = await bbFetch("data");
     bbNormalise(data); BB.err = "";
     try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
     if (spin) toast("Bills up to date");
@@ -1830,7 +1849,7 @@ function updateBillsBadge(){
 function renderBills(){
   const host = document.getElementById("bills"); if (!host) return;
   if (!bbOn()){
-    host.innerHTML = `<div class="bempty"><div class="big">🔔</div><b>Connect BillBell</b><p>Paste the setup link from your “BillBell setup link” email so your bills show here.</p>
+    host.innerHTML = `<div class="bempty"><div class="big">🔔</div><b>Connect Home Base first</b><p>Bills come through your Home Base sync script. Connect it in ⚙︎ → Sync — or paste the link from your “BillBell setup link” email below.</p>
       <textarea id="bbLink" placeholder="https://bmpwestside.github.io/billbell/#api=…&key=…"></textarea><button class="pill c" id="bbConnect">Connect</button></div>`;
     host.querySelector("#bbConnect").onclick = () => {
       const cfg = parseBillBellLink(host.querySelector("#bbLink").value);
@@ -1853,9 +1872,8 @@ function renderBills(){
       <button id="bbAdd" aria-label="Add a bill">＋</button>
     </div>`;
   if (BB.err) h += `<div class="bfix"><b>Couldn't load your bills</b><span>${esc(BB.err)}.</span>
-      <span>Usually this means the BillBell script needs a fresh deployment: open your <b>BillBell</b> project at script.google.com → <b>Deploy → Manage deployments</b> → ✎ Edit → Version <b>New version</b> → check <b>Who has access: Anyone</b> → Deploy. Then run <b>sendSetupLink</b> and paste the new link here.</span>
-      <div class="ra" style="justify-content:flex-start"><a class="pill" href="${esc(LOCAL.bbApi + (LOCAL.bbApi.includes("?") ? "&" : "?") + "action=data&key=" + encodeURIComponent(LOCAL.bbKey))}" target="_blank" rel="noopener">Test in Safari</a>
-      <button class="pill" id="bbRetry">Try again</button><button class="pill" id="bbRelink">Paste new link</button></div></div>`;
+      <span>${hbBills() ? `Bills now load through your <b>Home Base</b> sync script. Paste the latest <b>Code.gs</b> into that project at script.google.com, run <b>setupDailyCheck</b> once (allow access), then <b>Deploy → Manage deployments</b> → ✎ Edit → Version <b>New version</b> → Deploy.` : `Paste the BillBell setup link again, or update your Home Base sync script.`}</span>
+      <div class="ra" style="justify-content:flex-start"><button class="pill" id="bbRetry">Try again</button>${bbLinked() ? `<button class="pill" id="bbRelink">Forget BillBell link</button>` : ""}</div></div>`;
   h += BB.view === "paid" ? bbPaidHTML() : BB.view === "review" ? bbReviewHTML() : bbDueHTML();
   host.innerHTML = h;
   host.querySelectorAll("[data-bv]").forEach(b => b.onclick = () => { BB.view = b.dataset.bv; renderBills(); });

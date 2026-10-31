@@ -41,6 +41,8 @@ function handle_(p) {
   const ver = () => Number(props.getProperty('ver_' + doc) || 0);
 
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
+  if (p.op === 'bills') { try { return out_({ ok: true, data: bbData_() }); } catch (e) { return out_({ ok: false, error: e.message }); } }
+  if (p.op === 'billAction') { try { return out_(bbAction_(p.action, JSON.parse(p.payload || '{}'))); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'get') { const v = ver(); return out_({ ok: true, version: v, data: read_(doc, v) }); }
   if (p.op === 'put') {
     const lock = LockService.getScriptLock();
@@ -105,4 +107,69 @@ function setupDailyCheck() {
   ScriptApp.getProjectTriggers().forEach(tr => { if (tr.getHandlerFunction() === 'checkGasBottle') ScriptApp.deleteTrigger(tr); });
   ScriptApp.newTrigger('checkGasBottle').timeBased().everyDays(1).atHour(8).inTimezone('Australia/Sydney').create();
   checkGasBottle();
+}
+
+
+/* ---------- Bills (reads the BillBell Data sheet in this same Google account) ---------- */
+const BILLBELL_SHEET = 'BillBell Data';
+const BILL_EDITABLE = ['provider', 'category', 'amount', 'dueDate', 'issueDate', 'status', 'paidDate', 'notes', 'invoiceNo', 'autopay', 'reason', 'flags'];
+
+function bbSheet_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('bb_sheet');
+  if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} }
+  const it = DriveApp.getFilesByName(BILLBELL_SHEET);
+  if (!it.hasNext()) throw new Error('Could not find the "' + BILLBELL_SHEET + '" sheet in this Google account');
+  const f = it.next();
+  props.setProperty('bb_sheet', f.getId());
+  return SpreadsheetApp.openById(f.getId());
+}
+function bbTable_(name) {
+  const sh = bbSheet_().getSheetByName(name);
+  if (!sh || sh.getLastRow() < 2) return [];
+  const v = sh.getDataRange().getValues(), h = v[0];
+  return v.slice(1).map(r => { const o = {}; h.forEach((k, i) => { const x = r[i]; o[k] = x instanceof Date ? Utilities.formatDate(x, 'Australia/Sydney', 'yyyy-MM-dd') : (x === null || x === undefined ? '' : x); }); return o; });
+}
+function bbUpdate_(name, id, patch) {
+  const sh = bbSheet_().getSheetByName(name), v = sh.getDataRange().getValues(), h = v[0];
+  for (let r = 1; r < v.length; r++) {
+    if (String(v[r][0]) === String(id)) {
+      Object.keys(patch).forEach(k => { const c = h.indexOf(k); if (c >= 0) sh.getRange(r + 1, c + 1).setNumberFormat('@').setValue(patch[k] == null ? '' : String(patch[k])); });
+      return true;
+    }
+  }
+  return false;
+}
+function bbAppend_(name, obj) {
+  const sh = bbSheet_().getSheetByName(name), h = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  const row = h.map(k => obj[k] == null ? '' : String(obj[k]));
+  sh.getRange(sh.getLastRow() + 1, 1, 1, row.length).setNumberFormat('@').setValues([row]);
+}
+function bbProviders_() { return bbTable_('Providers').filter(p => String(p.active) !== 'false'); }
+function bbData_() {
+  const cutoff = Utilities.formatDate(new Date(Date.now() - 800 * 864e5), 'Australia/Sydney', 'yyyy-MM-dd');
+  const bills = bbTable_('Bills').filter(b => b.status === 'due' || b.status === 'review' || (b.dueDate || b.paidDate || '') >= cutoff);
+  return { bills: bills, providers: bbProviders_(), settings: { ntfyTopic: NTFY_TOPIC }, generated: new Date().toISOString() };
+}
+function bbAction_(action, body) {
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    if (action === 'update') {
+      const patch = {}; BILL_EDITABLE.forEach(k => { if (body.patch && k in body.patch) patch[k] = body.patch[k]; });
+      if (patch.provider && !patch.category) { const pr = bbProviders_().find(p => p.id === patch.provider); if (pr) patch.category = pr.category; }
+      bbUpdate_('Bills', body.id, patch);
+    } else if (action === 'add') {
+      const b = body.bill || {}, pv = bbProviders_().find(p => p.id === b.provider);
+      bbAppend_('Bills', Object.assign({}, b, {
+        id: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        category: pv ? pv.category : (b.category || 'Other'), status: b.status || 'due', source: 'manual', createdAt: new Date().toISOString()
+      }));
+    } else if (action === 'provider') {
+      const row = body.provider || {};
+      if (!bbUpdate_('Providers', row.id, row)) bbAppend_('Providers', Object.assign({ active: 'true', cycle: 30 }, row));
+    } else if (action !== 'data') {
+      return { ok: false, error: 'Use BillBell for ' + action };
+    }
+  } finally { lock.releaseLock(); }
+  return { ok: true, data: bbData_() };
 }
