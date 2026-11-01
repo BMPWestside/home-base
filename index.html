@@ -254,6 +254,55 @@
   .pbars.bnextbars{margin:0 0 12px}
   .bnextbars .pi{display:grid;place-items:center}
 
+  .gas.rems{padding:9px 14px}
+  .rq{margin:8px 0 0}
+  .rq input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--ink);font-size:15px;outline:none}
+  .rq input::placeholder{color:var(--soft);opacity:.8}
+  .rqp{font-size:12.5px;font-weight:700;color:var(--acc);margin:5px 4px 0;min-height:0}
+  .rqp:empty{display:none}
+  .rqp span{color:var(--soft);font-weight:600}
+  .rwarn{display:block;width:100%;margin:8px 0 2px;padding:8px 10px;border-radius:10px;background:rgba(255,200,80,.14);color:#ffd36b;font-size:13px;font-weight:800;text-align:left}
+  .rrow{display:flex;align-items:center;gap:10px;padding:5px 0;border-top:1px solid rgba(255,255,255,.07)}
+  .rrow:first-of-type,.rqp + .rrow,.rq + .rqp + .rrow{margin-top:6px}
+  .rchk{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--soft);opacity:.85}
+  .rchk:active{background:var(--acc);border-color:var(--acc)}
+  .rm{flex:1;min-width:0;display:flex;flex-direction:column;text-align:left;color:var(--ink)}
+  .rm b{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rm span{font-size:11.5px;color:var(--soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rd{font-size:12.5px;font-weight:800;color:var(--soft);white-space:nowrap}
+  .rrow.late .rd{color:#ff8a80}
+  .rrow.late .rchk{border-color:#ff8a80}
+  .rform .r2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .rform .r2 input,.rform .r2 select{width:100%}
+  .rdays{display:flex;gap:5px;margin-top:8px}
+  .rdays button{flex:1;padding:9px 0;border-radius:10px;background:rgba(255,255,255,.08);font-weight:800;font-size:13px;color:var(--ink)}
+  .rdays button.on{background:var(--acc);color:var(--onacc)}
+  .rtog{display:flex !important;align-items:center;gap:10px;margin-top:10px !important;font-size:14px !important;text-transform:none !important;letter-spacing:0 !important;color:var(--ink) !important;font-weight:600 !important}
+  .rtog input{width:20px !important;height:20px !important;min-height:0 !important;padding:0 !important;margin:0 !important;border:0 !important;background:none !important;box-shadow:none !important;accent-color:var(--acc);flex:none}
+  .rtog span{flex:1;min-width:0}
+  .rhint{font-size:12.5px;font-weight:700;color:var(--acc);margin:10px 2px 0;min-height:16px}
+  .r3{display:flex;gap:8px;margin-top:12px}
+  .r3 button{flex:1;padding:11px 4px;border-radius:12px;background:rgba(255,255,255,.1);font-weight:800;font-size:14px;color:var(--ink)}
+  .r3 button.del{color:#ff8c84}
+  .rset{padding:0 12px 6px;color:var(--ink)}
+  .rsh{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--soft);margin:14px 0 6px}
+  .rsh:first-child{margin-top:4px}
+  .rsteps{margin:0 0 8px;padding-left:20px;font-size:13.5px;line-height:1.45}
+  .rtopic{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px;border-radius:12px;background:rgba(255,255,255,.08)}
+  .rtopic code{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rtopic button,.rbtn{padding:8px 12px;border-radius:10px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:13.5px}
+  .rbtn{display:block;width:100%;margin-top:8px;padding:11px}
+  .rbtn:disabled{opacity:.4}
+  .rnote{font-size:12px;color:var(--soft);margin-top:6px}
+  .rset .r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  .rset .r2 label{display:block;font-size:12px;color:var(--soft);font-weight:700;margin-bottom:3px}
+  .rset .r2 input{width:100%;padding:9px;border-radius:10px;border:0;background:rgba(255,255,255,.1);color:var(--ink)}
+  .rhist{padding:0 12px 8px;max-height:55vh;overflow:auto}
+  .rhr{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.07);color:var(--ink);font-size:14px}
+  .rhr span{color:#3ccf7a;font-weight:900}
+  .rhr b{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rhr em{font-style:normal;font-size:12px;color:var(--soft);white-space:nowrap}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -544,7 +593,7 @@
 
 <nav class="tabs" id="tabs">
   <button class="tab" data-tab="shopping">Shopping</button>
-  <button class="tab" data-tab="personal">Personal</button>
+  <button class="tab" data-tab="personal">Reminders</button>
   <button class="tab" data-tab="bills">Bills</button>
 </nav>
 
@@ -987,8 +1036,8 @@ function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
   if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="bills"></div>`; renderBills(); return; }
-  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div>`:""}${S.tab==="personal"?`<div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
-  if (S.tab==="personal"){ renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
+  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div>`:""}${S.tab==="personal"?`<div id="rems"></div><div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
+  if (S.tab==="personal"){ renderRems(); renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
   renderBanner();
   if (S.tab==="shopping") renderToday();
   renderBands();
@@ -1321,7 +1370,7 @@ function showMoveSheet(cardId, itemId){
   const grouped = S.aisles && S.tab === "shopping";
   menu.innerHTML = `<div class="mt">Move “${esc(it.text)}” to</div>
     ${lists("shopping").length ? `<div class="sl" style="padding:4px 14px">Shopping</div><div class="mvlist">${btns("shopping")}</div>` : ""}
-    ${lists("personal").length ? `<div class="sl" style="padding:4px 14px">Personal</div><div class="mvlist">${btns("personal")}</div>` : ""}
+    ${lists("personal").length ? `<div class="sl" style="padding:4px 14px">Reminders</div><div class="mvlist">${btns("personal")}</div>` : ""}
     ${grouped && !it.done ? `<div class="sep"></div><div class="mt">Or change aisle</div><div class="mvlist">${AISLES.map(a=>`<button data-aisle="${a[0]}" style="${aisleOf(it)===a[0]?"outline:2px solid var(--acc)":""}">${a[1]}</button>`).join("")}</div>` : ""}
     <button class="sdone" id="cx">Cancel</button>`;
   menu.querySelectorAll("[data-to]").forEach(b => b.onclick = () => {
@@ -1545,6 +1594,7 @@ function fmtShort(iso){ const [y,m,d] = iso.split("-").map(Number); return d + "
 function dueWords(d){ return d < 0 ? `${-d} day${d<-1?"s":""} overdue` : d === 0 ? "today" : d === 1 ? "tomorrow" : `in ${d} days`; }
 function todayRows(){
   const rows = [];
+  if (typeof remTodayRows === "function") remTodayRows().forEach(r => rows.push(r));
   if (typeof BB !== "undefined" && typeof bbUnpaid === "function"){
     bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 7).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
       const d = daysTo(b.dueDate), pct = d < 0 ? 100 : (7 - d) / 7 * 100;
@@ -1914,7 +1964,7 @@ function showSettings(listId, sub){
   }
 
   let html = `<div class="mt">Themes</div>
-    <div class="sg3"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Personal</div>${themeSel("personal")}</div><div><div class="sl">Bills</div>${themeSel("bills")}</div></div>
+    <div class="sg3"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Reminders</div>${themeSel("personal")}</div><div><div class="sl">Bills</div>${themeSel("bills")}</div></div>
     <div class="sg2"><div><div class="sl">Text size</div><select class="set-sel" id="tsz"><option value="normal">Normal</option><option value="large" ${S.textSize==="large"?"selected":""}>Large</option><option value="xl" ${S.textSize==="xl"?"selected":""}>Extra large</option></select></div>
       <div><div class="sl">Shopping by aisle</div><select class="set-sel" id="ais"><option value="0">Off</option><option value="1" ${S.aisles?"selected":""}>On</option></select></div></div>`;
   if (onLists && c){
@@ -2677,6 +2727,432 @@ let lkHiddenAt = 0;
 document.addEventListener("visibilitychange", () => { if (document.hidden) lkHiddenAt = Date.now(); else if (Date.now() - lkHiddenAt > 120000) appLock(); });
 appLock();
 
+/* ================= Reminders core (shared by the app and the Google script) =================
+ * Times are Sydney wall-clock strings "YYYY-MM-DDTHH:MM", so daylight saving never shifts them
+ * and plain string comparison works for "is it due yet".
+ */
+var RL = (function(){
+  const pad = n => String(n).padStart(2, "0");
+  const MONS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const DAYS = ["sun","mon","tue","wed","thu","fri","sat"];
+  const toMs = w => Date.UTC(+w.slice(0,4), +w.slice(5,7) - 1, +w.slice(8,10), +w.slice(11,13) || 0, +w.slice(14,16) || 0);
+  const fromMs = ms => { const d = new Date(ms); return d.getUTCFullYear() + "-" + pad(d.getUTCMonth()+1) + "-" + pad(d.getUTCDate()) + "T" + pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()); };
+  const addMin = (w, m) => fromMs(toMs(w) + m * 60000);
+  const dow = w => new Date(toMs(w)).getUTCDay();
+  const daysIn = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();          // m is 1-12
+  const minsBetween = (a, b) => Math.round((toMs(b) - toMs(a)) / 60000);
+  function wallNow(d){ d = d || new Date(); return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+  function addMonths(w, k, day){
+    let y = +w.slice(0,4), m = +w.slice(5,7) + k;
+    while (m > 12){ m -= 12; y++; } while (m < 1){ m += 12; y--; }
+    return y + "-" + pad(m) + "-" + pad(Math.min(day, daysIn(y, m))) + w.slice(10);
+  }
+  function step(r, w, anchorDay){
+    switch (r.f){
+      case "daily": return addMin(w, 1440);
+      case "ndays": return addMin(w, 1440 * Math.max(1, +r.n || 1));
+      case "weekdays": { let x = addMin(w, 1440); while (dow(x) === 0 || dow(x) === 6) x = addMin(x, 1440); return x; }
+      case "weekly": {
+        const days = (r.days && r.days.length) ? r.days : [dow(w)];
+        let x = w; for (let i = 0; i < 8; i++){ x = addMin(x, 1440); if (days.indexOf(dow(x)) >= 0) return x; }
+        return addMin(w, 7 * 1440);
+      }
+      case "monthly": return addMonths(w, Math.max(1, +r.n || 1), anchorDay);
+      case "yearly": return addMonths(w, 12, anchorDay);
+    }
+    return null;
+  }
+  const repeats = it => !!(it.rep && it.rep.f && it.rep.f !== "none");
+  const at = it => it.snooze || it.due;
+  /* Next time a repeating reminder is due after `now` (null when the series has ended). */
+  function nextDue(it, now){
+    if (!repeats(it)) return null;
+    const r = it.rep, anchor = +(it.anchor || it.due).slice(8,10);
+    let x = it.due, guard = 0;
+    do { x = step(r, x, anchor); } while (x && x <= now && ++guard < 5000);
+    if (!x) return null;
+    if (r.end && x.slice(0,10) > r.end) return null;
+    if (r.count){ const left = (r.left == null ? r.count : r.left) - 1; if (left <= 0) return null; }
+    return x;
+  }
+  /* Tick a reminder off. Repeating ones move to their next time; others are marked done. */
+  function complete(it, now, stamp){
+    const nx = nextDue(it, now), title = it.title;
+    if (nx){ if (it.rep.count) it.rep.left = (it.rep.left == null ? it.rep.count : it.rep.left) - 1; it.due = nx; }
+    else { it.done = true; it.doneAt = now; }
+    it.snooze = null; it.u = stamp || Date.now();
+    return { t: title, at: now, id: it.id + "@" + now, ms: stamp || Date.now() };
+  }
+  function snooze(it, now, mins, stamp){ it.snooze = mins === "tmr" ? addMin(now.slice(0,10) + "T09:00", 1440) : addMin(now, mins); it.u = stamp || Date.now(); }
+
+  /* Merge two copies (phone + server): newest edit wins per reminder; deletes are kept as tombstones. */
+  function merge(a, b){
+    a = a || {}; b = b || {};
+    const out = {}, del = Object.assign({}, a.del || {});
+    Object.keys(b.del || {}).forEach(k => { del[k] = Math.max(del[k] || 0, b.del[k]); });
+    const byId = {};
+    (a.items || []).concat(b.items || []).forEach(it => { const o = byId[it.id]; if (!o || (it.u || 0) > (o.u || 0)) byId[it.id] = it; });
+    out.items = Object.keys(byId).map(k => byId[k]).filter(it => !(del[it.id] && del[it.id] >= (it.u || 0)));
+    const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
+    out.del = del;
+    const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
+    ["topic","key","quiet","hide","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
+    const hc = Math.max(a.hc || 0, b.hc || 0);
+    out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);
+    out.hc = hc;
+    return out;
+  }
+
+  /* ---------- typing a reminder in plain words: "Pay rego Fri 5pm", "Bins every Tue 7pm" ---------- */
+  function parse(text, now){
+    let s = " " + String(text || "").replace(/\s+/g, " ").trim() + " ";
+    const low = () => s.toLowerCase();
+    const take = re => { const m = low().match(re); if (!m) return null; s = s.slice(0, m.index) + " " + s.slice(m.index + m[0].length); return m; };
+    take(/^ (remind me (to|about)?|reminder:?) /);
+    let date = null, time = null, rep = null, rel = null, nth = false;
+    const dayIdx = w => DAYS.indexOf(w.slice(0,3));
+    const DAYRE = "(sun|mon|tue|tues|wed|thu|thur|thurs|fri|sat)(day|nesday|sday|rsday|urday)?";
+    let m;
+    // repeats
+    if ((m = take(/ every ?day | daily /)) ) rep = { f:"daily" };
+    else if ((m = take(/ every weekday | weekdays /))) rep = { f:"weekdays" };
+    else if ((m = take(/ every (\d+) days? /))) rep = { f:"ndays", n:+m[1] };
+    else if ((m = take(/ every (\d+) weeks? /))) rep = { f:"ndays", n:+m[1] * 7 };
+    else if ((m = take(/ every (\d+) months? /))) rep = { f:"monthly", n:+m[1] };
+    else if ((m = take(new RegExp(" every (" + DAYRE + "(?:(?:,| and|,? &) ?" + DAYRE + ")*) ")))){
+      rep = { f:"weekly", days: (m[1].match(new RegExp(DAYRE, "g")) || []).map(dayIdx).filter(x => x >= 0) };
+    }
+    else if ((m = take(/ every week | weekly /))) rep = { f:"weekly" };
+    else if ((m = take(/ every month | monthly /))) rep = { f:"monthly", n:1 };
+    else if ((m = take(/ every year | yearly | annually /))) rep = { f:"yearly" };
+    // relative
+    if ((m = take(/ in (\d+|an?|half an?) (min|mins|minutes?|hours?|hrs?|days?|weeks?) /))){
+      const n = /^half/.test(m[1]) ? 0.5 : /^an?$/.test(m[1]) ? 1 : +m[1], u = m[2][0];
+      rel = Math.round(n * (u === "m" ? 1 : u === "h" ? 60 : u === "d" ? 1440 : 10080));
+    }
+    // time
+    if ((m = take(/ (?:at |@ ?|by )?(\d{1,2})(?:[:.](\d{2}))? ?(am|pm|a\.m\.|p\.m\.) /))){
+      let h = +m[1] % 12; if (m[3][0] === "p") h += 12; time = pad(h) + ":" + (m[2] || "00");
+    } else if ((m = take(/ (?:at |@ ?)?([01]?\d|2[0-3])[:.](\d{2}) /))) time = pad(+m[1]) + ":" + m[2];
+    else if ((m = take(/ (?:at )?(noon|midday) /))) time = "12:00";
+    else if ((m = take(/ at (\d{1,2}) /))){ let h = +m[1]; if (h >= 1 && h <= 7) h += 12; time = pad(h) + ":00"; }
+    if ((m = take(/ (this |in the )?(morning|afternoon|evening|tonight) /))){
+      const w = m[2]; if (!time) time = w === "morning" ? "09:00" : w === "afternoon" ? "15:00" : w === "evening" ? "18:00" : "20:00";
+      if (w === "tonight") date = now.slice(0,10);
+    }
+    const today = now.slice(0,10);
+    // dates
+    if ((m = take(/ (today|tonight) /))) date = today;
+    else if ((m = take(/ (tomorrow|tmrw|tmr) /))) date = addMin(today + "T00:00", 1440).slice(0,10);
+    else if ((m = take(/ (?:on )?(\d{1,2})(?:st|nd|rd|th)?(?: of)? (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?: (\d{4}))? /))) date = mkDate(+m[1], MONS.indexOf(m[2]) + 1, m[3]);
+    else if ((m = take(/ (?:on )?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]* (\d{1,2})(?:st|nd|rd|th)?(?:,? (\d{4}))? /))) date = mkDate(+m[2], MONS.indexOf(m[1]) + 1, m[3]);
+    else if ((m = take(/ (?:on )?(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))? /))) date = mkDate(+m[1], +m[2], m[3]);
+    else if ((m = take(new RegExp(" (?:on |this |next )?" + DAYRE + " ")))){
+      const want = dayIdx(m[1]); let x = today + "T00:00";
+      for (let i = 0; i < 8; i++){ x = addMin(x, 1440); if (dow(x) === want) break; }
+      if (dow(today + "T00:00") === want && !/next/.test(m[0])) x = today + "T00:00";
+      date = x.slice(0,10);
+    }
+    else if ((m = take(/ (?:on )?the (\d{1,2})(?:st|nd|rd|th) /))){
+      const d = +m[1]; let y = +today.slice(0,4), mo = +today.slice(5,7);
+      let cand = y + "-" + pad(mo) + "-" + pad(Math.min(d, daysIn(y, mo)));
+      if (cand < today){ mo++; if (mo > 12){ mo = 1; y++; } cand = y + "-" + pad(mo) + "-" + pad(Math.min(d, daysIn(y, mo))); }
+      date = cand; nth = true;
+    }
+    function mkDate(d, mo, y){
+      if (!(mo >= 1 && mo <= 12 && d >= 1 && d <= 31)) return null;
+      let yy = y ? (+y < 100 ? 2000 + +y : +y) : +today.slice(0,4);
+      let c = yy + "-" + pad(mo) + "-" + pad(Math.min(d, daysIn(yy, mo)));
+      if (!y && c < today){ yy++; c = yy + "-" + pad(mo) + "-" + pad(Math.min(d, daysIn(yy, mo))); }
+      return c;
+    }
+    let due = null;
+    if (rel != null) due = addMin(now, rel);
+    else if (rep && rep.f === "weekly" && rep.days && rep.days.length && !date){
+      const t = time || "09:00"; let x = today + "T" + t;
+      for (let i = 0; i < 8; i++){ if (rep.days.indexOf(dow(x)) >= 0 && x > now) break; x = addMin(x, 1440); }
+      due = x;
+    }
+    else if (date || time){
+      due = (date || today) + "T" + (time || "09:00");
+      if (!date && due <= now) due = addMin(due, 1440);
+      if (rep && !date && rep.f === "weekdays") while (dow(due) === 0 || dow(due) === 6) due = addMin(due, 1440);
+    }
+    else if (rep){ due = today + "T09:00"; if (due <= now) due = addMin(due, 1440); }
+    if (nth && due && due <= now) due = addMonths(due, 1, +due.slice(8,10));
+    let title = s.replace(/\s+/g, " ").trim().replace(/^(to|about|on|at|by)\s+/i, "").replace(/\s+(on|at|by|in|every|the)$/i, "").trim();
+    if (title) title = title[0].toUpperCase() + title.slice(1);
+    return { title, due, rep: rep || { f:"none" } };
+  }
+
+  const ord = n => n + (n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th","st","nd","rd"][n % 10] || "th");
+  function repText(it){
+    const r = it.rep || {}, D = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    switch (r.f){
+      case "daily": return "Every day";
+      case "weekdays": return "Weekdays";
+      case "ndays": return r.n % 7 === 0 && r.n > 7 ? `Every ${r.n/7} weeks` : r.n === 7 ? "Every week" : `Every ${r.n} days`;
+      case "weekly": return (r.days && r.days.length ? "Every " + r.days.slice().sort((a,b) => ((a+6)%7) - ((b+6)%7)).map(d => D[d]).join(", ") : "Every " + D[dow(it.due)]);
+      case "monthly": return (+r.n > 1 ? `Every ${r.n} months` : "Monthly") + " on the " + ord(+(it.anchor || it.due).slice(8,10));
+      case "yearly": return "Every year";
+    }
+    return "";
+  }
+  return { pad, toMs, addMin, dow, wallNow, minsBetween, nextDue, complete, snooze, merge, parse, repText, repeats, at, ord };
+})();
+/* ================= Reminders (private to this phone's owner, pushed through ntfy) ================= */
+const remKey = () => "hb_rem_" + whoAmI();
+let REM = (() => { try { return JSON.parse(localStorage.getItem(remKey()) || "null"); } catch(e){ return null; } })() || { items:[], del:{}, hist:[] };
+const remRnd = n => { const a = new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a).map(x => "abcdefghijkmnpqrstuvwxyz23456789"[x % 32]).join(""); };
+function remInit(){
+  REM.items = REM.items || []; REM.del = REM.del || {}; REM.hist = REM.hist || [];
+  if (!REM.topic){ REM.topic = "hb-" + whoAmI().toLowerCase() + "-" + remRnd(18); REM.key = remRnd(24); REM.su = REM.su || 1; REM.quiet = REM.quiet || { on:false, from:"22:00", to:"07:00" }; REM.hide = !!REM.hide; }
+}
+let remT = null, remBusy = false, remAgain = false;
+function remSave(push){
+  try { localStorage.setItem(remKey(), JSON.stringify(REM)); } catch(e){}
+  if (push !== false){ clearTimeout(remT); remT = setTimeout(remSync, 500); }
+}
+async function remSync(){
+  if (!LOCAL.url || LOCAL.offline) return;
+  if (remBusy){ remAgain = true; return; }
+  remBusy = true;
+  try {
+    const r = await apiPost({ doc:"house", key:keyFor(), op:"remSync", who:whoAmI(), data:JSON.stringify(REM) });
+    if (r && r.ok && r.data){
+      const before = JSON.stringify(REM);
+      REM = RL.merge(REM, r.data); remInit();
+      try { localStorage.setItem(remKey(), JSON.stringify(REM)); } catch(e){}
+      if (JSON.stringify(REM) !== before) remRefresh();
+    }
+  } catch(e){}
+  finally { remBusy = false; if (remAgain){ remAgain = false; remSync(); } }
+}
+function remRefresh(){
+  if (S.tab === "personal" && !interacting()) renderRems();
+  if (S.tab === "shopping" && typeof renderToday === "function") renderToday();
+}
+const remNow = () => RL.wallNow();
+function remHM(w){ const h = +w.slice(11,13), m = w.slice(14,16); return ((h % 12) || 12) + (m === "00" ? "" : ":" + m) + (h < 12 ? "am" : "pm"); }
+function remDay(w){
+  const now = remNow(), d = w.slice(0,10), t = now.slice(0,10);
+  if (d === t) return "Today";
+  if (d === RL.addMin(t + "T00:00", 1440).slice(0,10)) return "Tomorrow";
+  if (d === RL.addMin(t + "T00:00", -1440).slice(0,10)) return "Yesterday";
+  return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][RL.dow(w)] + " " + (+w.slice(8,10)) + " " + MONS[+w.slice(5,7) - 1];
+}
+const remWhen = w => remDay(w) + " " + remHM(w);
+function remRel(w){
+  const m = RL.minsBetween(remNow(), w);
+  if (m < 0){ const a = -m; return a < 60 ? `${a}m late` : a < 1440 ? `${Math.floor(a/60)}h late` : `${Math.floor(a/1440)}d late`; }
+  if (m < 60) return m <= 0 ? "now" : `in ${m}m`;
+  if (m < 1440) return `in ${Math.floor(m/60)}h`;
+  return `in ${Math.round(m/1440)}d`;
+}
+const remOpen = () => (REM.items || []).filter(x => !x.done).sort((a,b) => RL.at(a) < RL.at(b) ? -1 : 1);
+
+function renderRems(){
+  const host = document.getElementById("rems"); if (!host) return;
+  remInit();
+  const all = remOpen(), weekEnd = RL.addMin(remNow(), 7 * 1440);
+  const soon = all.filter(x => RL.at(x) <= weekEnd), show = S._allRems ? all : soon;
+  const row = it => { const w = RL.at(it), late = w <= remNow(), rt = RL.repText(it);
+    return `<div class="rrow ${late ? "late" : ""}"><button class="rchk" data-rdone="${it.id}" aria-label="Done"></button><button class="rm" data-redit="${it.id}"><b>${esc(it.title)}</b><span>${remWhen(w)}${it.snooze ? " · 💤" : ""}${rt ? " · 🔁 " + rt : ""}${it.nag ? " · 🔔" : ""}${it.hi ? " · ❗" : ""}</span></button><span class="rd">${remRel(w)}</span></div>`; };
+  let body = show.map(row).join("");
+  if (!all.length) body = `<div class="stats" style="margin-top:4px">Type a reminder above, like "Pay rego Fri 5pm" or "Bins every Tue 7pm".</div>`;
+  else if (!show.length) body = `<div class="stats" style="margin-top:4px">Nothing in the next 7 days.</div>`;
+  const more = all.length > soon.length || S._allRems ? `<span class="ed dall" id="rAll">${S._allRems ? "Week" : "All"}</span>` : "";
+  const warn = !LOCAL.remTested ? `<button class="rwarn" id="rWarn">🔔 Turn on alerts for this phone</button>` : "";
+  host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button>${more}<span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
+    <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
+    ${warn}${body}</div>`;
+  const q = s => host.querySelector(s), inp = q("#rqIn");
+  inp.oninput = () => {
+    const v = inp.value.trim(), p = RL.parse(v, remNow());
+    q("#rqP").innerHTML = !v ? "" : p.due ? `⏰ ${remWhen(p.due)}${RL.repeats(p) ? " · 🔁 " + RL.repText(p) : ""}` : `<span>Add a time, like "Fri 5pm" or "in 2 hours", or press Done to pick one</span>`;
+  };
+  q("#rq").onsubmit = e => {
+    e.preventDefault();
+    const v = inp.value.trim(); if (!v) return;
+    const p = RL.parse(v, remNow());
+    if (!p.title){ toast("Say what to remind you about"); return; }
+    if (!p.due){ inp.blur(); editRem(null, p); return; }
+    remAdd(p); inp.value = ""; inp.blur();
+  };
+  host.querySelectorAll("[data-rdone]").forEach(b => b.onclick = () => remDone(b.dataset.rdone));
+  host.querySelectorAll("[data-redit]").forEach(b => b.onclick = () => editRem(b.dataset.redit));
+  q("#rAdd").onclick = () => editRem(null);
+  q("#rHead").onclick = () => inp.focus();
+  q("#rSet").onclick = showRemSettings;
+  q("#rHist").onclick = showRemHistory;
+  const ra = q("#rAll"); if (ra) ra.onclick = () => { S._allRems = !S._allRems; renderRems(); };
+  const rw = q("#rWarn"); if (rw) rw.onclick = showRemSettings;
+}
+function remAdd(p){
+  const it = { id:uid(), title:p.title, due:p.due, anchor:p.due, rep:p.rep || { f:"none" }, early:p.early || 0, nag:!!p.nag, hi:!!p.hi, u:Date.now(), created:remNow() };
+  REM.items.push(it); remSave(); renderRems();
+  toast("Reminder set · " + remWhen(it.due));
+  return it;
+}
+function remDone(id){
+  const it = REM.items.find(x => x.id === id); if (!it) return;
+  const copy = JSON.parse(JSON.stringify(it)), h = RL.complete(it, remNow());
+  REM.hist = [h].concat(REM.hist || []).slice(0, 60);
+  remSave(); renderRems(); if (typeof renderToday === "function") renderToday();
+  undoToast(it.done ? "Done: " + copy.title : "Next: " + remWhen(it.due), () => {
+    Object.assign(it, copy, { u:Date.now(), done:false, doneAt:null }); REM.hist = REM.hist.filter(x => x.id !== h.id); remSave(); renderRems();
+  });
+}
+function remDelete(it){
+  const idx = REM.items.indexOf(it); if (idx < 0) return;
+  REM.items.splice(idx, 1); REM.del[it.id] = Date.now(); remSave(); renderRems();
+  undoToast("Deleted " + it.title, () => { it.u = Date.now() + 1; REM.items.splice(idx, 0, it); remSave(); renderRems(); });
+}
+
+const REP_OPTS = [["none","Doesn't repeat"],["daily","Every day"],["weekdays","Weekdays (Mon–Fri)"],["weekly","Weekly"],["ndays","Every few days"],["monthly","Monthly"],["yearly","Every year"]];
+const EARLY_OPTS = [[0,"No early alert"],[15,"15 minutes before"],[60,"1 hour before"],[1440,"1 day before"]];
+function editRem(id, pre){
+  const it = id ? REM.items.find(x => x.id === id) : null;
+  const base = it || Object.assign({ title:"", due:null, rep:{ f:"none" }, early:0, nag:false, hi:false }, pre || {});
+  const now = remNow(), dflt = base.due || RL.addMin(now.slice(0,13) + ":00", 60);
+  const r = base.rep || { f:"none" };
+  let days = (r.days && r.days.length) ? r.days.slice() : [RL.dow(dflt)];
+  const endMode = r.end ? "date" : r.count ? "count" : "never";
+  const DL = ["S","M","T","W","T","F","S"];
+  menu.innerHTML = `<div class="mt">${it ? "Edit reminder" : "New reminder"}</div>
+    <form class="ed rform" id="rf" style="padding-top:0">
+      <label>Remind me to</label><input id="rT" value="${esc(base.title)}" placeholder="e.g. Pay rego" autocomplete="off">
+      <div class="r2"><div><label>Date</label><input id="rD" type="date" value="${dflt.slice(0,10)}"></div><div><label>Time</label><input id="rH" type="time" value="${dflt.slice(11,16)}"></div></div>
+      <label>Repeat</label><select class="set-sel" id="rR">${REP_OPTS.map(([v,l]) => `<option value="${v}" ${r.f === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <div id="rWk" class="rdays">${[1,2,3,4,5,6,0].map(d => `<button type="button" data-wd="${d}" class="${days.indexOf(d) >= 0 ? "on" : ""}">${DL[d]}</button>`).join("")}</div>
+      <div id="rN" class="r2"><div><label id="rNl">Every how many days?</label><input id="rNv" type="number" min="1" max="365" inputmode="numeric" value="${r.n || (r.f === "monthly" ? 1 : 2)}"></div></div>
+      <div id="rEnd"><label>Ends</label><div class="r2"><div><select class="set-sel" id="rE"><option value="never">Never</option><option value="date" ${endMode === "date" ? "selected" : ""}>On a date</option><option value="count" ${endMode === "count" ? "selected" : ""}>After a number of times</option></select></div>
+        <div><input id="rEd" type="date" value="${r.end || ""}"><input id="rEc" type="number" min="1" inputmode="numeric" placeholder="Times" value="${r.count || ""}"></div></div></div>
+      <label>Early alert</label><select class="set-sel" id="rEa">${EARLY_OPTS.map(([v,l]) => `<option value="${v}" ${+base.early === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <label class="rtog"><input type="checkbox" id="rNag" ${base.nag ? "checked" : ""}><span>Keep reminding every 15 min until done</span></label>
+      <label class="rtog"><input type="checkbox" id="rHi" ${base.hi ? "checked" : ""}><span>Important (high-priority alert)</span></label>
+      <div class="rhint" id="rHint"></div>
+      ${it ? `<div class="r3"><button type="button" id="rDo">✓ Done</button><button type="button" id="rSn">💤 1 hour</button><button type="button" id="rDel" class="del">Delete</button></div>` : ""}
+      <div class="acts"><button type="submit" class="save">${it ? "Save" : "Add reminder"}</button></div>
+    </form>`;
+  const $ = s => menu.querySelector(s);
+  const sync = () => {
+    const f = $("#rR").value;
+    $("#rWk").style.display = f === "weekly" ? "" : "none";
+    $("#rN").style.display = f === "ndays" || f === "monthly" ? "" : "none";
+    $("#rNl").textContent = f === "monthly" ? "Every how many months?" : "Every how many days?";
+    $("#rEnd").style.display = f === "none" ? "none" : "";
+    $("#rEd").style.display = $("#rE").value === "date" ? "" : "none";
+    $("#rEc").style.display = $("#rE").value === "count" ? "" : "none";
+    const tmp = collect(true);
+    $("#rHint").textContent = tmp && tmp.due ? (tmp.due <= remNow() && !it ? "⚠️ That time has already passed" : "⏰ " + remWhen(tmp.due) + (RL.repeats(tmp) ? " · 🔁 " + RL.repText(tmp) : "")) : "";
+  };
+  function collect(quiet){
+    const title = $("#rT").value.trim(), d = $("#rD").value, h = $("#rH").value || "09:00", f = $("#rR").value;
+    if (!d){ if (!quiet) toast("Pick a date"); return null; }
+    const rep = { f };
+    if (f === "weekly") rep.days = days.slice();
+    if (f === "ndays" || f === "monthly") rep.n = Math.max(1, +$("#rNv").value || 1);
+    if (f !== "none"){
+      const em = $("#rE").value;
+      if (em === "date" && $("#rEd").value) rep.end = $("#rEd").value;
+      if (em === "count" && +$("#rEc").value > 0){ rep.count = +$("#rEc").value; if (it && it.rep && it.rep.count === rep.count) rep.left = it.rep.left; }
+    }
+    let due = d + "T" + h;
+    if (f === "weekly" && rep.days.length && rep.days.indexOf(RL.dow(due)) < 0){ let x = due; for (let i = 0; i < 7; i++){ x = RL.addMin(x, 1440); if (rep.days.indexOf(RL.dow(x)) >= 0) break; } due = x; }
+    if (f === "weekdays") while (RL.dow(due) === 0 || RL.dow(due) === 6) due = RL.addMin(due, 1440);
+    return { title, due, rep, early:+$("#rEa").value, nag:$("#rNag").checked, hi:$("#rHi").checked };
+  }
+  menu.querySelectorAll("[data-wd]").forEach(b => b.onclick = () => {
+    const d = +b.dataset.wd, i = days.indexOf(d);
+    if (i >= 0){ if (days.length > 1) days.splice(i, 1); } else days.push(d);
+    menu.querySelectorAll("[data-wd]").forEach(x => x.classList.toggle("on", days.indexOf(+x.dataset.wd) >= 0)); sync();
+  });
+  ["#rR","#rE","#rD","#rH","#rNv","#rEd","#rEc"].forEach(s => { $(s).addEventListener("input", sync); $(s).addEventListener("change", sync); });
+  sync();
+  $("#rf").onsubmit = e => {
+    e.preventDefault();
+    const v = collect(false); if (!v) return;
+    if (!v.title){ $("#rT").focus(); return; }
+    if (it){
+      const moved = v.due !== it.due || JSON.stringify(v.rep) !== JSON.stringify(it.rep);
+      Object.assign(it, v, { u:Date.now() });
+      if (moved){ it.snooze = null; it.anchor = v.due; it.done = false; }
+      remSave(); closeMenu(); renderRems();
+    } else { closeMenu(); remAdd(v); }
+  };
+  if (it){
+    $("#rDo").onclick = () => { closeMenu(); remDone(it.id); };
+    $("#rSn").onclick = () => { RL.snooze(it, remNow(), 60); remSave(); closeMenu(); renderRems(); toast("Snoozed until " + remHM(it.snooze)); };
+    $("#rDel").onclick = () => { closeMenu(); remDelete(it); };
+  }
+  openMenu();
+  if (!it && !base.title) setTimeout(() => $("#rT").focus(), 60);
+}
+
+function remSiriLink(){ return LOCAL.url ? LOCAL.url + (LOCAL.url.includes("?") ? "&" : "?") + "op=remAdd&who=" + whoAmI() + "&k=" + REM.key + "&text=" : ""; }
+async function remCopy(t, msg){ try { await navigator.clipboard.writeText(t); toast(msg || "Copied"); } catch(e){ prompt("Copy this:", t); } }
+function showRemSettings(){
+  remInit();
+  const q0 = REM.quiet || { on:false, from:"22:00", to:"07:00" };
+  menu.innerHTML = `<div class="mt">Reminder alerts</div>
+    <div class="rset">
+      <div class="rsh">1 · Get alerts on this phone</div>
+      <ol class="rsteps"><li>Install the free <b>ntfy</b> app from the App Store.</li><li>In ntfy tap <b>＋</b>, paste the topic below and tap <b>Subscribe</b>.</li><li>Tap <b>Send test</b> to check it works.</li></ol>
+      <div class="rtopic"><code id="rTop">${esc(REM.topic)}</code><button id="rCp">Copy</button></div>
+      <button class="rbtn" id="rTest">🔔 Send test</button>
+      <div class="rnote">This topic is private to you. D's phone doesn't see your reminders.</div>
+      <div class="rsh">2 · Quiet hours</div>
+      <label class="rtog"><input type="checkbox" id="rQ" ${q0.on ? "checked" : ""}><span>Hold alerts during quiet hours</span></label>
+      <div class="r2"><div><label>From</label><input type="time" id="rQf" value="${q0.from}"></div><div><label>Until</label><input type="time" id="rQt" value="${q0.to}"></div></div>
+      <div class="rsh">3 · Lock screen</div>
+      <label class="rtog"><input type="checkbox" id="rHide" ${REM.hide ? "checked" : ""}><span>Hide what the reminder says (shows "You have a reminder")</span></label>
+      <div class="rsh">4 · Add with Siri</div>
+      <ol class="rsteps"><li>Open <b>Shortcuts</b> → <b>＋</b> → name it <b>Home Base reminder</b>.</li><li>Add <b>Dictate Text</b>.</li><li>Add <b>Get Contents of URL</b>: paste the link below, then add <b>Dictated Text</b> at the end of it.</li><li>Add <b>Show Result</b>. Now say "Hey Siri, Home Base reminder".</li></ol>
+      <button class="rbtn" id="rSiri" ${LOCAL.url ? "" : "disabled"}>📋 Copy Siri link</button>
+      <div class="rnote">Keep this link to yourself: it can add reminders to your list.</div>
+    </div>
+    <button class="sdone" id="rSd">Done</button>`;
+  const $ = s => menu.querySelector(s);
+  const setQ = () => { REM.quiet = { on:$("#rQ").checked, from:$("#rQf").value || "22:00", to:$("#rQt").value || "07:00" }; REM.su = Date.now(); remSave(); };
+  $("#rQ").onchange = setQ; $("#rQf").onchange = setQ; $("#rQt").onchange = setQ;
+  $("#rHide").onchange = () => { REM.hide = $("#rHide").checked; REM.su = Date.now(); remSave(); };
+  $("#rCp").onclick = () => remCopy(REM.topic, "Topic copied — paste it in ntfy");
+  $("#rTest").onclick = async () => {
+    try {
+      await fetch("https://ntfy.sh/", { method:"POST", body:JSON.stringify({ topic:REM.topic, title:"Home Base", message:"Reminders are working ✅", tags:["alarm_clock"] }) });
+      LOCAL.remTested = 1; saveLocal(); toast("Test sent — check your phone"); renderRems();
+    } catch(e){ toast("Couldn't send — check your connection"); }
+  };
+  $("#rSiri").onclick = () => remCopy(remSiriLink(), "Siri link copied");
+  $("#rSd").onclick = () => { closeMenu(); renderRems(); };
+  openMenu();
+}
+function showRemHistory(){
+  const h = (REM.hist || []).slice().sort((a,b) => a.at < b.at ? 1 : -1);
+  menu.innerHTML = `<div class="mt">Done reminders</div>
+    ${h.length ? `<div class="rhist">${h.map(x => `<div class="rhr"><span>✓</span><b>${esc(x.t)}</b><em>${remWhen(x.at)}</em></div>`).join("")}</div>` : `<div class="stats" style="padding:6px 12px 12px">Nothing done yet.</div>`}
+    <div class="r3" style="padding:0 8px">${h.length ? `<button id="rHc" class="del">Clear history</button>` : ""}<button id="rHd">Close</button></div>`;
+  const c = menu.querySelector("#rHc"); if (c) c.onclick = () => { REM.hc = Date.now(); REM.hist = []; remSave(); closeMenu(); };
+  menu.querySelector("#rHd").onclick = closeMenu;
+  openMenu();
+}
+/* Today card rows (Shopping) */
+function remTodayRows(){
+  const end = remNow().slice(0,10) + "T23:59";
+  return remOpen().filter(it => RL.at(it) <= end).slice(0, 4).map(it => {
+    const w = RL.at(it), m = RL.minsBetween(remNow(), w), late = m <= 0;
+    const pct = late ? 100 : Math.max(5, (1 - m / 720) * 100);
+    return { k:"rem", name:"⏰ " + esc(it.title), key: late ? "Now" : remHM(w), val: remRel(w), pct, tone: late ? "late" : m <= 60 ? "hot" : "" };
+  });
+}
+
+remInit(); remSave(false);
+setTimeout(remSync, 900);
+setInterval(() => { if (!document.hidden) remSync(); }, 30000);
+setInterval(() => { if (!document.hidden && !interacting()) remRefresh(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) remSync(); });
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
 const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg(Object.assign({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }, LOCAL.bbApi ? { b:{ u:LOCAL.bbApi, k:LOCAL.bbKey } } : {})));
