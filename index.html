@@ -302,6 +302,26 @@
   .rhr span{color:#3ccf7a;font-weight:900}
   .rhr b{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rhr em{font-style:normal;font-size:12px;color:var(--soft);white-space:nowrap}
+  .rlists{margin-top:8px;border-radius:14px;background:rgba(255,255,255,.06);overflow:hidden}
+  .rl{display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px;text-align:left;color:var(--ink);position:relative}
+  .rl + .rl::before{content:"";position:absolute;top:0;left:52px;right:12px;height:1px;background:rgba(255,255,255,.1)}
+  .rl:active{background:rgba(255,255,255,.08)}
+  .rli{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)}
+  .rli.big{width:40px;height:40px;font-size:20px}
+  .rln{flex:1;min-width:0;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rlc{font-size:16px;font-weight:600;color:var(--soft)}
+  .rlc.late{color:#ff8a80;font-weight:800}
+  .rlx{font-size:22px;line-height:1;color:var(--soft);opacity:.6;margin-left:2px}
+  .rnewl{display:block;margin:8px 2px 2px;font-size:13px;font-weight:800;color:var(--acc)}
+  .rlhead{display:flex;align-items:center;gap:12px;padding:8px 12px 6px}
+  .rlhead b{flex:1;font-size:22px;font-weight:800}
+  .rlhead button{font-size:14px;font-weight:800;color:var(--acc);padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.08)}
+  .rlbody{padding:0 12px 6px}
+  .rlbody .rq{margin-top:4px}
+  .rlprev{display:flex;justify-content:center;padding:4px 0 2px}
+  .rcols{display:flex;flex-wrap:wrap;gap:8px}
+  .rcols button{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
+  .rcols button.on{box-shadow:0 0 0 3px var(--menu,#222),0 0 0 5px #fff}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -375,12 +395,13 @@
   .pbar .pt{flex:1;min-width:36px;height:5px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
   .pbar .pt i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#f3b53c,#f9e273);transition:width .4s}
   .pbar .pv{font-size:12.5px;font-weight:600;white-space:nowrap;color:rgba(225,225,255,.82)}
-  .pbar.hot .pk{color:#ffab5e;text-shadow:0 0 10px rgba(255,150,70,.45)}
-  .pbar.hot .pt i{background:linear-gradient(90deg,#ff8a3d,#ffc46b)}
-  .pbar.late .pk{color:#ff7a6e;text-shadow:0 0 10px rgba(255,90,78,.5)}
-  .pbar.late .pt i{background:linear-gradient(90deg,#ff4d4d,#ff9a7a)}
-  .pbar.auto .pk{color:#8cc0ff;text-shadow:0 0 10px rgba(106,168,255,.45)}
-  .pbar.auto .pt i{background:linear-gradient(90deg,#4f8dff,#9fd0ff)}
+  .pbar .pd{width:9px;height:9px;border-radius:50%;flex:none;background:var(--pc);box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 25%,transparent)}
+  .pbar .pk{color:var(--pc);text-shadow:0 0 10px color-mix(in srgb,var(--pc) 45%,transparent)}
+  .pbar .pt i{background:linear-gradient(90deg,var(--pc),var(--pc2))}
+  .pbar.green{--pc:#3ccf7a;--pc2:#8fe8b0}
+  .pbar.orange{--pc:#ffa53a;--pc2:#ffd08a}
+  .pbar.red{--pc:#ff5a4e;--pc2:#ff9a8a}
+  .pbar.blue{--pc:#4aa3e8;--pc2:#9fd0ff}
   .seg3{display:flex;gap:6px}
   .seg3 button{flex:1;padding:10px 2px;border-radius:12px;background:rgba(255,255,255,.08);font-size:12.5px;white-space:nowrap;font-weight:700;color:var(--ink)}
   .seg3 button.on{background:var(--acc);color:var(--onacc)}
@@ -388,7 +409,7 @@
   .today .trow{display:flex;align-items:center;gap:10px;width:100%;padding:7px 2px;text-align:left;color:var(--ink);font-size:14.5px}
   .today .trow + .trow{border-top:1px solid rgba(255,255,255,.07)}
   .today .tt{flex:1;min-width:0}
-  .divider{height:1px;margin:4px 18px 14px;background:currentColor;opacity:.18}
+  .divider{height:1px;margin:4px 18px 14px;background:currentColor;opacity:.32}
   .gas{margin:0 14px 12px;padding:14px 16px;border-radius:18px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.08);color:var(--ink)}
   .gas .gh{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
   .gas .gr{display:flex;align-items:center;gap:8px;margin-top:12px}
@@ -1036,7 +1057,7 @@ function render(){
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
   if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="bills"></div>`; renderBills(); return; }
-  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div>`:""}${S.tab==="personal"?`<div id="rems"></div><div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
+  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>`:""}${S.tab==="personal"?`<div id="rems"></div><div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal"){ renderRems(); renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
   renderBanner();
   if (S.tab==="shopping") renderToday();
@@ -1586,9 +1607,9 @@ function editDate(id){
 /* ================= Today card (top of Shopping) ================= */
 function pbarRow(o){
   const pct = Math.max(5, Math.min(100, Math.round(o.pct)));
-  return `<button class="pbar ${o.tone||""}" ${o.attrs||""}><span class="pn">${o.name}</span><span class="pk">${o.key}</span><span class="pt"><i style="width:${pct}%"></i></span><span class="pv">${o.val||""}</span></button>`;
+  return `<button class="pbar ${o.tone||"green"}" ${o.attrs||""}><span class="pd"></span><span class="pn">${o.name}</span><span class="pk">${o.key}</span><span class="pt"><i style="width:${pct}%"></i></span><span class="pv">${o.val||""}</span></button>`;
 }
-function pTone(pct, late){ return late ? "late" : pct >= 85 ? "hot" : ""; }
+function pTone(pct, late){ return late ? "red" : pct >= 85 ? "orange" : "green"; }
 function dKey(d){ return d < 0 ? `${-d}d late` : d === 0 ? "Today" : `${d}d`; }
 function fmtShort(iso){ const [y,m,d] = iso.split("-").map(Number); return d + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]; }
 function dueWords(d){ return d < 0 ? `${-d} day${d<-1?"s":""} overdue` : d === 0 ? "today" : d === 1 ? "tomorrow" : `in ${d} days`; }
@@ -1598,7 +1619,7 @@ function todayRows(){
   if (typeof BB !== "undefined" && typeof bbUnpaid === "function"){
     bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 7).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
       const d = daysTo(b.dueDate), pct = d < 0 ? 100 : (7 - d) / 7 * 100;
-      rows.push({ k:"bill", pid:b.provider, name:esc(bbProv(b.provider).name), key:dKey(d), val:money0(b.amount), pct, tone:pTone(pct, d <= 0) });
+      rows.push({ k:"bill", pid:b.provider, name:esc(bbProv(b.provider).name), key:dKey(d), val:money0(b.amount), pct, tone: d <= 3 ? "red" : "orange" });
     });
   }
   const gas = (S.trackers||[]).find(t => /gas/i.test(t.name||"") || t.icon === "🔥");
@@ -1610,13 +1631,14 @@ function todayRows(){
   }
   (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 7).sort((a,b) => a.days - b.days).slice(0,2).forEach(up => {
     const pct = (7 - up.days) / 7 * 100;
-    rows.push({ k:"date", name:(up.dt.icon || "📅") + " " + esc(up.dt.name), key:dKey(up.days), val:fmtShort(up.iso), pct, tone: up.days <= 1 ? "hot" : "" });
+    rows.push({ k:"date", name:(up.dt.icon || "📅") + " " + esc(up.dt.name), key:dKey(up.days), val:fmtShort(up.iso), pct, tone: up.days <= 1 ? "orange" : "green" });
   });
   return rows;
 }
 function renderToday(){
   const host = document.getElementById("today"); if (!host) return;
   const rows = todayRows();
+  const dv = document.getElementById("tdiv"); if (dv) dv.style.display = rows.length ? "" : "none";
   if (!rows.length){ host.innerHTML = ""; fitBands(); return; }
   host.innerHTML = `<div class="pbars"><div class="th">Today</div>${rows.map(r => pbarRow(Object.assign({}, r, { attrs:`data-k="${r.k}"${r.pid ? ` data-pid="${esc(r.pid)}"` : ""}` }))).join("")}</div>`;
   host.querySelectorAll(".pbar").forEach(b => b.onclick = () => {
@@ -2351,7 +2373,7 @@ function bbDueHTML(){
   let nx = dated.filter(x => daysTo(x.dueDate) <= 14).slice(0, 5); if (!nx.length) nx = dated.slice(0, 1);
   if (nx.length) h += `<div class="pbars bnextbars"><div class="th">Next</div>${nx.map(b => { const p = bbProv(b.provider), d = daysTo(b.dueDate), w = bbWhen(b);
     const pct = d < 0 ? 100 : Math.max(0, (14 - d) / 14 * 100);
-    void w; return pbarRow({ name:esc(p.name), key:dKey(d), val:money(b.amount), pct, tone: b.autopay && d >= 0 ? "auto" : pTone(pct, d <= 0), attrs:`data-prov="${esc(p.id)}"` }); }).join("")}</div>`;
+    void w; return pbarRow({ name:esc(p.name), key:dKey(d), val:money(b.amount), pct, tone: ({ urgent:"red", due:"orange", auto:"blue", paid:"green" })[bbState(b)], attrs:`data-prov="${esc(p.id)}"` }); }).join("")}</div>`;
   h += bbCalHTML();
   const latest = {};
   BB.bills.filter(b => b.status === "due" || b.status === "paid").forEach(b => { const kk = b.dueDate || b.paidDate || ""; if (!latest[b.provider] || kk > latest[b.provider]) latest[b.provider] = kk; });
@@ -2796,7 +2818,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);
@@ -2902,11 +2924,17 @@ var RL = (function(){
   return { pad, toMs, addMin, dow, wallNow, minsBetween, nextDue, complete, snooze, merge, parse, repText, repeats, at, ord };
 })();
 /* ================= Reminders (private to this phone's owner, pushed through ntfy) ================= */
+const REM_DEFAULT_LISTS = [{ id:"general", name:"General", icon:"💡", color:"#f6c945" }, { id:"bills", name:"Bills", icon:"💳", color:"#ec5141" }];
+const REM_COLORS = ["#ec5141","#f59a3b","#f6c945","#3ccf7a","#2bb7a8","#4aa3e8","#6c6cf0","#b06cf0","#ef6fa8","#8e8e93"];
+const REM_ICONS = ["💡","💳","🏠","🛒","💊","🚗","💼","🎓","👨‍👩‍👦","🐶","🌱","✈️","🏋️","🎉","📞","🔧","📦","⭐"];
+const remListOf = it => (REM.lists || []).find(l => l.id === it.list) ? it.list : "general";
+const remListById = id => (REM.lists || []).find(l => l.id === id) || REM.lists[0];
 const remKey = () => "hb_rem_" + whoAmI();
 let REM = (() => { try { return JSON.parse(localStorage.getItem(remKey()) || "null"); } catch(e){ return null; } })() || { items:[], del:{}, hist:[] };
 const remRnd = n => { const a = new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a).map(x => "abcdefghijkmnpqrstuvwxyz23456789"[x % 32]).join(""); };
 function remInit(){
   REM.items = REM.items || []; REM.del = REM.del || {}; REM.hist = REM.hist || [];
+  if (!Array.isArray(REM.lists) || !REM.lists.length) REM.lists = REM_DEFAULT_LISTS.map(x => Object.assign({}, x));
   if (!REM.topic){ REM.topic = "hb-" + whoAmI().toLowerCase() + "-" + remRnd(18); REM.key = remRnd(24); REM.su = REM.su || 1; REM.quiet = REM.quiet || { on:false, from:"22:00", to:"07:00" }; REM.hide = !!REM.hide; }
 }
 let remT = null, remBusy = false, remAgain = false;
@@ -2952,45 +2980,94 @@ function remRel(w){
 }
 const remOpen = () => (REM.items || []).filter(x => !x.done).sort((a,b) => RL.at(a) < RL.at(b) ? -1 : 1);
 
+function remRowHTML(it){
+  const w = RL.at(it), late = w <= remNow(), rt = RL.repText(it);
+  return `<div class="rrow ${late ? "late" : ""}"><button class="rchk" data-rdone="${it.id}" aria-label="Done"></button><button class="rm" data-redit="${it.id}"><b>${esc(it.title)}</b><span>${remWhen(w)}${it.snooze ? " · 💤" : ""}${rt ? " · 🔁 " + rt : ""}${it.nag ? " · 🔔" : ""}${it.hi ? " · ❗" : ""}</span></button><span class="rd">${remRel(w)}</span></div>`;
+}
 function renderRems(){
   const host = document.getElementById("rems"); if (!host) return;
   remInit();
-  const all = remOpen(), weekEnd = RL.addMin(remNow(), 7 * 1440);
-  const soon = all.filter(x => RL.at(x) <= weekEnd), show = S._allRems ? all : soon;
-  const row = it => { const w = RL.at(it), late = w <= remNow(), rt = RL.repText(it);
-    return `<div class="rrow ${late ? "late" : ""}"><button class="rchk" data-rdone="${it.id}" aria-label="Done"></button><button class="rm" data-redit="${it.id}"><b>${esc(it.title)}</b><span>${remWhen(w)}${it.snooze ? " · 💤" : ""}${rt ? " · 🔁 " + rt : ""}${it.nag ? " · 🔔" : ""}${it.hi ? " · ❗" : ""}</span></button><span class="rd">${remRel(w)}</span></div>`; };
-  let body = show.map(row).join("");
-  if (!all.length) body = `<div class="stats" style="margin-top:4px">Type a reminder above, like "Pay rego Fri 5pm" or "Bins every Tue 7pm".</div>`;
-  else if (!show.length) body = `<div class="stats" style="margin-top:4px">Nothing in the next 7 days.</div>`;
-  const more = all.length > soon.length || S._allRems ? `<span class="ed dall" id="rAll">${S._allRems ? "Week" : "All"}</span>` : "";
+  const open = remOpen(), now = remNow();
+  const rows = REM.lists.map(l => {
+    const mine = open.filter(it => remListOf(it) === l.id), late = mine.some(it => RL.at(it) <= now);
+    return `<button class="rl" data-rl="${l.id}"><span class="rli" style="background:${l.color}">${l.icon}</span><span class="rln">${esc(l.name)}</span><span class="rlc ${late ? "late" : ""}">${mine.length}</span><span class="rlx">›</span></button>`;
+  }).join("");
   const warn = !LOCAL.remTested ? `<button class="rwarn" id="rWarn">🔔 Turn on alerts for this phone</button>` : "";
-  host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button>${more}<span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
+  host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
-    ${warn}${body}</div>`;
-  const q = s => host.querySelector(s), inp = q("#rqIn");
-  inp.oninput = () => {
-    const v = inp.value.trim(), p = RL.parse(v, remNow());
-    q("#rqP").innerHTML = !v ? "" : p.due ? `⏰ ${remWhen(p.due)}${RL.repeats(p) ? " · 🔁 " + RL.repText(p) : ""}` : `<span>Add a time, like "Fri 5pm" or "in 2 hours", or press Done to pick one</span>`;
-  };
-  q("#rq").onsubmit = e => {
-    e.preventDefault();
-    const v = inp.value.trim(); if (!v) return;
-    const p = RL.parse(v, remNow());
-    if (!p.title){ toast("Say what to remind you about"); return; }
-    if (!p.due){ inp.blur(); editRem(null, p); return; }
-    remAdd(p); inp.value = ""; inp.blur();
-  };
-  host.querySelectorAll("[data-rdone]").forEach(b => b.onclick = () => remDone(b.dataset.rdone));
-  host.querySelectorAll("[data-redit]").forEach(b => b.onclick = () => editRem(b.dataset.redit));
-  q("#rAdd").onclick = () => editRem(null);
-  q("#rHead").onclick = () => inp.focus();
+    ${warn}<div class="rlists">${rows}</div><button class="rnewl" id="rNewL">＋ New list</button></div>`;
+  const q = s => host.querySelector(s);
+  remBindQuick(q("#rqIn"), q("#rq"), q("#rqP"), "general");
+  host.querySelectorAll("[data-rl]").forEach(b => b.onclick = () => openRemList(b.dataset.rl));
+  q("#rAdd").onclick = () => editRem(null, { list:"general" });
+  q("#rHead").onclick = () => q("#rqIn").focus();
   q("#rSet").onclick = showRemSettings;
   q("#rHist").onclick = showRemHistory;
-  const ra = q("#rAll"); if (ra) ra.onclick = () => { S._allRems = !S._allRems; renderRems(); };
+  q("#rNewL").onclick = () => editRemList(null);
   const rw = q("#rWarn"); if (rw) rw.onclick = showRemSettings;
 }
+function remBindQuick(inp, form, prev, listId, after){
+  inp.oninput = () => {
+    const v = inp.value.trim(), p = RL.parse(v, remNow());
+    prev.innerHTML = !v ? "" : p.due ? `⏰ ${remWhen(p.due)}${RL.repeats(p) ? " · 🔁 " + RL.repText(p) : ""}` : `<span>Add a time, like "Fri 5pm" or "in 2 hours", or press Done to pick one</span>`;
+  };
+  form.onsubmit = e => {
+    e.preventDefault();
+    const v = inp.value.trim(); if (!v) return;
+    const p = RL.parse(v, remNow()); p.list = listId;
+    if (!p.title){ toast("Say what to remind you about"); return; }
+    if (!p.due){ inp.blur(); editRem(null, p, listId === "general" && !after ? null : listId); return; }
+    remAdd(p); inp.value = ""; inp.blur(); if (after) after();
+  };
+}
+function openRemList(id){
+  const l = remListById(id); if (!l) return;
+  const items = remOpen().filter(it => remListOf(it) === l.id);
+  menu.innerHTML = `<div class="rlhead"><span class="rli big" style="background:${l.color}">${l.icon}</span><b style="color:${l.color}">${esc(l.name)}</b><button id="rlEdit">Edit</button></div>
+    <div class="rlbody"><form class="rq" id="rlq"><input id="rlqIn" placeholder="New reminder in ${esc(l.name)}…" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rlqP"></div>
+    ${items.map(remRowHTML).join("") || `<div class="stats" style="margin:10px 2px">No reminders here yet.</div>`}</div>
+    <button class="sdone" id="rlDone">Done</button>`;
+  const $ = s => menu.querySelector(s);
+  remBindQuick($("#rlqIn"), $("#rlq"), $("#rlqP"), l.id, () => openRemList(l.id));
+  menu.querySelectorAll("[data-rdone]").forEach(b => b.onclick = () => { remDone(b.dataset.rdone); openRemList(l.id); });
+  menu.querySelectorAll("[data-redit]").forEach(b => b.onclick = () => editRem(b.dataset.redit, null, l.id));
+  $("#rlEdit").onclick = () => editRemList(l.id);
+  $("#rlDone").onclick = closeMenu;
+  if (!menu.classList.contains("on")) openMenu();
+}
+function editRemList(id){
+  const l = id ? REM.lists.find(x => x.id === id) : null;
+  let icon = l ? l.icon : "⭐", color = l ? l.color : REM_COLORS[5];
+  menu.innerHTML = `<div class="mt">${l ? "Edit list" : "New list"}</div>
+    <form class="ed" id="rlf" style="padding-top:0">
+      <div class="rlprev"><span class="rli big" id="rlPv" style="background:${color}">${icon}</span></div>
+      <label>Name</label><input id="rlN" value="${esc(l ? l.name : "")}" placeholder="e.g. Home" autocomplete="off">
+      <label>Colour</label><div class="rcols">${REM_COLORS.map(c => `<button type="button" data-c="${c}" class="${c === color ? "on" : ""}" style="background:${c}"></button>`).join("")}</div>
+      <label>Icon</label><div class="emojis" style="padding:0">${REM_ICONS.map(e => `<button type="button" data-e="${e}" class="${e === icon ? "on" : ""}">${e}</button>`).join("")}</div>
+      <div class="acts">${l && l.id !== "general" ? `<button type="button" class="del" id="rlDel">Delete</button>` : ""}<button type="submit" class="save">${l ? "Save" : "Add list"}</button></div>
+    </form>`;
+  const $ = s => menu.querySelector(s), pv = () => { $("#rlPv").style.background = color; $("#rlPv").textContent = icon; };
+  menu.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { color = b.dataset.c; menu.querySelectorAll("[data-c]").forEach(x => x.classList.toggle("on", x === b)); pv(); });
+  menu.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { icon = b.dataset.e; menu.querySelectorAll("[data-e]").forEach(x => x.classList.toggle("on", x === b)); pv(); });
+  $("#rlf").onsubmit = e => {
+    e.preventDefault();
+    const name = $("#rlN").value.trim(); if (!name){ $("#rlN").focus(); return; }
+    if (l) Object.assign(l, { name, icon, color }); else REM.lists.push({ id:uid(), name, icon, color });
+    REM.su = Date.now(); remSave(); renderRems();
+    if (l) openRemList(l.id); else closeMenu();
+  };
+  const del = $("#rlDel");
+  if (del) del.onclick = () => {
+    const n = remOpen().filter(it => remListOf(it) === l.id).length;
+    if (n && !confirm(`Delete "${l.name}"? Its ${n} reminder${n === 1 ? "" : "s"} will move to General.`)) return;
+    (REM.items || []).forEach(it => { if (it.list === l.id){ it.list = "general"; it.u = Date.now(); } });
+    REM.lists = REM.lists.filter(x => x !== l); REM.su = Date.now(); remSave(); closeMenu(); renderRems();
+  };
+  openMenu();
+  if (!l) setTimeout(() => $("#rlN").focus(), 60);
+}
 function remAdd(p){
-  const it = { id:uid(), title:p.title, due:p.due, anchor:p.due, rep:p.rep || { f:"none" }, early:p.early || 0, nag:!!p.nag, hi:!!p.hi, u:Date.now(), created:remNow() };
+  const it = { id:uid(), list:p.list || "general", title:p.title, due:p.due, anchor:p.due, rep:p.rep || { f:"none" }, early:p.early || 0, nag:!!p.nag, hi:!!p.hi, u:Date.now(), created:remNow() };
   REM.items.push(it); remSave(); renderRems();
   toast("Reminder set · " + remWhen(it.due));
   return it;
@@ -3012,9 +3089,10 @@ function remDelete(it){
 
 const REP_OPTS = [["none","Doesn't repeat"],["daily","Every day"],["weekdays","Weekdays (Mon–Fri)"],["weekly","Weekly"],["ndays","Every few days"],["monthly","Monthly"],["yearly","Every year"]];
 const EARLY_OPTS = [[0,"No early alert"],[15,"15 minutes before"],[60,"1 hour before"],[1440,"1 day before"]];
-function editRem(id, pre){
+function editRem(id, pre, back){
   const it = id ? REM.items.find(x => x.id === id) : null;
-  const base = it || Object.assign({ title:"", due:null, rep:{ f:"none" }, early:0, nag:false, hi:false }, pre || {});
+  const base = it || Object.assign({ title:"", due:null, rep:{ f:"none" }, early:0, nag:false, hi:false, list: back || "general" }, pre || {});
+  const curList = it ? remListOf(it) : (base.list || "general");
   const now = remNow(), dflt = base.due || RL.addMin(now.slice(0,13) + ":00", 60);
   const r = base.rep || { f:"none" };
   let days = (r.days && r.days.length) ? r.days.slice() : [RL.dow(dflt)];
@@ -3023,6 +3101,7 @@ function editRem(id, pre){
   menu.innerHTML = `<div class="mt">${it ? "Edit reminder" : "New reminder"}</div>
     <form class="ed rform" id="rf" style="padding-top:0">
       <label>Remind me to</label><input id="rT" value="${esc(base.title)}" placeholder="e.g. Pay rego" autocomplete="off">
+      <label>List</label><select class="set-sel" id="rL">${REM.lists.map(l => `<option value="${l.id}" ${l.id === curList ? "selected" : ""}>${l.icon} ${esc(l.name)}</option>`).join("")}</select>
       <div class="r2"><div><label>Date</label><input id="rD" type="date" value="${dflt.slice(0,10)}"></div><div><label>Time</label><input id="rH" type="time" value="${dflt.slice(11,16)}"></div></div>
       <label>Repeat</label><select class="set-sel" id="rR">${REP_OPTS.map(([v,l]) => `<option value="${v}" ${r.f === v ? "selected" : ""}>${l}</option>`).join("")}</select>
       <div id="rWk" class="rdays">${[1,2,3,4,5,6,0].map(d => `<button type="button" data-wd="${d}" class="${days.indexOf(d) >= 0 ? "on" : ""}">${DL[d]}</button>`).join("")}</div>
@@ -3062,7 +3141,7 @@ function editRem(id, pre){
     let due = d + "T" + h;
     if (f === "weekly" && rep.days.length && rep.days.indexOf(RL.dow(due)) < 0){ let x = due; for (let i = 0; i < 7; i++){ x = RL.addMin(x, 1440); if (rep.days.indexOf(RL.dow(x)) >= 0) break; } due = x; }
     if (f === "weekdays") while (RL.dow(due) === 0 || RL.dow(due) === 6) due = RL.addMin(due, 1440);
-    return { title, due, rep, early:+$("#rEa").value, nag:$("#rNag").checked, hi:$("#rHi").checked };
+    return { title, due, rep, list:$("#rL").value, early:+$("#rEa").value, nag:$("#rNag").checked, hi:$("#rHi").checked };
   }
   menu.querySelectorAll("[data-wd]").forEach(b => b.onclick = () => {
     const d = +b.dataset.wd, i = days.indexOf(d);
@@ -3079,13 +3158,14 @@ function editRem(id, pre){
       const moved = v.due !== it.due || JSON.stringify(v.rep) !== JSON.stringify(it.rep);
       Object.assign(it, v, { u:Date.now() });
       if (moved){ it.snooze = null; it.anchor = v.due; it.done = false; }
-      remSave(); closeMenu(); renderRems();
-    } else { closeMenu(); remAdd(v); }
+      remSave(); renderRems(); back ? openRemList(back) : closeMenu();
+    } else { remAdd(v); back ? openRemList(back) : closeMenu(); }
   };
   if (it){
-    $("#rDo").onclick = () => { closeMenu(); remDone(it.id); };
-    $("#rSn").onclick = () => { RL.snooze(it, remNow(), 60); remSave(); closeMenu(); renderRems(); toast("Snoozed until " + remHM(it.snooze)); };
-    $("#rDel").onclick = () => { closeMenu(); remDelete(it); };
+    const after = () => back ? openRemList(back) : closeMenu();
+    $("#rDo").onclick = () => { remDone(it.id); after(); };
+    $("#rSn").onclick = () => { RL.snooze(it, remNow(), 60); remSave(); renderRems(); after(); toast("Snoozed until " + remHM(it.snooze)); };
+    $("#rDel").onclick = () => { remDelete(it); after(); };
   }
   openMenu();
   if (!it && !base.title) setTimeout(() => $("#rT").focus(), 60);
@@ -3144,7 +3224,7 @@ function remTodayRows(){
   return remOpen().filter(it => RL.at(it) <= end).slice(0, 4).map(it => {
     const w = RL.at(it), m = RL.minsBetween(remNow(), w), late = m <= 0;
     const pct = late ? 100 : Math.max(5, (1 - m / 720) * 100);
-    return { k:"rem", name:"⏰ " + esc(it.title), key: late ? "Now" : remHM(w), val: remRel(w), pct, tone: late ? "late" : m <= 60 ? "hot" : "" };
+    return { k:"rem", name:"⏰ " + esc(it.title), key: late ? "Now" : remHM(w), val: remRel(w), pct, tone: late ? "red" : m <= 60 ? "orange" : "green" };
   });
 }
 
