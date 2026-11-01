@@ -242,6 +242,11 @@ function remRemote_(p) {
       remWrite_(who, d);
       return 'Added: ' + r.title + ' - ' + remWhen_(due) + (RL.repeats({ rep: r.rep }) ? ' (' + RL.repText({ rep: r.rep, due: due }) + ')' : '');
     }
+    if (p.a === 'rtdone') {
+      const r = (d.routines || []).find(x => x.id === p.id); if (!r) return 'Routine not found';
+      d.rdone = d.rdone || {}; d.rdone[r.id] = { date: now.slice(0, 10), steps: (r.steps || []).map(s => s.id) }; d.su = stamp;
+      remWrite_(who, d); return 'All done: ' + r.name;
+    }
     const it = (d.items || []).find(x => x.id === p.id);
     if (!it || it.done) return 'Already done';
     if (p.a === 'done') { const h = RL.complete(it, now, stamp); d.hist = [h].concat(d.hist || []).slice(0, 60); remWrite_(who, d); return 'Done: ' + it.title; }
@@ -264,7 +269,7 @@ function checkReminders() {
   const url = ScriptApp.getService().getUrl();
   ['S', 'D'].forEach(who => {
     let d; try { d = remRead_(who); } catch (e) { return; }
-    if (!d || !d.topic || !(d.items || []).length) return;
+    if (!d || !d.topic || (!(d.items || []).length && !(d.routines || []).length)) return;
     const now = remNow_(), hm = now.slice(11);
     const q = d.quiet || {};
     if (q.on && q.from && q.to && (q.from < q.to ? (hm >= q.from && hm < q.to) : (hm >= q.from || hm < q.to))) return;   // quiet hours: hold until they end
@@ -279,6 +284,16 @@ function checkReminders() {
       if (now >= when && st.m !== when) { remPush_(d, it, 'due', url, who); st.m = when; st.n = RL.addMin(now, 15); st.c = 0; }
       else if (it.nag && st.m === when && st.n && now >= st.n && (st.c || 0) < 12) { remPush_(d, it, 'nag', url, who); st.n = RL.addMin(now, 15); st.c = (st.c || 0) + 1; }
       keep[it.id] = st;
+    });
+    const today = now.slice(0, 10);
+    (d.routines || []).forEach(r => {
+      if (!r.alert || !r.time || !(r.steps || []).length) return;
+      if (r.days && r.days.length && r.days.indexOf(RL.dow(today + 'T00:00')) < 0) return;
+      const done = (d.rdone && d.rdone[r.id] && d.rdone[r.id].date === today) ? d.rdone[r.id].steps || [] : [];
+      const left = r.steps.filter(s => done.indexOf(s.id) < 0);
+      const k = 'rt_' + r.id, prev = sent[k] || {};
+      if (left.length && now >= today + 'T' + r.time && prev.d !== today) { remPushRoutine_(d, r, left, url, who); prev.d = today; }
+      keep[k] = prev;
     });
     props.setProperty('remsent_' + who, JSON.stringify(keep));
   });
@@ -297,6 +312,17 @@ function remPush_(d, it, kind, url, who) {
       { action: 'http', label: '1 hour', url: act('snooze'), method: 'GET', clear: true },
       { action: 'http', label: 'Tomorrow', url: act('tmr'), method: 'GET', clear: true }
     ]
+  };
+  UrlFetchApp.fetch('https://ntfy.sh/', { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
+}
+
+function remPushRoutine_(d, r, left, url, who) {
+  const all = url + '?op=remAct&who=' + who + '&id=' + encodeURIComponent(r.id) + '&a=rtdone&k=' + encodeURIComponent(d.key);
+  const body = {
+    topic: d.topic, title: d.hide ? 'Home Base' : (r.icon || '') + ' ' + r.name,
+    message: d.hide ? 'Time for your routine' : left.length + ' of ' + r.steps.length + ' to do: ' + left.slice(0, 4).map(s => s.text).join(', ') + (left.length > 4 ? '…' : ''),
+    priority: 3, tags: ['sunrise'],
+    actions: [{ action: 'http', label: 'All done', url: all, method: 'GET', clear: true }]
   };
   UrlFetchApp.fetch('https://ntfy.sh/', { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
 }
@@ -377,7 +403,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","lists","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","routines","rdone","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);

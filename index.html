@@ -322,6 +322,21 @@
   .rcols{display:flex;flex-wrap:wrap;gap:8px}
   .rcols button{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.15)}
   .rcols button.on{box-shadow:0 0 0 3px var(--menu,#222),0 0 0 5px #fff}
+  .rnew2{display:flex;justify-content:space-between}
+  .rln small{font-size:11.5px;font-weight:700;color:var(--soft);margin-left:6px}
+  .rtbar{flex:none;width:54px;height:5px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .rtbar i{display:block;height:100%;border-radius:999px;transition:width .3s}
+  .rtbar.big{flex:1;width:auto;height:7px}
+  .rlc.ok{color:#3ccf7a;font-weight:900}
+  .rtsub{font-size:12.5px;font-weight:700;color:var(--soft);margin:0 2px 6px}
+  .rtprog{display:flex;align-items:center;gap:10px;margin:0 2px 6px}
+  .rtprog b{font-size:14px;color:var(--ink)}
+  .rtstep{display:flex;align-items:center;gap:12px;width:100%;padding:9px 2px;text-align:left;font-size:15.5px;font-weight:600;color:var(--ink);border-top:1px solid rgba(255,255,255,.07)}
+  .rtstep.on span:last-child{text-decoration:line-through;opacity:.55}
+  .rtstep.on .rchk{background:var(--acc);border-color:var(--acc);box-shadow:inset 0 0 0 3px var(--menu,#222)}
+  .rttpl{display:flex;gap:6px;margin-bottom:4px}
+  .rttpl button{flex:1;padding:9px 4px;border-radius:12px;background:rgba(255,255,255,.1);font-weight:800;font-size:13px;color:var(--ink)}
+  .rform textarea{width:100%;padding:10px 12px;border-radius:12px;border:0;background:rgba(255,255,255,.1);color:var(--ink);font-size:15px;resize:vertical}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -2817,7 +2832,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","lists","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","routines","rdone","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);
@@ -2994,7 +3009,7 @@ function renderRems(){
   const warn = !LOCAL.remTested ? `<button class="rwarn" id="rWarn">🔔 Turn on alerts for this phone</button>` : "";
   host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
-    ${warn}<div class="rlists">${rows}</div><button class="rnewl" id="rNewL">＋ New list</button></div>`;
+    ${warn}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
   const q = s => host.querySelector(s);
   remBindQuick(q("#rqIn"), q("#rq"), q("#rqP"), "general");
   host.querySelectorAll("[data-rl]").forEach(b => b.onclick = () => openRemList(b.dataset.rl));
@@ -3003,6 +3018,8 @@ function renderRems(){
   q("#rSet").onclick = showRemSettings;
   q("#rHist").onclick = showRemHistory;
   q("#rNewL").onclick = () => editRemList(null);
+  q("#rNewR").onclick = () => editRoutine(null);
+  host.querySelectorAll("[data-rt]").forEach(b => b.onclick = () => openRoutine(b.dataset.rt));
   const rw = q("#rWarn"); if (rw) rw.onclick = showRemSettings;
 }
 function remBindQuick(inp, form, prev, listId, after){
@@ -3220,11 +3237,11 @@ function showRemHistory(){
 /* Today card rows (Shopping) */
 function remTodayRows(){
   const end = remNow().slice(0,10) + "T23:59";
-  return remOpen().filter(it => RL.at(it) <= end).slice(0, 4).map(it => {
+  return rtTodayRows().concat(remOpen().filter(it => RL.at(it) <= end).slice(0, 4).map(it => {
     const w = RL.at(it), m = RL.minsBetween(remNow(), w), late = m <= 0;
     const pct = late ? 100 : Math.max(5, (1 - m / 720) * 100);
     return { k:"rem", name:"⏰ " + esc(it.title), key: late ? "Now" : remHM(w), val: remRel(w), pct, tone: late ? "red" : m <= 60 ? "orange" : "green" };
-  });
+  }));
 }
 
 remInit(); remSave(false);
@@ -3232,6 +3249,101 @@ setTimeout(remSync, 900);
 setInterval(() => { if (!document.hidden) remSync(); }, 30000);
 setInterval(() => { if (!document.hidden && !interacting()) remRefresh(); }, 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) remSync(); });
+/* ================= Routines: checklists that reset every day ================= */
+const RT_ICONS = ["☀️","🌙","💊","🏋️","🧹","📚","🧘","🐶","🍳","🚿","👔","🛏️","🙏","💧"];
+const RT_TEMPLATES = {
+  morning:{ name:"Morning", icon:"☀️", color:"#f59a3b", time:"07:00", steps:["Make bed","Drink water","Vitamins","Check today's reminders"] },
+  evening:{ name:"Evening", icon:"🌙", color:"#6c6cf0", time:"21:00", steps:["Lock doors","Kitchen tidy","Charge phone","Set alarm"] },
+  blank:{ name:"", icon:"⭐", color:"#2bb7a8", time:"", steps:[] }
+};
+const rtToday = () => remNow().slice(0,10);
+function rtDoneSteps(r){ const x = (REM.rdone || {})[r.id]; return x && x.date === rtToday() ? (x.steps || []).filter(id => (r.steps || []).some(st => st.id === id)) : []; }
+function rtActiveToday(r){ return !r.days || !r.days.length || r.days.indexOf(RL.dow(rtToday() + "T00:00")) >= 0; }
+function rtSet(r, steps){ REM.rdone = REM.rdone || {}; REM.rdone[r.id] = { date:rtToday(), steps }; REM.su = Date.now(); remSave(); }
+function rtRowsHTML(){
+  return (REM.routines || []).map(r => {
+    const n = rtDoneSteps(r).length, t = (r.steps || []).length, on = rtActiveToday(r), all = t && n >= t;
+    return `<button class="rl rtrow" data-rt="${r.id}"><span class="rli" style="background:${r.color || "#f59a3b"}">${r.icon || "☀️"}</span><span class="rln">${esc(r.name)}${r.time ? `<small>${remHM("2000-01-01T" + r.time)}</small>` : ""}</span>${on ? `<span class="rtbar"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color || "#f59a3b"}"></i></span><span class="rlc ${all ? "ok" : ""}">${all ? "✓" : n + "/" + t}</span>` : `<span class="rlc">Rest day</span>`}<span class="rlx">›</span></button>`;
+  }).join("");
+}
+function rtCelebrate(r){ toast(`${r.name} done 🎉`); try { confetti(); } catch(e){} }
+function openRoutine(id){
+  const r = (REM.routines || []).find(x => x.id === id); if (!r) return;
+  const done = rtDoneSteps(r), t = r.steps.length, n = done.length;
+  const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const sched = (r.days && r.days.length && r.days.length < 7 ? r.days.slice().sort((a,b) => ((a+6)%7) - ((b+6)%7)).map(d => DN[d]).join(", ") : "Every day") + (r.time ? " · " + remHM("2000-01-01T" + r.time) + (r.alert ? " 🔔" : "") : "");
+  menu.innerHTML = `<div class="rlhead"><span class="rli big" style="background:${r.color}">${r.icon}</span><b style="color:${r.color}">${esc(r.name)}</b><button id="rtEdit">Edit</button></div>
+    <div class="rlbody">
+      <div class="rtsub">${sched}${rtActiveToday(r) ? "" : " · rest day today"}</div>
+      <div class="rtprog"><span class="rtbar big"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color}"></i></span><b>${n}/${t}</b></div>
+      ${r.steps.map(st => `<button class="rtstep ${done.indexOf(st.id) >= 0 ? "on" : ""}" data-st="${st.id}"><span class="rchk"></span><span>${esc(st.text)}</span></button>`).join("") || `<div class="stats" style="margin:8px 2px">No steps yet. Tap Edit to add some.</div>`}
+    </div>
+    <div class="r3" style="padding:0 8px 4px">${n ? `<button id="rtReset">Start over</button>` : ""}${n < t ? `<button id="rtAll">✓ All done</button>` : ""}</div>
+    <button class="sdone" id="rtDone">Done</button>`;
+  const $ = s => menu.querySelector(s);
+  menu.querySelectorAll("[data-st]").forEach(b => b.onclick = () => {
+    const cur = rtDoneSteps(r).slice(), i = cur.indexOf(b.dataset.st);
+    if (i >= 0) cur.splice(i, 1); else cur.push(b.dataset.st);
+    rtSet(r, cur); openRoutine(r.id); renderRems();
+    if (i < 0 && cur.length === r.steps.length) rtCelebrate(r);
+  });
+  if ($("#rtReset")) $("#rtReset").onclick = () => { rtSet(r, []); openRoutine(r.id); renderRems(); };
+  if ($("#rtAll")) $("#rtAll").onclick = () => { rtSet(r, r.steps.map(st => st.id)); openRoutine(r.id); renderRems(); rtCelebrate(r); };
+  $("#rtEdit").onclick = () => editRoutine(r.id);
+  $("#rtDone").onclick = closeMenu;
+  if (!menu.classList.contains("on")) openMenu();
+}
+function editRoutine(id){
+  const r = id ? (REM.routines || []).find(x => x.id === id) : null;
+  let v = r ? { name:r.name, icon:r.icon, color:r.color, time:r.time || "", alert:!!r.alert, days:(r.days && r.days.length ? r.days.slice() : [0,1,2,3,4,5,6]), steps:r.steps.map(x => x.text) }
+            : Object.assign({ alert:true, days:[0,1,2,3,4,5,6] }, JSON.parse(JSON.stringify(RT_TEMPLATES.morning)));
+  const DL = ["S","M","T","W","T","F","S"];
+  const draw = () => {
+    menu.innerHTML = `<div class="mt">${r ? "Edit routine" : "New routine"}</div>
+      <form class="ed rform" id="rtf" style="padding-top:0">
+        ${r ? "" : `<div class="rttpl">${Object.keys(RT_TEMPLATES).map(k => `<button type="button" data-tpl="${k}">${k === "blank" ? "✏️ Blank" : RT_TEMPLATES[k].icon + " " + RT_TEMPLATES[k].name}</button>`).join("")}</div>`}
+        <div class="rlprev"><span class="rli big" style="background:${v.color}">${v.icon}</span></div>
+        <label>Name</label><input id="rtN" value="${esc(v.name)}" placeholder="e.g. Morning" autocomplete="off">
+        <label>Steps (one per line)</label><textarea id="rtS" rows="5" placeholder="Make bed&#10;Vitamins&#10;Drink water">${esc(v.steps.join("\n"))}</textarea>
+        <label>Days</label><div class="rdays">${[1,2,3,4,5,6,0].map(d => `<button type="button" data-wd="${d}" class="${v.days.indexOf(d) >= 0 ? "on" : ""}">${DL[d]}</button>`).join("")}</div>
+        <div class="r2"><div><label>Time</label><input id="rtT" type="time" value="${v.time}"></div><div></div></div>
+        <label class="rtog"><input type="checkbox" id="rtA" ${v.alert ? "checked" : ""}><span>ntfy alert at this time if it isn't finished</span></label>
+        <label>Colour</label><div class="rcols">${REM_COLORS.map(c => `<button type="button" data-c="${c}" class="${c === v.color ? "on" : ""}" style="background:${c}"></button>`).join("")}</div>
+        <label>Icon</label><div class="emojis" style="padding:0">${RT_ICONS.map(e => `<button type="button" data-e="${e}" class="${e === v.icon ? "on" : ""}">${e}</button>`).join("")}</div>
+        <div class="acts">${r ? `<button type="button" class="del" id="rtDel">Delete</button>` : ""}<button type="submit" class="save">${r ? "Save" : "Add routine"}</button></div>
+      </form>`;
+    const $ = s => menu.querySelector(s);
+    const grab = () => { v.name = $("#rtN").value; v.steps = $("#rtS").value.split("\n").map(x => x.trim()).filter(Boolean); v.time = $("#rtT").value; v.alert = $("#rtA").checked; };
+    menu.querySelectorAll("[data-tpl]").forEach(b => b.onclick = () => { v = Object.assign({ alert:true, days:[0,1,2,3,4,5,6] }, JSON.parse(JSON.stringify(RT_TEMPLATES[b.dataset.tpl]))); draw(); });
+    menu.querySelectorAll("[data-wd]").forEach(b => b.onclick = () => { grab(); const d = +b.dataset.wd, i = v.days.indexOf(d); if (i >= 0){ if (v.days.length > 1) v.days.splice(i, 1); } else v.days.push(d); draw(); });
+    menu.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { grab(); v.color = b.dataset.c; draw(); });
+    menu.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { grab(); v.icon = b.dataset.e; draw(); });
+    $("#rtf").onsubmit = e => {
+      e.preventDefault(); grab();
+      if (!v.name.trim()){ $("#rtN").focus(); return; }
+      if (!v.steps.length){ toast("Add at least one step"); $("#rtS").focus(); return; }
+      const old = r ? r.steps : [];
+      const steps = v.steps.map(text => { const m = old.find(x => x.text === text); return m || { id:uid(), text }; });
+      const data = { name:v.name.trim(), icon:v.icon, color:v.color, time:v.time, alert:!!(v.alert && v.time), days:v.days.length === 7 ? [] : v.days.slice(), steps };
+      REM.routines = REM.routines || [];
+      let tgt = r; if (r) Object.assign(r, data); else { tgt = Object.assign({ id:uid() }, data); REM.routines.push(tgt); }
+      REM.su = Date.now(); remSave(); renderRems(); openRoutine(tgt.id);
+    };
+    const del = $("#rtDel");
+    if (del) del.onclick = () => {
+      const idx = REM.routines.indexOf(r); REM.routines.splice(idx, 1); REM.su = Date.now(); remSave(); closeMenu(); renderRems();
+      undoToast("Deleted " + r.name, () => { REM.routines.splice(idx, 0, r); REM.su = Date.now(); remSave(); renderRems(); });
+    };
+  };
+  draw(); openMenu();
+}
+function rtTodayRows(){
+  return (REM.routines || []).filter(r => r.time && rtActiveToday(r) && r.steps.length).map(r => {
+    const at = rtToday() + "T" + r.time, n = rtDoneSteps(r).length, t = r.steps.length;
+    if (n >= t || RL.addMin(at, -60) > remNow()) return null;
+    return { k:"rem", name:r.icon + " " + esc(r.name), key:`${n}/${t}`, val:remHM(at), pct:Math.max(5, n / t * 100), tone: remNow() >= at ? "orange" : "green" };
+  }).filter(Boolean);
+}
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
 const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg(Object.assign({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }, LOCAL.bbApi ? { b:{ u:LOCAL.bbApi, k:LOCAL.bbKey } } : {})));
