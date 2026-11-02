@@ -42,6 +42,7 @@ function handle_(p) {
   const ver = () => Number(props.getProperty('ver_' + doc) || 0);
 
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
+  if (p.op === 'remStatus') { try { return out_(remStatus_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remSync') { try { return out_(remSync_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'bills') { try { return out_({ ok: true, data: bbData_() }); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'billAction') { try { return out_(bbAction_(p.action, JSON.parse(p.payload || '{}'))); } catch (e) { return out_({ ok: false, error: e.message }); } }
@@ -266,6 +267,11 @@ function remWhen_(w) {
 
 function checkReminders() {
   const props = PropertiesService.getScriptProperties();
+  props.setProperty('rem_lastrun', remNow_());
+  try { checkReminders__(props); props.deleteProperty('rem_lasterr'); }
+  catch (e) { props.setProperty('rem_lasterr', remNow_() + ' ' + e.message); throw e; }
+}
+function checkReminders__(props) {
   const url = ScriptApp.getService().getUrl();
   ['S', 'D'].forEach(who => {
     let d; try { d = remRead_(who); } catch (e) { return; }
@@ -313,7 +319,24 @@ function remPush_(d, it, kind, url, who) {
       { action: 'http', label: 'Tomorrow', url: act('tmr'), method: 'GET', clear: true }
     ]
   };
-  UrlFetchApp.fetch('https://ntfy.sh/', { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
+  remSend_(who, body, it.title);
+}
+function remSend_(who, body, label) {
+  let code = 0;
+  try { code = UrlFetchApp.fetch('https://ntfy.sh/', { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true }).getResponseCode(); } catch (e) { code = 'error: ' + e.message; }
+  const props = PropertiesService.getScriptProperties(), k = 'remlog_' + who;
+  const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code });
+  props.setProperty(k, JSON.stringify(log.slice(0, 6)));
+  return code;
+}
+function remStatus_(p) {
+  const who = remWho_(p.who), props = PropertiesService.getScriptProperties(), d = remRead_(who) || {};
+  const open = (d.items || []).filter(x => !x.done).sort((a, b) => ((a.snooze || a.due) < (b.snooze || b.due) ? -1 : 1));
+  let res = { ok: true, version: 3, now: remNow_(), triggers: ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'checkReminders').length,
+    lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', topic: d.topic || '', open: open.length,
+    next: open[0] ? { t: open[0].title, at: open[0].snooze || open[0].due } : null, log: JSON.parse(props.getProperty('remlog_' + who) || '[]') };
+  if (p.test) res.test = d.topic ? remSend_(who, { topic: d.topic, title: 'Home Base', message: 'Test from your Google script ✅', tags: ['white_check_mark'] }, 'Test') : 'no topic';
+  return res;
 }
 
 function remPushRoutine_(d, r, left, url, who) {
@@ -324,7 +347,7 @@ function remPushRoutine_(d, r, left, url, who) {
     priority: 3, tags: ['sunrise'],
     actions: [{ action: 'http', label: 'All done', url: all, method: 'GET', clear: true }]
   };
-  UrlFetchApp.fetch('https://ntfy.sh/', { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
+  remSend_(who, body, r.name);
 }
 
 function setupReminders() {

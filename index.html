@@ -337,6 +337,11 @@
   .rttpl{display:flex;gap:6px;margin-bottom:4px}
   .rttpl button{flex:1;padding:9px 4px;border-radius:12px;background:rgba(255,255,255,.1);font-weight:800;font-size:13px;color:var(--ink)}
   .rform textarea{width:100%;padding:10px 12px;border-radius:12px;border:0;background:rgba(255,255,255,.1);color:var(--ink);font-size:15px;resize:vertical}
+  .rwarn.bad{background:rgba(255,90,78,.18);color:#ff9a8f}
+  .rchk2{margin-top:8px}
+  .rchk2 .ck{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;padding:5px 0;border-top:1px solid rgba(255,255,255,.07)}
+  .rchk2 .ck.bad{color:#ffb3aa}
+  .rbtn.ghost{background:rgba(255,255,255,.1);color:var(--ink)}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -2951,7 +2956,7 @@ function remInit(){
   if (!Array.isArray(REM.lists) || !REM.lists.length) REM.lists = REM_DEFAULT_LISTS.map(x => Object.assign({}, x));
   if (!REM.topic){ REM.topic = "hb-" + whoAmI().toLowerCase() + "-" + remRnd(18); REM.key = remRnd(24); REM.su = REM.su || 1; REM.quiet = REM.quiet || { on:false, from:"22:00", to:"07:00" }; REM.hide = !!REM.hide; }
 }
-let remT = null, remBusy = false, remAgain = false;
+let remT = null, remBusy = false, remAgain = false, REM_SYNC = { ok:true };
 function remSave(push){
   try { localStorage.setItem(remKey(), JSON.stringify(REM)); } catch(e){}
   if (push !== false){ clearTimeout(remT); remT = setTimeout(remSync, 500); }
@@ -2962,13 +2967,15 @@ async function remSync(){
   remBusy = true;
   try {
     const r = await apiPost({ doc:"house", key:keyFor(), op:"remSync", who:whoAmI(), data:JSON.stringify(REM) });
+    if (r && r.ok === false){ const was = REM_SYNC.ok; REM_SYNC = { ok:false, err: r.error || "error" }; if (was) remRefresh(); }
     if (r && r.ok && r.data){
+      if (!REM_SYNC.ok){ REM_SYNC = { ok:true }; remRefresh(); }
       const before = JSON.stringify(REM);
       REM = RL.merge(REM, r.data); remInit();
       try { localStorage.setItem(remKey(), JSON.stringify(REM)); } catch(e){}
       if (JSON.stringify(REM) !== before) remRefresh();
     }
-  } catch(e){}
+  } catch(e){ REM_SYNC = { ok:false, err:"offline" }; }
   finally { remBusy = false; if (remAgain){ remAgain = false; remSync(); } }
 }
 function remRefresh(){
@@ -3006,7 +3013,8 @@ function renderRems(){
     const mine = open.filter(it => remListOf(it) === l.id), late = mine.some(it => RL.at(it) <= now);
     return `<button class="rl" data-rl="${l.id}"><span class="rli" style="background:${l.color}">${l.icon}</span><span class="rln">${esc(l.name)}</span><span class="rlc ${late ? "late" : ""}">${mine.length}</span><span class="rlx">›</span></button>`;
   }).join("");
-  const warn = !LOCAL.remTested ? `<button class="rwarn" id="rWarn">🔔 Turn on alerts for this phone</button>` : "";
+  const warn = !REM_SYNC.ok && REM_SYNC.err !== "offline" ? `<button class="rwarn bad" id="rWarn">⚠️ ${REM_SYNC.err === "unknown op" ? "Your Google script needs the reminders update" : "Reminders aren't reaching your Google script"} · tap to check</button>`
+    : !LOCAL.remTested ? `<button class="rwarn" id="rWarn">🔔 Turn on alerts for this phone</button>` : "";
   host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
     ${warn}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
@@ -3208,6 +3216,9 @@ function showRemSettings(){
       <ol class="rsteps"><li>Open <b>Shortcuts</b> → <b>＋</b> → name it <b>Home Base reminder</b>.</li><li>Add <b>Dictate Text</b>.</li><li>Add <b>Get Contents of URL</b>: paste the link below, then add <b>Dictated Text</b> at the end of it.</li><li>Add <b>Show Result</b>. Now say "Hey Siri, Home Base reminder".</li></ol>
       <button class="rbtn" id="rSiri" ${LOCAL.url ? "" : "disabled"}>📋 Copy Siri link</button>
       <div class="rnote">Keep this link to yourself: it can add reminders to your list.</div>
+      <div class="rsh">5 · Check alerts</div>
+      <button class="rbtn" id="rChk">🩺 Check everything</button>
+      <div class="rchk2" id="rChkOut"></div>
     </div>
     <button class="sdone" id="rSd">Done</button>`;
   const $ = s => menu.querySelector(s);
@@ -3222,8 +3233,35 @@ function showRemSettings(){
     } catch(e){ toast("Couldn't send — check your connection"); }
   };
   $("#rSiri").onclick = () => remCopy(remSiriLink(), "Siri link copied");
+  $("#rChk").onclick = () => remCheck($("#rChkOut"));
   $("#rSd").onclick = () => { closeMenu(); renderRems(); };
   openMenu();
+}
+async function remCheck(out, test){
+  const line = (ok, t) => `<div class="ck ${ok === true ? "ok" : ok === false ? "bad" : ""}"><span>${ok === true ? "✅" : ok === false ? "❌" : "ℹ️"}</span><span>${t}</span></div>`;
+  if (!LOCAL.url){ out.innerHTML = line(false, "This phone isn't connected to your Google script (⚙︎ → Sync)."); return; }
+  out.innerHTML = `<div class="ck">Checking…</div>`;
+  await remSync();
+  let r; try { r = await api({ doc:"house", key:keyFor(), op:"remStatus", who:whoAmI(), test: test ? 1 : "" }); } catch(e){ out.innerHTML = line(false, "Couldn't reach your Google script. Check your internet, or the Sync link in ⚙︎."); return; }
+  let h = "";
+  if (!r || r.ok === false){
+    h += line(false, r && r.error === "unknown op" ? "Your Google script is the old version. Paste the latest Code.gs, then Deploy → Manage deployments → Edit → New version → Deploy." : "Google script error: " + esc((r && r.error) || "no reply"));
+    out.innerHTML = h; return;
+  }
+  h += line(true, "Google script is up to date");
+  const ago = r.lastRun ? RL.minsBetween(r.lastRun, r.now) : null;
+  if (!r.triggers) h += line(false, "The every-minute check isn't switched on. In the script editor, choose <b>setupReminders</b> and press Run.");
+  else if (ago == null || ago > 3) h += line(false, `The every-minute check is set but ${ago == null ? "has never run" : "last ran " + ago + " min ago"}. Run <b>setupReminders</b> again and allow access.`);
+  else h += line(true, `Every-minute check is running (last run ${ago <= 0 ? "just now" : ago + " min ago"})`);
+  if (r.lastErr) h += line(false, "Last check failed: " + esc(r.lastErr));
+  h += r.topic === REM.topic ? line(true, "This phone and the script use the same ntfy topic") : line(false, "The script has a different ntfy topic from this phone. Pull down to refresh, then check again.");
+  h += r.open ? line(true, `${r.open} reminder${r.open === 1 ? "" : "s"} saved in Google${r.next ? ` · next: ${esc(r.next.t)}, ${remWhen(r.next.at)}` : ""}`) : line(false, "Google has no reminders saved from this phone yet.");
+  if (r.log && r.log.length) h += line(null, "Last alerts sent: " + r.log.slice(0, 3).map(x => `${esc(x.t)} at ${remHM(x.at)}${x.code === 200 ? "" : " (failed: " + esc(String(x.code)) + ")"}`).join("; "));
+  else h += line(null, "No alerts have been sent by the script yet.");
+  if (test) h += r.test === 200 ? line(true, "Test sent from Google — it should be on your phone now. If not, check you're subscribed to the topic in ntfy.") : line(false, "Google couldn't send the test: " + esc(String(r.test)));
+  else h += `<button class="rbtn ghost" id="rChkT">Send a test from Google</button>`;
+  out.innerHTML = h;
+  const t = out.querySelector("#rChkT"); if (t) t.onclick = () => remCheck(out, true);
 }
 function showRemHistory(){
   const h = (REM.hist || []).slice().sort((a,b) => a.at < b.at ? 1 : -1);
