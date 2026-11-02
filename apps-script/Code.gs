@@ -42,6 +42,7 @@ function handle_(p) {
   const ver = () => Number(props.getProperty('ver_' + doc) || 0);
 
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
+  if (p.op === 'remSetup') { try { return out_(remSetup_(p)); } catch (e) { return out_({ ok: false, error: 'setup: ' + e.message }); } }
   if (p.op === 'remStatus') { try { return out_(remStatus_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remSync') { try { return out_(remSync_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'bills') { try { return out_({ ok: true, data: bbData_() }); } catch (e) { return out_({ ok: false, error: e.message }); } }
@@ -328,6 +329,12 @@ function remSend_(who, body, label) {
   const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code });
   props.setProperty(k, JSON.stringify(log.slice(0, 6)));
   return code;
+}
+function remSetup_(p) {
+  ScriptApp.getProjectTriggers().forEach(tr => { if (tr.getHandlerFunction() === 'checkReminders') ScriptApp.deleteTrigger(tr); });
+  ScriptApp.newTrigger('checkReminders').timeBased().everyMinutes(1).create();
+  checkReminders();
+  return remStatus_(p);
 }
 function remStatus_(p) {
   const who = remWho_(p.who), props = PropertiesService.getScriptProperties(), d = remRead_(who) || {};

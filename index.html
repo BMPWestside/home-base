@@ -3237,20 +3237,22 @@ function showRemSettings(){
   $("#rSd").onclick = () => { closeMenu(); renderRems(); };
   openMenu();
 }
-async function remCheck(out, test){
+async function remCheck(out, test, setup){
   const line = (ok, t) => `<div class="ck ${ok === true ? "ok" : ok === false ? "bad" : ""}"><span>${ok === true ? "✅" : ok === false ? "❌" : "ℹ️"}</span><span>${t}</span></div>`;
   if (!LOCAL.url){ out.innerHTML = line(false, "This phone isn't connected to your Google script (⚙︎ → Sync)."); return; }
   out.innerHTML = `<div class="ck">Checking…</div>`;
   await remSync();
-  let r; try { r = await api({ doc:"house", key:keyFor(), op:"remStatus", who:whoAmI(), test: test ? 1 : "" }); } catch(e){ out.innerHTML = line(false, "Couldn't reach your Google script. Check your internet, or the Sync link in ⚙︎."); return; }
+  let r; try { r = await api({ doc:"house", key:keyFor(), op: setup ? "remSetup" : "remStatus", who:whoAmI(), test: test ? 1 : "" }); } catch(e){ out.innerHTML = line(false, "Couldn't reach your Google script. Check your internet, or the Sync link in ⚙︎."); return; }
   let h = "";
   if (!r || r.ok === false){
+    if (setup && r && r.error === "unknown op"){ out.innerHTML = line(false, "Your script doesn't have the switch-on button yet. Paste the latest Code.gs and deploy a New version, then try again."); return; }
+    if (r && /^setup:/.test(r.error || "")){ out.innerHTML = line(false, "Google wouldn't let the app switch it on (" + esc(r.error.slice(7)) + "). Open the script, choose <b>setupReminders</b> in the drop-down next to Run, press Run, and tap Allow."); return; }
     h += line(false, r && r.error === "unknown op" ? "Your Google script is the old version. Paste the latest Code.gs, then Deploy → Manage deployments → Edit → New version → Deploy." : "Google script error: " + esc((r && r.error) || "no reply"));
     out.innerHTML = h; return;
   }
   h += line(true, "Google script is up to date");
   const ago = r.lastRun ? RL.minsBetween(r.lastRun, r.now) : null;
-  if (!r.triggers) h += line(false, "The every-minute check isn't switched on. In the script editor, choose <b>setupReminders</b> and press Run.");
+  if (!r.triggers) h += line(false, `The every-minute check isn't switched on.<br><button class="rbtn" id="rChkS">⚡ Switch it on now</button>`);
   else if (ago == null || ago > 3) h += line(false, `The every-minute check is set but ${ago == null ? "has never run" : "last ran " + ago + " min ago"}. Run <b>setupReminders</b> again and allow access.`);
   else h += line(true, `Every-minute check is running (last run ${ago <= 0 ? "just now" : ago + " min ago"})`);
   if (r.lastErr) h += line(false, "Last check failed: " + esc(r.lastErr));
@@ -3262,6 +3264,7 @@ async function remCheck(out, test){
   else h += `<button class="rbtn ghost" id="rChkT">Send a test from Google</button>`;
   out.innerHTML = h;
   const t = out.querySelector("#rChkT"); if (t) t.onclick = () => remCheck(out, true);
+  const sw = out.querySelector("#rChkS"); if (sw) sw.onclick = () => remCheck(out, false, true);
 }
 function showRemHistory(){
   const h = (REM.hist || []).slice().sort((a,b) => a.at < b.at ? 1 : -1);
