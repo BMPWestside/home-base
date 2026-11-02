@@ -287,9 +287,9 @@ function checkReminders__(props) {
       const st = sent[it.id] || {}, when = it.snooze || it.due;
       if (it.early > 0 && !it.snooze) {
         const ea = RL.addMin(it.due, -it.early);
-        if (now >= ea && now < it.due && st.e !== it.due) { remPush_(d, it, 'early', url, who); st.e = it.due; }
+        if (now >= ea && now < it.due && st.e !== it.due && remOk_(st, remPush_(d, it, 'early', url, who))) st.e = it.due;
       }
-      if (now >= when && st.m !== when) { remPush_(d, it, 'due', url, who); st.m = when; st.n = RL.addMin(now, 15); st.c = 0; }
+      if (now >= when && st.m !== when) { if (remOk_(st, remPush_(d, it, 'due', url, who))) { st.m = when; st.n = RL.addMin(now, 15); st.c = 0; } }
       else if (it.nag && st.m === when && st.n && now >= st.n && (st.c || 0) < 12) { remPush_(d, it, 'nag', url, who); st.n = RL.addMin(now, 15); st.c = (st.c || 0) + 1; }
       keep[it.id] = st;
     });
@@ -300,7 +300,7 @@ function checkReminders__(props) {
       const done = (d.rdone && d.rdone[r.id] && d.rdone[r.id].date === today) ? d.rdone[r.id].steps || [] : [];
       const left = r.steps.filter(s => done.indexOf(s.id) < 0);
       const k = 'rt_' + r.id, prev = sent[k] || {};
-      if (left.length && now >= today + 'T' + r.time && prev.d !== today) { remPushRoutine_(d, r, left, url, who); prev.d = today; }
+      if (left.length && now >= today + 'T' + r.time && prev.d !== today && remOk_(prev, remPushRoutine_(d, r, left, url, who))) prev.d = today;
       keep[k] = prev;
     });
     props.setProperty('remsent_' + who, JSON.stringify(keep));
@@ -321,7 +321,13 @@ function remPush_(d, it, kind, url, who) {
       { action: 'http', label: 'Tomorrow', url: act('tmr'), method: 'GET', clear: true }
     ]
   };
-  remSend_(who, body, it.title);
+  return remSend_(who, body, it.title);
+}
+/* A failed alert is tried again next minute; after 30 failed tries it is skipped so it can't loop forever. */
+function remOk_(st, code) {
+  if (code === 200) { st.f = 0; return true; }
+  st.f = (st.f || 0) + 1;
+  return st.f >= 30;
 }
 function remSend_(who, body, label) {
   let code = 0;
@@ -375,7 +381,7 @@ function remPushRoutine_(d, r, left, url, who) {
     priority: 3, tags: ['sunrise'],
     actions: [{ action: 'http', label: 'All done', url: all, method: 'GET', clear: true }]
   };
-  remSend_(who, body, r.name);
+  return remSend_(who, body, r.name);
 }
 
 function setupReminders() {
