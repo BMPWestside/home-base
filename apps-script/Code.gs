@@ -324,7 +324,15 @@ function remPush_(d, it, kind, url, who) {
 }
 function remSend_(who, body, label) {
   let code = 0;
-  try { code = UrlFetchApp.fetch('https://ntfy.sh/', { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true }).getResponseCode(); } catch (e) { code = 'error: ' + e.message; }
+  // Publish to https://ntfy.sh/<topic> with headers (Google can't reach ntfy's JSON address).
+  const enc = t => /^[\x20-\x7e]*$/.test(t) ? t : '=?UTF-8?B?' + Utilities.base64Encode(t, Utilities.Charset.UTF_8) + '?=';
+  const headers = { Title: enc(body.title || 'Home Base'), Priority: String(body.priority || 3), Tags: (body.tags || []).join(',') };
+  if (body.actions && body.actions.length) headers.Actions = JSON.stringify(body.actions);
+  const opts = { method: 'post', contentType: 'text/plain; charset=utf-8', payload: body.message || '', headers: headers, muteHttpExceptions: true };
+  for (let i = 0; i < 2 && code !== 200; i++) {
+    try { code = UrlFetchApp.fetch('https://ntfy.sh/' + encodeURIComponent(body.topic), opts).getResponseCode(); }
+    catch (e) { code = 'error: ' + e.message; if (i === 0) Utilities.sleep(1500); }
+  }
   const props = PropertiesService.getScriptProperties(), k = 'remlog_' + who;
   const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code });
   props.setProperty(k, JSON.stringify(log.slice(0, 6)));
