@@ -43,6 +43,7 @@ function handle_(p) {
 
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
   if (p.op === 'remSetup') { try { return out_(remSetup_(p)); } catch (e) { return out_({ ok: false, error: 'setup: ' + e.message }); } }
+  if (p.op === 'remToken') { try { return out_(remToken_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remStatus') { try { return out_(remStatus_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remSync') { try { return out_(remSync_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'bills') { try { return out_({ ok: true, data: bbData_() }); } catch (e) { return out_({ ok: false, error: e.message }); } }
@@ -93,7 +94,7 @@ function checkGasBottle() {
   UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
     method: 'post', muteHttpExceptions: true,
     payload: since + ' days since the last change. Your bottles usually last about ' + avg + ' days.',
-    headers: { Title: 'Gas bottle due - Home Base', Tags: 'fire', Click: APP_URL }
+    headers: ntfyAuth_({ Title: 'Gas bottle due - Home Base', Tags: 'fire', Click: APP_URL })
   });
   props.setProperty('gas_alerted', last);
 }
@@ -104,7 +105,7 @@ function testGasAlert() {
   const data = read_('house', Number(props.getProperty('ver_house') || 0)) || {};
   const topic = NTFY_TOPIC || data.ntfy;
   if (!topic) { Logger.log('No ntfy topic yet.'); return; }
-  UrlFetchApp.fetch('https://ntfy.sh/' + topic, { method: 'post', payload: 'Gas bottle alerts are working.', headers: { Title: 'Home Base test', Tags: 'white_check_mark', Click: APP_URL } });
+  UrlFetchApp.fetch('https://ntfy.sh/' + topic, { method: 'post', payload: 'Gas bottle alerts are working.', headers: ntfyAuth_({ Title: 'Home Base test', Tags: 'white_check_mark', Click: APP_URL }) });
   Logger.log('Test sent to ' + topic);
 }
 
@@ -200,7 +201,7 @@ function checkDates_(data, topic) {
     UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
       method: 'post', muteHttpExceptions: true,
       payload: 'In 3 days: ' + dt.name + extra,
-      headers: { Title: 'Coming up - Home Base', Tags: 'tada', Click: APP_URL }
+      headers: ntfyAuth_({ Title: 'Coming up - Home Base', Tags: 'tada', Click: APP_URL })
     });
     props.setProperty(key, '1');
   });
@@ -326,12 +327,13 @@ function remSend_(who, body, label) {
   let code = 0;
   // Publish to https://ntfy.sh/<topic> with headers (Google can't reach ntfy's JSON address).
   const enc = t => /^[\x20-\x7e]*$/.test(t) ? t : '=?UTF-8?B?' + Utilities.base64Encode(t, Utilities.Charset.UTF_8) + '?=';
-  const headers = { Title: enc(body.title || 'Home Base'), Priority: String(body.priority || 3), Tags: (body.tags || []).join(',') };
+  const headers = ntfyAuth_({ Title: enc(body.title || 'Home Base'), Priority: String(body.priority || 3), Tags: (body.tags || []).join(',') });
   if (body.actions && body.actions.length) headers.Actions = JSON.stringify(body.actions);
   const opts = { method: 'post', contentType: 'text/plain; charset=utf-8', payload: body.message || '', headers: headers, muteHttpExceptions: true };
-  for (let i = 0; i < 2 && code !== 200; i++) {
+  for (let i = 0; i < 3 && code !== 200; i++) {
+    if (i) Utilities.sleep(2000 * i);
     try { code = UrlFetchApp.fetch('https://ntfy.sh/' + encodeURIComponent(body.topic), opts).getResponseCode(); }
-    catch (e) { code = 'error: ' + e.message; if (i === 0) Utilities.sleep(1500); }
+    catch (e) { code = 'error: ' + e.message; }
   }
   const props = PropertiesService.getScriptProperties(), k = 'remlog_' + who;
   const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code });
@@ -344,11 +346,22 @@ function remSetup_(p) {
   checkReminders();
   return remStatus_(p);
 }
+/* Your own free ntfy.sh account token: ntfy limits anonymous senders by address, and Google's are shared. */
+function ntfyAuth_(headers) {
+  const t = PropertiesService.getScriptProperties().getProperty('ntfy_token');
+  if (t) headers.Authorization = 'Bearer ' + t;
+  return headers;
+}
+function remToken_(p) {
+  const props = PropertiesService.getScriptProperties(), t = String(p.token || '').trim();
+  if (t) props.setProperty('ntfy_token', t); else props.deleteProperty('ntfy_token');
+  return remStatus_(p);
+}
 function remStatus_(p) {
   const who = remWho_(p.who), props = PropertiesService.getScriptProperties(), d = remRead_(who) || {};
   const open = (d.items || []).filter(x => !x.done).sort((a, b) => ((a.snooze || a.due) < (b.snooze || b.due) ? -1 : 1));
   let res = { ok: true, version: 3, now: remNow_(), triggers: ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'checkReminders').length,
-    lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', topic: d.topic || '', open: open.length,
+    hasToken: !!props.getProperty('ntfy_token'), lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', topic: d.topic || '', open: open.length,
     next: open[0] ? { t: open[0].title, at: open[0].snooze || open[0].due } : null, log: JSON.parse(props.getProperty('remlog_' + who) || '[]') };
   if (p.test) res.test = d.topic ? remSend_(who, { topic: d.topic, title: 'Home Base', message: 'Test from your Google script ✅', tags: ['white_check_mark'] }, 'Test') : 'no topic';
   return res;

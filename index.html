@@ -342,6 +342,7 @@
   .rchk2 .ck{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;padding:5px 0;border-top:1px solid rgba(255,255,255,.07)}
   .rchk2 .ck.bad{color:#ffb3aa}
   .rbtn.ghost{background:rgba(255,255,255,.1);color:var(--ink)}
+  .rtopic input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font-size:14px;outline:none;padding:4px 0;font-family:ui-monospace,Menlo,monospace}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -3217,6 +3218,9 @@ function showRemSettings(){
       <button class="rbtn" id="rSiri" ${LOCAL.url ? "" : "disabled"}>📋 Copy Siri link</button>
       <div class="rnote">Keep this link to yourself: it can add reminders to your list.</div>
       <div class="rsh">5 · Check alerts</div>
+      <div class="rnote" style="margin:0 0 6px">ntfy's free server limits how many alerts Google can send without an account. Add your free ntfy access token so alerts always get through:</div>
+      <ol class="rsteps"><li>Go to <b>ntfy.sh</b> → <b>Sign up</b> (free) and log in.</li><li><b>Account</b> → <b>Access tokens</b> → <b>Create access token</b> (never expires), and copy it (starts with tk_).</li><li>Paste it here and tap Save.</li></ol>
+      <div class="rtopic"><input id="rTok" placeholder="tk_…" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="rTokS">Save</button></div>
       <button class="rbtn" id="rChk">🩺 Check everything</button>
       <div class="rchk2" id="rChkOut"></div>
     </div>
@@ -3234,6 +3238,14 @@ function showRemSettings(){
   };
   $("#rSiri").onclick = () => remCopy(remSiriLink(), "Siri link copied");
   $("#rChk").onclick = () => remCheck($("#rChkOut"));
+  $("#rTokS").onclick = async () => {
+    const t = $("#rTok").value.trim();
+    if (t && !/^tk_[A-Za-z0-9]{20,}$/.test(t)){ toast("That doesn't look like an ntfy token (tk_…)"); return; }
+    try { const r = await api({ doc:"house", key:keyFor(), op:"remToken", who:whoAmI(), token:t });
+      if (r && r.ok){ $("#rTok").value = ""; toast(t ? "Token saved in your Google script" : "Token removed"); remCheck($("#rChkOut"), !!t); }
+      else toast(r && r.error === "unknown op" ? "Update your Google script first" : "Couldn't save: " + ((r && r.error) || "no reply"));
+    } catch(e){ toast("Couldn't reach your Google script"); }
+  };
   $("#rSd").onclick = () => { closeMenu(); renderRems(); };
   openMenu();
 }
@@ -3256,11 +3268,13 @@ async function remCheck(out, test, setup){
   else if (ago == null || ago > 3) h += line(false, `The every-minute check is set but ${ago == null ? "has never run" : "last ran " + ago + " min ago"}. Run <b>setupReminders</b> again and allow access.`);
   else h += line(true, `Every-minute check is running (last run ${ago <= 0 ? "just now" : ago + " min ago"})`);
   if (r.lastErr) h += line(false, "Last check failed: " + esc(r.lastErr));
+  h += r.hasToken ? line(true, "Sending with your ntfy account") : line(null, "No ntfy account token yet. Without one, ntfy often refuses alerts from Google (error 429). Add it above.");
   h += r.topic === REM.topic ? line(true, "This phone and the script use the same ntfy topic") : line(false, "The script has a different ntfy topic from this phone. Pull down to refresh, then check again.");
   h += r.open ? line(true, `${r.open} reminder${r.open === 1 ? "" : "s"} saved in Google${r.next ? ` · next: ${esc(r.next.t)}, ${remWhen(r.next.at)}` : ""}`) : line(false, "Google has no reminders saved from this phone yet.");
   if (r.log && r.log.length) h += line(null, "Last alerts sent: " + r.log.slice(0, 3).map(x => `${esc(x.t)} at ${remHM(x.at)}${x.code === 200 ? "" : " (failed: " + esc(String(x.code)) + ")"}`).join("; "));
   else h += line(null, "No alerts have been sent by the script yet.");
-  if (test) h += r.test === 200 ? line(true, "Test sent from Google — it should be on your phone now. If not, check you're subscribed to the topic in ntfy.") : line(false, "Google couldn't send the test: " + esc(String(r.test)));
+  if (test && r.test === 429) h += line(false, r.hasToken ? "ntfy is still limiting your account (429). Wait a minute and try again." : "ntfy refused it (429 = too many alerts from Google's shared address). Add your free ntfy token above, then test again.");
+  else if (test) h += r.test === 200 ? line(true, "Test sent from Google — it should be on your phone now. If not, check you're subscribed to the topic in ntfy.") : line(false, "Google couldn't send the test: " + esc(String(r.test)));
   else h += `<button class="rbtn ghost" id="rChkT">Send a test from Google</button>`;
   out.innerHTML = h;
   const t = out.querySelector("#rChkT"); if (t) t.onclick = () => remCheck(out, true);
