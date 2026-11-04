@@ -475,8 +475,46 @@ var WP = (function(){
     if (b.length - i === 1){ const n = b[i] << 16; s += B64[n >> 18] + B64[(n >> 12) & 63]; } else if (b.length - i === 2){ const n = (b[i] << 16) | (b[i+1] << 8); s += B64[n >> 18] + B64[(n >> 12) & 63] + B64[(n >> 6) & 63]; } return s; }
   function unb64u(s){ s = String(s).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_"); const o = []; let buf = 0, bits = 0;
     for (const c of s){ const v = B64.indexOf(c); if (v < 0) continue; buf = (buf << 6) | v; bits += 6; if (bits >= 8){ bits -= 8; o.push((buf >> bits) & 255); } } return u8(o); }
-  const toBig = b => { let n = 0n; for (const x of b) n = (n << 8n) | BigInt(x); return n; };
-  const fromBig = (n, len) => { const o = new Uint8Array(len); for (let i = len - 1; i >= 0; i--){ o[i] = Number(n & 255n); n >>= 8n; } return o; };
+  /* ---- 256-bit numbers as 16 little-endian 16-bit limbs (no BigInt: Google's script engine doesn't support it) ---- */
+  const L = 16;
+  const zero = () => new Array(L).fill(0);
+  function limbs(b){ const x = zero(); for (let i = 0; i < L; i++) x[i] = b[31 - 2*i] | (b[30 - 2*i] << 8); return x; }
+  function bytes(x){ const o = new Uint8Array(32); for (let i = 0; i < L; i++){ o[31 - 2*i] = x[i] & 255; o[30 - 2*i] = x[i] >>> 8; } return o; }
+  function hexL(h){ const b = new Uint8Array(32); for (let i = 0; i < 32; i++) b[i] = parseInt(h.substr(2*i, 2), 16); return limbs(b); }
+  const isZero = x => x.every(v => v === 0);
+  function ge(a, b){ for (let i = L - 1; i >= 0; i--){ if (a[i] !== b[i]) return a[i] > b[i]; } return true; }
+  function subRaw(a, b){ const o = zero(); let br = 0; for (let i = 0; i < L; i++){ let v = a[i] - b[i] - br; br = v < 0 ? 1 : 0; o[i] = v & 0xffff; } return o; }
+  function addRaw(a, b){ const o = zero(); let c = 0; for (let i = 0; i < L; i++){ const v = a[i] + b[i] + c; o[i] = v & 0xffff; c = v >>> 16; } return [o, c]; }
+  function ctx(hex){
+    const m = hexL(hex), m0 = m[0];
+    let inv = 1; for (let k = 0; k < 5; k++) inv = (inv * ((2 - ((m0 * inv) % 65536) + 65536) % 65536)) % 65536;
+    const mp = (65536 - inv) % 65536;
+    const C = { m, mp };
+    C.add = (a, b) => { const [o, c] = addRaw(a, b); return (c || ge(o, m)) ? subRaw(o, m) : o; };
+    C.sub = (a, b) => ge(a, b) ? subRaw(a, b) : addRaw(subRaw(a, b), m)[0];
+    C.red = a => ge(a, m) ? subRaw(a, m) : a;
+    C.mm = (a, b) => {            // Montgomery product a*b/2^256 mod m
+      const t = new Array(L + 2).fill(0);
+      for (let i = 0; i < L; i++){
+        let c = 0; const bi = b[i];
+        for (let j = 0; j < L; j++){ const v = t[j] + a[j] * bi + c; t[j] = v % 65536; c = Math.floor(v / 65536); }
+        let v = t[L] + c; t[L] = v % 65536; t[L+1] = Math.floor(v / 65536);
+        const u = (t[0] * mp) % 65536;
+        v = t[0] + u * m[0]; c = Math.floor(v / 65536);
+        for (let j = 1; j < L; j++){ v = t[j] + u * m[j] + c; t[j-1] = v % 65536; c = Math.floor(v / 65536); }
+        v = t[L] + c; t[L-1] = v % 65536; c = Math.floor(v / 65536);
+        t[L] = t[L+1] + c; t[L+1] = 0;
+      }
+      const o = t.slice(0, L); return (t[L] || ge(o, m)) ? subRaw(o, m) : o;
+    };
+    let r2 = zero(); r2[0] = 1; for (let k = 0; k < 512; k++) r2 = C.add(r2, r2);
+    const one = zero(); one[0] = 1;
+    C.to = a => C.mm(a, r2); C.from = a => C.mm(a, one); C.oneM = C.to(one);
+    C.mul = (a, b) => C.mm(C.mm(a, b), r2);                  // plain a*b mod m
+    C.pow = (aM, e) => { let r = C.oneM; for (let i = L*16 - 1; i >= 0; i--){ r = C.mm(r, r); if ((e[i >> 4] >>> (i & 15)) & 1) r = C.mm(r, aM); } return r; };
+    C.inv = a => C.from(C.pow(C.to(a), subRaw(m, (() => { const t = zero(); t[0] = 2; return t; })())));
+    return C;
+  }
 
   /* ---- SHA-256 / HMAC ---- */
   const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -516,38 +554,51 @@ var WP = (function(){
   }
 
   /* ---- P-256 ---- */
-  const P = 0xffffffff00000001000000000000000000000000ffffffffffffffffffffffffn;
-  const N = 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n;
-  const A = P - 3n, B = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604bn;
-  const G = [0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296n, 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5n];
-  const mod = (a, m) => { const r = a % m; return r >= 0n ? r : r + m; };
-  function inv(a, m){ let [r0, r1] = [mod(a, m), m], [s0, s1] = [1n, 0n]; while (r1){ const q = r0 / r1; [r0, r1] = [r1, r0 - q * r1]; [s0, s1] = [s1, s0 - q * s1]; } return mod(s0, m); }
-  // Jacobian coordinates [X, Y, Z]
-  function dbl(p){ const [X, Y, Z] = p; if (!Y || !Z) return [0n, 1n, 0n];
-    const YY = mod(Y*Y, P), S = mod(4n*X*YY, P), ZZ = mod(Z*Z, P), M = mod(3n*(X - ZZ)*(X + ZZ), P);
-    const X3 = mod(M*M - 2n*S, P); return [X3, mod(M*(S - X3) - 8n*YY*YY, P), mod(2n*Y*Z, P)]; }
-  function add(p, q){ if (!p[2]) return q; if (!q[2]) return p;
-    const Z1Z1 = mod(p[2]*p[2], P), Z2Z2 = mod(q[2]*q[2], P), U1 = mod(p[0]*Z2Z2, P), U2 = mod(q[0]*Z1Z1, P);
-    const S1 = mod(p[1]*q[2]*Z2Z2, P), S2 = mod(q[1]*p[2]*Z1Z1, P);
-    if (U1 === U2) return S1 === S2 ? dbl(p) : [0n, 1n, 0n];
-    const H = mod(U2 - U1, P), R = mod(S2 - S1, P), HH = mod(H*H, P), HHH = mod(H*HH, P), V = mod(U1*HH, P);
-    const X3 = mod(R*R - HHH - 2n*V, P); return [X3, mod(R*(V - X3) - S1*HHH, P), mod(p[2]*q[2]*H, P)]; }
-  function mul(k, pt){ let R = [0n, 1n, 0n], Q = [pt[0], pt[1], 1n];
-    for (let i = BigInt(k.toString(2).length) - 1n; i >= 0n; i--){ R = dbl(R); if ((k >> i) & 1n) R = add(R, Q); }
-    if (!R[2]) throw new Error("point at infinity"); const zi = inv(R[2], P), zi2 = mod(zi*zi, P); return [mod(R[0]*zi2, P), mod(R[1]*zi2*zi, P)]; }
-  const pub = pt => cat([4], fromBig(pt[0], 32), fromBig(pt[1], 32));
+  const FP = ctx("ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+  const FN = ctx("ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551");
+  const Bm = FP.to(hexL("5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b"));
+  const G = [hexL("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"), hexL("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5")];
+  const halfN = hexL("7fffffff800000007fffffffffffffffde737d56d38bcf4279dce5617e3192a8");
+  const fm = FP.mm, fa = FP.add, fs = FP.sub;
+  // Jacobian points [X, Y, Z] in Montgomery form; Z = 0 is the point at infinity
+  function dbl(p){ const [X, Y, Z] = p; if (isZero(Z) || isZero(Y)) return [zero(), FP.oneM, zero()];
+    const YY = fm(Y, Y), XYY = fm(X, YY), S = fa(fa(XYY, XYY), fa(XYY, XYY)), ZZ = fm(Z, Z);
+    const t = fm(fs(X, ZZ), fa(X, ZZ)), M = fa(fa(t, t), t);
+    const X3 = fs(fm(M, M), fa(S, S)), YYYY = fm(YY, YY), e2 = fa(YYYY, YYYY), e4 = fa(e2, e2), e8 = fa(e4, e4);
+    const YZ = fm(Y, Z); return [X3, fs(fm(M, fs(S, X3)), e8), fa(YZ, YZ)]; }
+  function add(p, q){ if (isZero(p[2])) return q; if (isZero(q[2])) return p;
+    const Z1Z1 = fm(p[2], p[2]), Z2Z2 = fm(q[2], q[2]), U1 = fm(p[0], Z2Z2), U2 = fm(q[0], Z1Z1);
+    const S1 = fm(fm(p[1], q[2]), Z2Z2), S2 = fm(fm(q[1], p[2]), Z1Z1);
+    const H = fs(U2, U1), R = fs(S2, S1);
+    if (isZero(H)) return isZero(R) ? dbl(p) : [zero(), FP.oneM, zero()];
+    const HH = fm(H, H), HHH = fm(H, HH), V = fm(U1, HH);
+    const X3 = fs(fs(fm(R, R), HHH), fa(V, V)); return [X3, fs(fm(R, fs(V, X3)), fm(S1, HHH)), fm(fm(p[2], q[2]), H)]; }
+  function mul(k, pt){
+    let R = [zero(), FP.oneM, zero()]; const Q = [FP.to(pt[0]), FP.to(pt[1]), FP.oneM];
+    for (let i = L*16 - 1; i >= 0; i--){ R = dbl(R); if ((k[i >> 4] >>> (i & 15)) & 1) R = add(R, Q); }
+    if (isZero(R[2])) throw new Error("point at infinity");
+    const zi = FP.pow(R[2], subRaw(FP.m, (() => { const t = zero(); t[0] = 2; return t; })())), zi2 = fm(zi, zi);
+    return [FP.from(fm(R[0], zi2)), FP.from(fm(fm(R[1], zi2), zi))]; }
+  const pub = pt => cat([4], bytes(pt[0]), bytes(pt[1]));
   function unpub(b){ if (b.length !== 65 || b[0] !== 4) throw new Error("bad public key");
-    const x = toBig(b.subarray(1, 33)), y = toBig(b.subarray(33)); if (mod(y*y - (x*x*x + A*x + B), P) !== 0n) throw new Error("public key not on curve"); return [x, y]; }
-  function newKey(){ let d; do { d = mod(toBig(rand(40)), N); } while (!d); return { d, pub: pub(mul(d, G)) }; }
+    const x = limbs(b.subarray(1, 33)), y = limbs(b.subarray(33)), xm = FP.to(x), ym = FP.to(y);
+    const rhs = fa(fs(fm(fm(xm, xm), xm), fa(fa(xm, xm), xm)), Bm);
+    if (!isZero(fs(fm(ym, ym), rhs))) throw new Error("public key not on curve"); return [x, y]; }
+  function scalar(){ for (;;){ const d = limbs(rand(32)); if (!isZero(d) && !ge(d, FN.m)) return d; } }
+  function newKey(){ const d = scalar(); return { d, pub: pub(mul(d, G)) }; }
 
   /* ECDSA P-256 / SHA-256 with deterministic nonces (RFC 6979), so the private key never depends on luck */
   function sign(d, msg){
-    const h = sha256(msg), z = mod(toBig(h), N), x = fromBig(d, 32), h1 = fromBig(z, 32);
+    const z = FN.red(limbs(sha256(msg))), x = bytes(d), h1 = bytes(z);
     let V = new Uint8Array(32).fill(1), Kk = new Uint8Array(32);
     Kk = hmac(Kk, cat(V, [0], x, h1)); V = hmac(Kk, V); Kk = hmac(Kk, cat(V, [1], x, h1)); V = hmac(Kk, V);
     for (;;){
-      V = hmac(Kk, V); const k = toBig(V);
-      if (k > 0n && k < N){ const r = mod(mul(k, G)[0], N); if (r){ let s = mod(inv(k, N) * (z + r * d), N); if (s){ if (s > N / 2n) s = N - s; return cat(fromBig(r, 32), fromBig(s, 32)); } } }
+      V = hmac(Kk, V); const k = limbs(V);
+      if (!isZero(k) && !ge(k, FN.m)){
+        const r = FN.red(mul(k, G)[0]);
+        if (!isZero(r)){ let s = FN.mul(FN.inv(k), FN.add(z, FN.mul(r, d)));
+          if (!isZero(s)){ if (!ge(halfN, s)) s = subRaw(FN.m, s); return cat(bytes(r), bytes(s)); } }
+      }
       Kk = hmac(Kk, cat(V, [0])); V = hmac(Kk, V);
     }
   }
@@ -570,24 +621,32 @@ var WP = (function(){
         s[c*4] ^= all ^ xt(a0 ^ a1); s[c*4+1] ^= all ^ xt(a1 ^ a2); s[c*4+2] ^= all ^ xt(a2 ^ a3); s[c*4+3] ^= all ^ xt(a3 ^ a0); }
       for (let i = 0; i < 16; i++) s[i] ^= w[r*16 + i];
     } return s; }
-  function gmul(X, Y){ let Z = 0n, V = Y; const R = 0xe1n << 120n;
-    for (let i = 127n; i >= 0n; i--){ if ((X >> i) & 1n) Z ^= V; V = (V & 1n) ? (V >> 1n) ^ R : V >> 1n; } return Z; }
+  const w4 = b => [0, 1, 2, 3].map(i => ((b[4*i] << 24) | (b[4*i+1] << 16) | (b[4*i+2] << 8) | b[4*i+3]) >>> 0);
+  const b4 = w => { const o = new Uint8Array(16); w.forEach((v, i) => { o[4*i] = v >>> 24; o[4*i+1] = (v >>> 16) & 255; o[4*i+2] = (v >>> 8) & 255; o[4*i+3] = v & 255; }); return o; };
+  function gmul(X, Y){ let Z = [0, 0, 0, 0], V = Y.slice();
+    for (let i = 0; i < 128; i++){
+      if ((X[i >> 5] >>> (31 - (i & 31))) & 1) Z = Z.map((z, k) => (z ^ V[k]) >>> 0);
+      const lsb = V[3] & 1;
+      V = [V[0] >>> 1, ((V[1] >>> 1) | ((V[0] & 1) << 31)) >>> 0, ((V[2] >>> 1) | ((V[1] & 1) << 31)) >>> 0, ((V[3] >>> 1) | ((V[2] & 1) << 31)) >>> 0];
+      if (lsb) V[0] = (V[0] ^ 0xe1000000) >>> 0;
+    } return Z; }
   function gcm(key, iv, pt){
-    const w = expand(key), Hk = toBig(encBlock(w, new Uint8Array(16)));
-    const J0 = cat(iv, [0, 0, 0, 1]), ct = new Uint8Array(pt.length);
-    let cnt = toBig(J0);
-    for (let i = 0; i < pt.length; i += 16){ cnt = (cnt & ~0xffffffffn) | ((cnt + 1n) & 0xffffffffn); const ks = encBlock(w, fromBig(cnt, 16));
-      for (let j = 0; j < 16 && i + j < pt.length; j++) ct[i + j] = pt[i + j] ^ ks[j]; }
-    let y = 0n; for (let i = 0; i < ct.length; i += 16){ const blk = new Uint8Array(16); blk.set(ct.subarray(i, i + 16)); y = gmul(y ^ toBig(blk), Hk); }
-    y = gmul(y ^ BigInt(ct.length * 8), Hk);
-    const tag = fromBig(y ^ toBig(encBlock(w, J0)), 16);
-    return cat(ct, tag);
+    const w = expand(key), Hk = w4(encBlock(w, new Uint8Array(16)));
+    const J0 = cat(iv, [0, 0, 0, 1]), ct = new Uint8Array(pt.length), cb = J0.slice();
+    for (let i = 0; i < pt.length; i += 16){
+      for (let k = 15; k >= 12; k--){ cb[k] = (cb[k] + 1) & 255; if (cb[k]) break; }
+      const ks = encBlock(w, cb); for (let j = 0; j < 16 && i + j < pt.length; j++) ct[i + j] = pt[i + j] ^ ks[j]; }
+    let y = [0, 0, 0, 0];
+    for (let i = 0; i < ct.length; i += 16){ const blk = new Uint8Array(16); blk.set(ct.subarray(i, i + 16)); y = gmul(w4(blk).map((v, k) => (v ^ y[k]) >>> 0), Hk); }
+    const bits = ct.length * 8; y = gmul([y[0], y[1], (y[2] ^ Math.floor(bits / 4294967296)) >>> 0, (y[3] ^ (bits >>> 0)) >>> 0], Hk);
+    const ek = w4(encBlock(w, J0));
+    return cat(ct, b4(y.map((v, k) => (v ^ ek[k]) >>> 0)));
   }
 
   /* ---- Web Push message (RFC 8291 aes128gcm + RFC 8292 VAPID) ---- */
   function encrypt(sub, payload){
     const ua = unb64u(sub.keys.p256dh), auth = unb64u(sub.keys.auth), uaPt = unpub(ua);
-    const eph = newKey(), shared = fromBig(mul(eph.d, uaPt)[0], 32), salt = rand(16);
+    const eph = newKey(), shared = bytes(mul(eph.d, uaPt)[0]), salt = rand(16);
     const prkKey = hmac(auth, shared), ikm = hmac(prkKey, cat(utf8("WebPush: info\0"), ua, eph.pub, [1]));
     const prk = hmac(salt, ikm);
     const cek = hmac(prk, cat(utf8("Content-Encoding: aes128gcm\0"), [1])).slice(0, 16);
@@ -598,10 +657,10 @@ var WP = (function(){
   function jwt(vapid, aud, subject){
     const enc = o => b64u(utf8(JSON.stringify(o)));
     const head = enc({ typ:"JWT", alg:"ES256" }) + "." + enc({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: subject });
-    return head + "." + b64u(sign(toBig(unb64u(vapid.d)), utf8(head)));
+    return head + "." + b64u(sign(limbs(unb64u(vapid.d)), utf8(head)));
   }
-  function makeVapid(){ const k = newKey(); return { d: b64u(fromBig(k.d, 32)), pub: b64u(k.pub) }; }
-  return { encrypt, jwt, makeVapid, b64u, unb64u, sha256, hmac, sign, gcm, mul, G, toBig, fromBig, utf8 };
+  function makeVapid(){ const k = newKey(); return { d: b64u(bytes(k.d)), pub: b64u(k.pub) }; }
+  return { encrypt, jwt, makeVapid, b64u, unb64u, sha256, hmac, sign, gcm, mul, G, limbs, bytes, utf8 };
 })();
 
 /* ---------- sending ---------- */
