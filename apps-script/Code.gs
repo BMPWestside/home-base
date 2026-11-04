@@ -9,14 +9,41 @@
  */
 const HOUSE_KEY = 'PUT-HOUSEHOLD-KEY-HERE';   // everyone in the house
 
-function doGet(e)  { return handle_(e && e.parameter || {}); }
+function doGet(e)  { const p = e && e.parameter || {}; return (p.op || p.doc) ? handle_(p) : setupPage_(); }
+
+/* The household key: the one written above, or (in a fresh copy) one made automatically the first time. */
+function houseKey_() {
+  if (HOUSE_KEY && HOUSE_KEY.indexOf('PUT-') !== 0) return HOUSE_KEY;
+  const props = PropertiesService.getScriptProperties();
+  let k = props.getProperty('house_key');
+  if (!k) { k = 'house-' + Utilities.getUuid().replace(/-/g, '').slice(0, 24); props.setProperty('house_key', k); }
+  return k;
+}
+/* Opening the script's web-app address in Safari shows this page with your personal Home Base link. */
+function setupPage_() {
+  const url = ScriptApp.getService().getUrl();
+  try {   // switch on the every-minute reminder check the first time this page is opened
+    if (!ScriptApp.getProjectTriggers().some(t => t.getHandlerFunction() === 'checkReminders'))
+      ScriptApp.newTrigger('checkReminders').timeBased().everyMinutes(1).create();
+  } catch (e) {}
+  const cfg = Utilities.base64EncodeWebSafe(JSON.stringify({ u: url, k: houseKey_(), w: 'S' }), Utilities.Charset.UTF_8).replace(/=+$/, '');
+  const link = APP_URL + '?c=' + encodeURIComponent(cfg);
+  const html = '<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home Base</title>'
+    + '<body style="font-family:-apple-system,Helvetica,sans-serif;background:#0f2b2b;color:#fff;padding:28px;line-height:1.5">'
+    + '<h1 style="color:#5fe0cf;margin:0 0 6px">Home Base is ready 🎉</h1>'
+    + '<p>This is your own private copy. Your lists are saved in your Google Drive.</p>'
+    + '<ol><li>Tap the button below (on your iPhone, in Safari).</li><li>Tap <b>Share</b> → <b>Add to Home Screen</b> → <b>Add</b>.</li><li>Open Home Base from your Home Screen, go to <b>Reminders → ⋯</b> and tap <b>Turn on notifications</b>.</li></ol>'
+    + '<p><a href="' + link + '" target="_top" style="display:inline-block;background:#5fe0cf;color:#0f2b2b;font-weight:800;padding:14px 22px;border-radius:14px;text-decoration:none">Open my Home Base</a></p>'
+    + '<p style="opacity:.7;font-size:14px">Keep this page to yourself: the button opens your lists.</p></body>';
+  return HtmlService.createHtmlOutput(html).setTitle('Home Base').addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
 function doPost(e) { let p = {}; try { p = JSON.parse(e.postData.contents); } catch (err) {} return handle_(p); }
 
 function out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
 function allowed_(doc, key) {
   if (!key) return false;
-  return doc === 'house' && key === HOUSE_KEY;
+  return doc === 'house' && key === houseKey_();
 }
 
 function file_(doc) {
@@ -44,6 +71,8 @@ function handle_(p) {
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
   if (p.op === 'remSetup') { try { return out_(remSetup_(p)); } catch (e) { return out_({ ok: false, error: 'setup: ' + e.message }); } }
   if (p.op === 'remToken') { try { return out_(remToken_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
+  if (p.op === 'pushKey') { try { return out_({ ok: true, key: wpVapid_().pub }); } catch (e) { return out_({ ok: false, error: e.message }); } }
+  if (p.op === 'pushSub') { try { return out_(wpSubscribe_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remStatus') { try { return out_(remStatus_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remSync') { try { return out_(remSync_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'bills') { try { return out_({ ok: true, data: bbData_() }); } catch (e) { return out_({ ok: false, error: e.message }); } }
@@ -78,7 +107,6 @@ function checkGasBottle() {
   const data = read_('house', Number(props.getProperty('ver_house') || 0));
   if (!data) return;
   const topic = NTFY_TOPIC || data.ntfy;
-  if (!topic) { Logger.log('No ntfy topic yet — connect the Bills tab in Home Base, or set NTFY_TOPIC.'); return; }
   try { checkDates_(data, topic); } catch (e) { Logger.log('Dates: ' + e.message); }
   const t = (data.trackers || []).find(x => /gas/i.test(x.name || '') || x.icon === '🔥');
   if (!t) return;
@@ -91,11 +119,12 @@ function checkGasBottle() {
   const last = ch[ch.length - 1], since = day(today) - day(last);
   if (since < avg) return;
   if (props.getProperty('gas_alerted') === last) return;      // only once per bottle
-  UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
-    method: 'post', muteHttpExceptions: true,
-    payload: since + ' days since the last change. Your bottles usually last about ' + avg + ' days.',
+  const gasMsg = since + ' days since the last change. Your bottles usually last about ' + avg + ' days.';
+  if (topic) UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
+    method: 'post', muteHttpExceptions: true, payload: gasMsg,
     headers: ntfyAuth_({ Title: 'Gas bottle due - Home Base', Tags: 'fire', Click: APP_URL })
   });
+  hbBroadcast_('🔥 Gas bottle due', gasMsg);
   props.setProperty('gas_alerted', last);
 }
 
@@ -198,11 +227,12 @@ function checkDates_(data, topic) {
     const years = dt.yearly !== false && p[0] > 1900 ? Number(iso.slice(0, 4)) - p[0] : 0;
     const kind = dt.type || (dt.icon === '🎂' ? 'birthday' : dt.icon === '💍' ? 'anniversary' : 'other');
     const extra = years ? (kind === 'birthday' ? ' (turns ' + years + ')' : kind === 'anniversary' ? ' (' + years + ' years)' : ' (' + years + ' years)') : '';
-    UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
+    if (topic) UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
       method: 'post', muteHttpExceptions: true,
       payload: 'In 3 days: ' + dt.name + extra,
       headers: ntfyAuth_({ Title: 'Coming up - Home Base', Tags: 'tada', Click: APP_URL })
     });
+    hbBroadcast_((dt.icon || '🎉') + ' Coming up', 'In 3 days: ' + dt.name + extra);
     props.setProperty(key, '1');
   });
 }
@@ -270,6 +300,11 @@ function remWhen_(w) {
 function checkReminders() {
   const props = PropertiesService.getScriptProperties();
   props.setProperty('rem_lastrun', remNow_());
+  const today = remNow_().slice(0, 10);
+  if (remNow_().slice(11) >= '08:00' && props.getProperty('daily_done') !== today) {    // gas bottle + important dates, once a day after 8am
+    props.setProperty('daily_done', today);
+    try { checkGasBottle(); } catch (e) { Logger.log('Daily: ' + e.message); }
+  }
   try { checkReminders__(props); props.deleteProperty('rem_lasterr'); }
   catch (e) { props.setProperty('rem_lasterr', remNow_() + ' ' + e.message); throw e; }
 }
@@ -321,7 +356,24 @@ function remPush_(d, it, kind, url, who) {
       { action: 'http', label: 'Tomorrow', url: act('tmr'), method: 'GET', clear: true }
     ]
   };
-  return remSend_(who, body, it.title);
+  body.badge = remBadge_(d); body.tag = it.id;
+  body.ptitle = d.hide ? 'Reminder' : '⏰ ' + it.title;
+  body.pbody = d.hide ? 'You have a reminder' : kind === 'early' ? 'Coming up · ' + remWhen_(it.due) : kind === 'nag' ? 'Still to do · tap to open' : 'Due ' + remWhen_(it.snooze || it.due);
+  return remSend_(who, body, it.title, d);
+}
+/* Number on the Home Base icon: overdue reminders plus bills due within 3 days. */
+function remBadge_(d) {
+  const now = remNow_(); let n = (d.items || []).filter(x => !x.done && (x.snooze || x.due) <= now).length;
+  try { n += bbUrgent_(); } catch (e) {}
+  return n;
+}
+function bbUrgent_() {
+  if (typeof BILLS_ENABLED !== 'undefined' && !BILLS_ENABLED) return 0;
+  const c = CacheService.getScriptCache(), hit = c.get('bb_urgent'); if (hit !== null) return Number(hit);
+  let n = 0;
+  try { const lim = Utilities.formatDate(new Date(Date.now() + 3 * 864e5), REM_TZ, 'yyyy-MM-dd');
+    n = bbData_().bills.filter(b => b.status === 'due' && String(b.autopay) !== 'true' && b.dueDate && b.dueDate <= lim).length; } catch (e) {}
+  c.put('bb_urgent', String(n), 900); return n;
 }
 /* A failed alert is tried again next minute; after 30 failed tries it is skipped so it can't loop forever. */
 function remOk_(st, code) {
@@ -329,7 +381,18 @@ function remOk_(st, code) {
   st.f = (st.f || 0) + 1;
   return st.f >= 30;
 }
-function remSend_(who, body, label) {
+function remSend_(who, body, label, d) {
+  const via = (d && d.via) || 'ntfy', hasPush = wpSubs_(who).length > 0;
+  let push = '', ntfy = '';
+  if (hasPush && via !== 'ntfy') push = wpSend_(who, { title: body.ptitle || body.title, body: body.pbody || body.message, tag: body.tag, badge: body.badge, urgent: body.priority >= 4 });
+  if (body.topic && (via !== 'push' || !hasPush)) ntfy = remNtfy_(body);
+  const code = push === 200 || ntfy === 200 ? 200 : (push || ntfy || 'nothing to send to');
+  const props = PropertiesService.getScriptProperties(), k = 'remlog_' + who;
+  const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code, push: push, ntfy: ntfy });
+  props.setProperty(k, JSON.stringify(log.slice(0, 6)));
+  return code;
+}
+function remNtfy_(body) {
   let code = 0;
   // Publish to https://ntfy.sh/<topic> with headers (Google can't reach ntfy's JSON address).
   const enc = t => /^[\x20-\x7e]*$/.test(t) ? t : '=?UTF-8?B?' + Utilities.base64Encode(t, Utilities.Charset.UTF_8) + '?=';
@@ -341,10 +404,11 @@ function remSend_(who, body, label) {
     try { code = UrlFetchApp.fetch('https://ntfy.sh/' + encodeURIComponent(body.topic), opts).getResponseCode(); }
     catch (e) { code = 'error: ' + e.message; }
   }
-  const props = PropertiesService.getScriptProperties(), k = 'remlog_' + who;
-  const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code });
-  props.setProperty(k, JSON.stringify(log.slice(0, 6)));
   return code;
+}
+/* Gas bottle and important-date alerts go to everyone in the house who turned notifications on. */
+function hbBroadcast_(title, message) {
+  ['S', 'D'].forEach(w => { try { wpSend_(w, { title: title, body: message }); } catch (e) {} });
 }
 function remSetup_(p) {
   ScriptApp.getProjectTriggers().forEach(tr => { if (tr.getHandlerFunction() === 'checkReminders') ScriptApp.deleteTrigger(tr); });
@@ -367,9 +431,9 @@ function remStatus_(p) {
   const who = remWho_(p.who), props = PropertiesService.getScriptProperties(), d = remRead_(who) || {};
   const open = (d.items || []).filter(x => !x.done).sort((a, b) => ((a.snooze || a.due) < (b.snooze || b.due) ? -1 : 1));
   let res = { ok: true, version: 3, now: remNow_(), triggers: ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'checkReminders').length,
-    hasToken: !!props.getProperty('ntfy_token'), lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', topic: d.topic || '', open: open.length,
+    hasToken: !!props.getProperty('ntfy_token'), pushSubs: wpSubs_(who).length, via: d.via || 'ntfy', engine: wpSelfTest_(), lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', topic: d.topic || '', open: open.length,
     next: open[0] ? { t: open[0].title, at: open[0].snooze || open[0].due } : null, log: JSON.parse(props.getProperty('remlog_' + who) || '[]') };
-  if (p.test) res.test = d.topic ? remSend_(who, { topic: d.topic, title: 'Home Base', message: 'Test from your Google script ✅', tags: ['white_check_mark'] }, 'Test') : 'no topic';
+  if (p.test) { res.test = remSend_(who, { topic: d.topic, title: 'Home Base', message: 'Test from your Google script ✅', tags: ['white_check_mark'], badge: remBadge_(d) }, 'Test', d); res.testLog = JSON.parse(props.getProperty('remlog_' + who) || '[]')[0]; }
   return res;
 }
 
@@ -381,7 +445,12 @@ function remPushRoutine_(d, r, left, url, who) {
     priority: 3, tags: ['sunrise'],
     actions: [{ action: 'http', label: 'All done', url: all, method: 'GET', clear: true }]
   };
-  return remSend_(who, body, r.name);
+  body.badge = remBadge_(d); body.tag = 'rt_' + r.id;
+  return remSend_(who, body, r.name, d);
+}
+
+function wpSelfTest_() {
+  try { const v = WP.makeVapid(); return v.pub.length > 80 ? 'ok' : 'bad'; } catch (e) { return 'error: ' + e.message; }
 }
 
 function setupReminders() {
@@ -389,6 +458,190 @@ function setupReminders() {
   ScriptApp.newTrigger('checkReminders').timeBased().everyMinutes(1).create();
   checkReminders();
   Logger.log('Reminders are on. They are checked every minute.');
+}
+
+
+/* ---------- Home Base notifications (Web Push, the same standard SMail uses) ----------
+ * Google Apps Script has no built-in tools for Apple's push encryption, so this file carries its own:
+ * P-256 elliptic curves (signing and key exchange), SHA-256/HMAC and AES-128-GCM, all in plain JavaScript.
+ */
+var WP = (function(){
+  /* ---- bytes ---- */
+  const u8 = a => Uint8Array.from(a, x => x & 255);
+  const cat = (...a) => { const n = a.reduce((s, x) => s + x.length, 0), o = new Uint8Array(n); let i = 0; a.forEach(x => { o.set(x, i); i += x.length; }); return o; };
+  const utf8 = s => { const o = []; s = unescape(encodeURIComponent(s)); for (let i = 0; i < s.length; i++) o.push(s.charCodeAt(i)); return u8(o); };
+  const B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  function b64u(b){ let s = "", i = 0; for (; i + 2 < b.length; i += 3){ const n = (b[i] << 16) | (b[i+1] << 8) | b[i+2]; s += B64[n >> 18] + B64[(n >> 12) & 63] + B64[(n >> 6) & 63] + B64[n & 63]; }
+    if (b.length - i === 1){ const n = b[i] << 16; s += B64[n >> 18] + B64[(n >> 12) & 63]; } else if (b.length - i === 2){ const n = (b[i] << 16) | (b[i+1] << 8); s += B64[n >> 18] + B64[(n >> 12) & 63] + B64[(n >> 6) & 63]; } return s; }
+  function unb64u(s){ s = String(s).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_"); const o = []; let buf = 0, bits = 0;
+    for (const c of s){ const v = B64.indexOf(c); if (v < 0) continue; buf = (buf << 6) | v; bits += 6; if (bits >= 8){ bits -= 8; o.push((buf >> bits) & 255); } } return u8(o); }
+  const toBig = b => { let n = 0n; for (const x of b) n = (n << 8n) | BigInt(x); return n; };
+  const fromBig = (n, len) => { const o = new Uint8Array(len); for (let i = len - 1; i >= 0; i--){ o[i] = Number(n & 255n); n >>= 8n; } return o; };
+
+  /* ---- SHA-256 / HMAC ---- */
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  function sha256(msg){
+    const l = msg.length, nb = ((l + 9 + 63) >> 6) << 6, m = new Uint8Array(nb); m.set(msg); m[l] = 0x80;
+    const bl = l * 8; for (let i = 0; i < 8; i++) m[nb - 1 - i] = Math.floor(bl / Math.pow(2, 8 * i)) & 255;
+    const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19], W = new Array(64);
+    const r = (x, n) => (x >>> n) | (x << (32 - n));
+    for (let o = 0; o < nb; o += 64){
+      for (let t = 0; t < 16; t++) W[t] = (m[o+4*t] << 24) | (m[o+4*t+1] << 16) | (m[o+4*t+2] << 8) | m[o+4*t+3];
+      for (let t = 16; t < 64; t++){ const s0 = r(W[t-15],7) ^ r(W[t-15],18) ^ (W[t-15] >>> 3), s1 = r(W[t-2],17) ^ r(W[t-2],19) ^ (W[t-2] >>> 10); W[t] = (W[t-16] + s0 + W[t-7] + s1) | 0; }
+      let [a,b,c,d,e,f,g,h] = H;
+      for (let t = 0; t < 64; t++){
+        const S1 = r(e,6) ^ r(e,11) ^ r(e,25), ch = (e & f) ^ (~e & g), t1 = (h + S1 + ch + K[t] + W[t]) | 0;
+        const S0 = r(a,2) ^ r(a,13) ^ r(a,22), mj = (a & b) ^ (a & c) ^ (b & c), t2 = (S0 + mj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0]+a)|0; H[1] = (H[1]+b)|0; H[2] = (H[2]+c)|0; H[3] = (H[3]+d)|0; H[4] = (H[4]+e)|0; H[5] = (H[5]+f)|0; H[6] = (H[6]+g)|0; H[7] = (H[7]+h)|0;
+    }
+    const out = new Uint8Array(32); H.forEach((v, i) => { out[4*i] = v >>> 24; out[4*i+1] = (v >>> 16) & 255; out[4*i+2] = (v >>> 8) & 255; out[4*i+3] = v & 255; }); return out;
+  }
+  function hmac(key, msg){
+    if (key.length > 64) key = sha256(key);
+    const k = new Uint8Array(64); k.set(key);
+    return sha256(cat(k.map(x => x ^ 0x5c), sha256(cat(k.map(x => x ^ 0x36), msg))));
+  }
+
+  /* ---- randomness (Google's UUIDs come from a secure generator) ---- */
+  let ctr = 0;
+  function rand(n){
+    const parts = []; let out = new Uint8Array(0);
+    while (out.length < n){
+      const seed = (typeof Utilities !== "undefined" ? Utilities.getUuid() + Utilities.getUuid() : WP_TEST_RANDOM()) + "|" + Date.now() + "|" + (++ctr) + "|" + Math.random();
+      out = cat(out, sha256(utf8(seed)));
+    }
+    return out.slice(0, n);
+  }
+
+  /* ---- P-256 ---- */
+  const P = 0xffffffff00000001000000000000000000000000ffffffffffffffffffffffffn;
+  const N = 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551n;
+  const A = P - 3n, B = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604bn;
+  const G = [0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296n, 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5n];
+  const mod = (a, m) => { const r = a % m; return r >= 0n ? r : r + m; };
+  function inv(a, m){ let [r0, r1] = [mod(a, m), m], [s0, s1] = [1n, 0n]; while (r1){ const q = r0 / r1; [r0, r1] = [r1, r0 - q * r1]; [s0, s1] = [s1, s0 - q * s1]; } return mod(s0, m); }
+  // Jacobian coordinates [X, Y, Z]
+  function dbl(p){ const [X, Y, Z] = p; if (!Y || !Z) return [0n, 1n, 0n];
+    const YY = mod(Y*Y, P), S = mod(4n*X*YY, P), ZZ = mod(Z*Z, P), M = mod(3n*(X - ZZ)*(X + ZZ), P);
+    const X3 = mod(M*M - 2n*S, P); return [X3, mod(M*(S - X3) - 8n*YY*YY, P), mod(2n*Y*Z, P)]; }
+  function add(p, q){ if (!p[2]) return q; if (!q[2]) return p;
+    const Z1Z1 = mod(p[2]*p[2], P), Z2Z2 = mod(q[2]*q[2], P), U1 = mod(p[0]*Z2Z2, P), U2 = mod(q[0]*Z1Z1, P);
+    const S1 = mod(p[1]*q[2]*Z2Z2, P), S2 = mod(q[1]*p[2]*Z1Z1, P);
+    if (U1 === U2) return S1 === S2 ? dbl(p) : [0n, 1n, 0n];
+    const H = mod(U2 - U1, P), R = mod(S2 - S1, P), HH = mod(H*H, P), HHH = mod(H*HH, P), V = mod(U1*HH, P);
+    const X3 = mod(R*R - HHH - 2n*V, P); return [X3, mod(R*(V - X3) - S1*HHH, P), mod(p[2]*q[2]*H, P)]; }
+  function mul(k, pt){ let R = [0n, 1n, 0n], Q = [pt[0], pt[1], 1n];
+    for (let i = BigInt(k.toString(2).length) - 1n; i >= 0n; i--){ R = dbl(R); if ((k >> i) & 1n) R = add(R, Q); }
+    if (!R[2]) throw new Error("point at infinity"); const zi = inv(R[2], P), zi2 = mod(zi*zi, P); return [mod(R[0]*zi2, P), mod(R[1]*zi2*zi, P)]; }
+  const pub = pt => cat([4], fromBig(pt[0], 32), fromBig(pt[1], 32));
+  function unpub(b){ if (b.length !== 65 || b[0] !== 4) throw new Error("bad public key");
+    const x = toBig(b.subarray(1, 33)), y = toBig(b.subarray(33)); if (mod(y*y - (x*x*x + A*x + B), P) !== 0n) throw new Error("public key not on curve"); return [x, y]; }
+  function newKey(){ let d; do { d = mod(toBig(rand(40)), N); } while (!d); return { d, pub: pub(mul(d, G)) }; }
+
+  /* ECDSA P-256 / SHA-256 with deterministic nonces (RFC 6979), so the private key never depends on luck */
+  function sign(d, msg){
+    const h = sha256(msg), z = mod(toBig(h), N), x = fromBig(d, 32), h1 = fromBig(z, 32);
+    let V = new Uint8Array(32).fill(1), Kk = new Uint8Array(32);
+    Kk = hmac(Kk, cat(V, [0], x, h1)); V = hmac(Kk, V); Kk = hmac(Kk, cat(V, [1], x, h1)); V = hmac(Kk, V);
+    for (;;){
+      V = hmac(Kk, V); const k = toBig(V);
+      if (k > 0n && k < N){ const r = mod(mul(k, G)[0], N); if (r){ let s = mod(inv(k, N) * (z + r * d), N); if (s){ if (s > N / 2n) s = N - s; return cat(fromBig(r, 32), fromBig(s, 32)); } } }
+      Kk = hmac(Kk, cat(V, [0])); V = hmac(Kk, V);
+    }
+  }
+
+  /* ---- AES-128-GCM ---- */
+  const SB = (() => { const s = new Uint8Array(256); let p = 1, q = 1;
+    do { p = p ^ ((p << 1) & 255) ^ (p & 0x80 ? 0x1b : 0); q ^= q << 1; q ^= q << 2; q ^= q << 4; q &= 255; if (q & 0x80) q ^= 0x09;
+      const x = q ^ ((q << 1) | (q >> 7)) ^ ((q << 2) | (q >> 6)) ^ ((q << 3) | (q >> 5)) ^ ((q << 4) | (q >> 4)); s[p] = (x ^ 0x63) & 255; } while (p !== 1);
+    s[0] = 0x63; return s; })();
+  const xt = b => ((b << 1) ^ (b & 0x80 ? 0x1b : 0)) & 255;
+  function expand(key){ const w = new Uint8Array(176); w.set(key); let rc = 1;
+    for (let i = 16; i < 176; i += 4){ let t = w.slice(i - 4, i);
+      if (i % 16 === 0){ t = Uint8Array.of(SB[t[1]] ^ rc, SB[t[2]], SB[t[3]], SB[t[0]]); rc = xt(rc); }
+      for (let j = 0; j < 4; j++) w[i + j] = w[i - 16 + j] ^ t[j]; } return w; }
+  function encBlock(w, inp){ const s = inp.slice(); for (let i = 0; i < 16; i++) s[i] ^= w[i];
+    for (let r = 1; r <= 10; r++){
+      for (let i = 0; i < 16; i++) s[i] = SB[s[i]];
+      const t = s.slice(); for (let c = 0; c < 4; c++) for (let rr = 0; rr < 4; rr++) s[c*4 + rr] = t[((c + rr) % 4)*4 + rr];
+      if (r < 10) for (let c = 0; c < 4; c++){ const a0 = s[c*4], a1 = s[c*4+1], a2 = s[c*4+2], a3 = s[c*4+3], all = a0 ^ a1 ^ a2 ^ a3;
+        s[c*4] ^= all ^ xt(a0 ^ a1); s[c*4+1] ^= all ^ xt(a1 ^ a2); s[c*4+2] ^= all ^ xt(a2 ^ a3); s[c*4+3] ^= all ^ xt(a3 ^ a0); }
+      for (let i = 0; i < 16; i++) s[i] ^= w[r*16 + i];
+    } return s; }
+  function gmul(X, Y){ let Z = 0n, V = Y; const R = 0xe1n << 120n;
+    for (let i = 127n; i >= 0n; i--){ if ((X >> i) & 1n) Z ^= V; V = (V & 1n) ? (V >> 1n) ^ R : V >> 1n; } return Z; }
+  function gcm(key, iv, pt){
+    const w = expand(key), Hk = toBig(encBlock(w, new Uint8Array(16)));
+    const J0 = cat(iv, [0, 0, 0, 1]), ct = new Uint8Array(pt.length);
+    let cnt = toBig(J0);
+    for (let i = 0; i < pt.length; i += 16){ cnt = (cnt & ~0xffffffffn) | ((cnt + 1n) & 0xffffffffn); const ks = encBlock(w, fromBig(cnt, 16));
+      for (let j = 0; j < 16 && i + j < pt.length; j++) ct[i + j] = pt[i + j] ^ ks[j]; }
+    let y = 0n; for (let i = 0; i < ct.length; i += 16){ const blk = new Uint8Array(16); blk.set(ct.subarray(i, i + 16)); y = gmul(y ^ toBig(blk), Hk); }
+    y = gmul(y ^ BigInt(ct.length * 8), Hk);
+    const tag = fromBig(y ^ toBig(encBlock(w, J0)), 16);
+    return cat(ct, tag);
+  }
+
+  /* ---- Web Push message (RFC 8291 aes128gcm + RFC 8292 VAPID) ---- */
+  function encrypt(sub, payload){
+    const ua = unb64u(sub.keys.p256dh), auth = unb64u(sub.keys.auth), uaPt = unpub(ua);
+    const eph = newKey(), shared = fromBig(mul(eph.d, uaPt)[0], 32), salt = rand(16);
+    const prkKey = hmac(auth, shared), ikm = hmac(prkKey, cat(utf8("WebPush: info\0"), ua, eph.pub, [1]));
+    const prk = hmac(salt, ikm);
+    const cek = hmac(prk, cat(utf8("Content-Encoding: aes128gcm\0"), [1])).slice(0, 16);
+    const nonce = hmac(prk, cat(utf8("Content-Encoding: nonce\0"), [1])).slice(0, 12);
+    const body = gcm(cek, nonce, cat(utf8(payload), [2]));
+    return cat(salt, [0, 0, 16, 0], [65], eph.pub, body);
+  }
+  function jwt(vapid, aud, subject){
+    const enc = o => b64u(utf8(JSON.stringify(o)));
+    const head = enc({ typ:"JWT", alg:"ES256" }) + "." + enc({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: subject });
+    return head + "." + b64u(sign(toBig(unb64u(vapid.d)), utf8(head)));
+  }
+  function makeVapid(){ const k = newKey(); return { d: b64u(fromBig(k.d, 32)), pub: b64u(k.pub) }; }
+  return { encrypt, jwt, makeVapid, b64u, unb64u, sha256, hmac, sign, gcm, mul, G, toBig, fromBig, utf8 };
+})();
+
+/* ---------- sending ---------- */
+function wpVapid_() {
+  const props = PropertiesService.getScriptProperties();
+  let v = props.getProperty('vapid');
+  if (!v) { v = JSON.stringify(WP.makeVapid()); props.setProperty('vapid', v); }
+  return JSON.parse(v);
+}
+function wpSubs_(who) { return JSON.parse(PropertiesService.getScriptProperties().getProperty('pushsubs_' + who) || '[]'); }
+function wpSaveSubs_(who, subs) { PropertiesService.getScriptProperties().setProperty('pushsubs_' + who, JSON.stringify(subs.slice(-6))); }
+function wpSubscribe_(p) {
+  const who = remWho_(p.who), sub = typeof p.sub === 'string' ? JSON.parse(p.sub) : p.sub;
+  if (!sub || !/^https:\/\//.test(sub.endpoint || '') || !sub.keys || !sub.keys.p256dh || !sub.keys.auth) return { ok: false, error: 'bad subscription' };
+  const subs = wpSubs_(who).filter(s => s.endpoint !== sub.endpoint);
+  if (p.off) { wpSaveSubs_(who, subs); return { ok: true, subs: subs.length }; }
+  subs.push({ endpoint: sub.endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth }, at: remNow_() });
+  wpSaveSubs_(who, subs);
+  return { ok: true, subs: subs.length };
+}
+/* Sends one notification to every phone of this person that turned Home Base notifications on. Returns 200 if any phone got it. */
+function wpSend_(who, msg) {
+  const subs = wpSubs_(who); if (!subs.length) return 0;
+  const vapid = wpVapid_(), payload = JSON.stringify(msg); let best = 0, keep = [];
+  subs.forEach(s => {
+    let code = 0;
+    try {
+      const aud = s.endpoint.match(/^https:\/\/[^/]+/)[0];
+      const res = UrlFetchApp.fetch(s.endpoint, {
+        method: 'post', muteHttpExceptions: true, contentType: 'application/octet-stream',
+        payload: Array.from(WP.encrypt(s, payload), b => (b > 127 ? b - 256 : b)),
+        headers: { TTL: '86400', Urgency: msg.urgent ? 'high' : 'normal', 'Content-Encoding': 'aes128gcm', Authorization: 'vapid t=' + WP.jwt(vapid, aud, APP_URL) + ', k=' + vapid.pub }
+      });
+      code = res.getResponseCode();
+    } catch (e) { code = 'error: ' + e.message; }
+    if (code !== 404 && code !== 410) keep.push(s);            // that phone removed Home Base or turned notifications off
+    if (code === 201 || code === 200) best = 200; else if (!best) best = code;
+  });
+  if (keep.length !== subs.length) wpSaveSubs_(who, keep);
+  return best;
 }
 
 /* ================= Reminders core (shared by the app and the Google script) =================
@@ -460,7 +713,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","lists","routines","rdone","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","routines","rdone","via","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);

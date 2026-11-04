@@ -343,6 +343,8 @@
   .rchk2 .ck.bad{color:#ffb3aa}
   .rbtn.ghost{background:rgba(255,255,255,.1);color:var(--ink)}
   .rtopic input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font-size:14px;outline:none;padding:4px 0;font-family:ui-monospace,Menlo,monospace}
+  .rdet{margin-top:10px}
+  .rdet summary{font-size:13px;font-weight:800;color:var(--acc);cursor:pointer;padding:4px 0}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -731,8 +733,8 @@ const mk = (title, items=[], tab="shopping") => ({id:uid(), title, icon:guessIco
 const DEFAULT = {
   tab:"shopping",
   tabs:{
-    shopping:[ mk("Aldi",["Milk","Eggs","Butter"]), mk("Coles",["Bread"]), mk("Costco"), mk("Indian Shop",["Toor dal","Curry leaves"]), mk("Kmart") ],
-    personal:[ mk("To Do",["Pay electricity bill"],"personal"), mk("Songs to Upload",[],"personal"), mk("Notes",[],"personal") ],
+    shopping:[ mk("Aldi"), mk("Coles"), mk("Woolworths"), mk("Costco") ],
+    personal:[ mk("To Do",[],"personal"), mk("Notes",[],"personal") ],
     work:[]
   },
   customers:[],
@@ -2231,11 +2233,19 @@ async function billsRefresh(spin){
     const data = await bbFetch("data");
     bbNormalise(data); BB.err = "";
     try { localStorage.setItem(BB_CACHE, JSON.stringify(data)); } catch(e){}
+    if (LOCAL.noBills){ LOCAL.noBills = 0; saveLocal(); applyBillsTab(); }
     if (spin) toast("Bills up to date");
-  } catch(e){ BB.err = e.message; if (spin) toast(navigator.onLine === false ? "Offline — showing saved bills" : "Couldn't load bills"); }
+  } catch(e){ BB.err = e.message;
+    if (/Could not find the "BillBell Data"/.test(e.message) && !bbLinked() && !LOCAL.noBills){ LOCAL.noBills = 1; saveLocal(); applyBillsTab(); } if (spin) toast(navigator.onLine === false ? "Offline — showing saved bills" : "Couldn't load bills"); }
   BB.loading = false;
-  renderBillsSafe(); updateBillsBadge();
+  renderBillsSafe(); updateBillsBadge(); if (typeof updateAppBadge === "function") updateAppBadge();
 }
+/* No BillBell sheet in this Google account (e.g. someone else's own copy): hide the Bills tab. */
+function applyBillsTab(){
+  const t = document.querySelector('.tab[data-tab="bills"]'); if (t) t.style.display = LOCAL.noBills ? "none" : "";
+  if (LOCAL.noBills && S.tab === "bills"){ S.tab = "shopping"; save(); render(); }
+}
+setTimeout(applyBillsTab, 0);
 function bbTyping(){ const a = document.activeElement; return (a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && a.closest("#bills")) || document.getElementById("menu").classList.contains("on"); }
 function renderBillsSafe(){
   if (S.tab === "personal" && !bbTyping()) renderPersonalBills();
@@ -2838,7 +2848,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","lists","routines","rdone","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","routines","rdone","via","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);
@@ -2980,6 +2990,7 @@ async function remSync(){
   finally { remBusy = false; if (remAgain){ remAgain = false; remSync(); } }
 }
 function remRefresh(){
+  updateAppBadge();
   if (S.tab === "personal" && !interacting()) renderRems();
   if (S.tab === "shopping" && typeof renderToday === "function") renderToday();
 }
@@ -3015,7 +3026,7 @@ function renderRems(){
     return `<button class="rl" data-rl="${l.id}"><span class="rli" style="background:${l.color}">${l.icon}</span><span class="rln">${esc(l.name)}</span><span class="rlc ${late ? "late" : ""}">${mine.length}</span><span class="rlx">›</span></button>`;
   }).join("");
   const warn = !REM_SYNC.ok && REM_SYNC.err !== "offline" ? `<button class="rwarn bad" id="rWarn">⚠️ ${REM_SYNC.err === "unknown op" ? "Your Google script needs the reminders update" : "Reminders aren't reaching your Google script"} · tap to check</button>`
-    : !LOCAL.remTested ? `<button class="rwarn" id="rWarn">🔔 Turn on alerts for this phone</button>` : "";
+    : !LOCAL.remTested && !LOCAL.pushOn ? `<button class="rwarn" id="rWarn">🔔 Turn on notifications for this phone</button>` : "";
   host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
     ${warn}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
@@ -3101,7 +3112,7 @@ function remDone(id){
   const it = REM.items.find(x => x.id === id); if (!it) return;
   const copy = JSON.parse(JSON.stringify(it)), h = RL.complete(it, remNow());
   REM.hist = [h].concat(REM.hist || []).slice(0, 60);
-  remSave(); renderRems(); if (typeof renderToday === "function") renderToday();
+  remSave(); renderRems(); updateAppBadge(); if (typeof renderToday === "function") renderToday();
   undoToast(it.done ? "Done: " + copy.title : "Next: " + remWhen(it.due), () => {
     Object.assign(it, copy, { u:Date.now(), done:false, doneAt:null }); REM.hist = REM.hist.filter(x => x.id !== h.id); remSave(); renderRems();
   });
@@ -3203,11 +3214,16 @@ function showRemSettings(){
   const q0 = REM.quiet || { on:false, from:"22:00", to:"07:00" };
   menu.innerHTML = `<div class="mt">Reminder alerts</div>
     <div class="rset">
-      <div class="rsh">1 · Get alerts on this phone</div>
+      <div class="rsh">1 · Home Base notifications</div>
+      <div class="rnote" style="margin:0 0 6px">Alerts come from the Home Base icon, with a number on the icon for things that are due.</div>
+      <div id="rPushBox"></div>
+      <label style="display:block;font-size:12px;color:var(--soft);font-weight:700;margin:10px 0 3px">Send my alerts by</label>
+      <select class="set-sel" id="rVia" style="width:100%;margin:0"><option value="push" ${REM.via === "push" ? "selected" : ""}>Home Base notifications</option><option value="both" ${REM.via === "both" ? "selected" : ""}>Home Base and ntfy</option><option value="ntfy" ${!REM.via || REM.via === "ntfy" ? "selected" : ""}>ntfy app only</option></select>
+      <details class="rdet"${REM.via === "push" ? "" : " open"}><summary>ntfy app (optional)</summary>
       <ol class="rsteps"><li>Install the free <b>ntfy</b> app from the App Store.</li><li>In ntfy tap <b>＋</b>, paste the topic below and tap <b>Subscribe</b>.</li><li>Tap <b>Send test</b> to check it works.</li></ol>
       <div class="rtopic"><code id="rTop">${esc(REM.topic)}</code><button id="rCp">Copy</button></div>
-      <button class="rbtn" id="rTest">🔔 Send test</button>
-      <div class="rnote">This topic is private to you. D's phone doesn't see your reminders.</div>
+      <button class="rbtn ghost" id="rTest">🔔 Send ntfy test</button></details>
+      <div class="rnote">Your reminders are private to you. D's phone doesn't see them.</div>
       <div class="rsh">2 · Quiet hours</div>
       <label class="rtog"><input type="checkbox" id="rQ" ${q0.on ? "checked" : ""}><span>Hold alerts during quiet hours</span></label>
       <div class="r2"><div><label>From</label><input type="time" id="rQf" value="${q0.from}"></div><div><label>Until</label><input type="time" id="rQt" value="${q0.to}"></div></div>
@@ -3227,6 +3243,8 @@ function showRemSettings(){
     <button class="sdone" id="rSd">Done</button>`;
   const $ = s => menu.querySelector(s);
   const setQ = () => { REM.quiet = { on:$("#rQ").checked, from:$("#rQf").value || "22:00", to:$("#rQt").value || "07:00" }; REM.su = Date.now(); remSave(); };
+  pushBox($("#rPushBox"));
+  $("#rVia").onchange = () => { REM.via = $("#rVia").value; REM.su = Date.now(); remSave(); toast("Saved"); };
   $("#rQ").onchange = setQ; $("#rQf").onchange = setQ; $("#rQt").onchange = setQ;
   $("#rHide").onchange = () => { REM.hide = $("#rHide").checked; REM.su = Date.now(); remSave(); };
   $("#rCp").onclick = () => remCopy(REM.topic, "Topic copied — paste it in ntfy");
@@ -3249,6 +3267,56 @@ function showRemSettings(){
   $("#rSd").onclick = () => { closeMenu(); renderRems(); };
   openMenu();
 }
+/* ---- Home Base notifications (Web Push) on this phone ---- */
+const pushSupported = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const standaloneApp = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+const urlB64 = s => { const b = atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+function pushBox(host){
+  if (!host) return;
+  let state, btn = "";
+  if (!pushSupported()) state = standaloneApp() ? "This iPhone needs iOS 16.4 or newer for Home Base notifications." : "Open Home Base from its <b>Home Screen icon</b> (not Safari) to turn on notifications.";
+  else if (Notification.permission === "denied") state = "Notifications are blocked for Home Base. Turn them on in iPhone <b>Settings → Notifications → Home Base</b>, then come back here.";
+  else if (Notification.permission === "granted" && LOCAL.pushOn) { state = "✅ Notifications are on for this phone."; btn = `<button class="rbtn ghost" id="rPushRe">Refresh this phone's notification link</button>`; }
+  else { state = ""; btn = `<button class="rbtn" id="rPush">🔔 Turn on notifications</button>`; }
+  host.innerHTML = (state ? `<div class="rnote" style="margin:0 0 4px;color:var(--ink)">${state}</div>` : "") + btn;
+  const b = host.querySelector("#rPush") || host.querySelector("#rPushRe");
+  if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Turning on…"; const ok = await enablePush(); pushBox(host); const v = document.getElementById("rVia"); if (ok && v) v.value = REM.via; };
+}
+async function enablePush(){
+  try {
+    if (!LOCAL.url){ toast("Connect your Google script first (⚙︎ → Sync)"); return false; }
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted"){ toast("Notifications weren't allowed"); return false; }
+    const reg = await navigator.serviceWorker.ready;
+    const k = await api({ doc:"house", key:keyFor(), op:"pushKey" });
+    if (!k || !k.ok){ toast(k && k.error === "unknown op" ? "Update your Google script first" : "Couldn't get the notification key"); return false; }
+    let sub = await reg.pushManager.getSubscription();
+    if (sub && sub.options && sub.options.applicationServerKey){
+      const cur = btoa(String.fromCharCode.apply(null, new Uint8Array(sub.options.applicationServerKey))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      if (cur !== k.key){ await sub.unsubscribe(); sub = null; }
+    }
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:urlB64(k.key) });
+    const r = await apiPost({ doc:"house", key:keyFor(), op:"pushSub", who:whoAmI(), sub:JSON.stringify(sub) });
+    if (!r || !r.ok){ toast("Couldn't save: " + ((r && r.error) || "no reply")); return false; }
+    LOCAL.pushOn = 1; saveLocal();
+    if (!REM.via || REM.via === "ntfy"){ REM.via = "push"; REM.su = Date.now(); remSave(); }
+    toast("Notifications are on 🔔"); updateAppBadge(); renderRems();
+    return true;
+  } catch(e){ toast("Couldn't turn on notifications: " + e.message); return false; }
+}
+/* The number on the Home Base icon: overdue reminders plus bills due within 3 days. */
+function appBadgeCount(){
+  let n = 0;
+  try { const now = remNow(); n += remOpen().filter(it => RL.at(it) <= now).length; } catch(e){}
+  try { if (typeof BB !== "undefined" && typeof bbUnpaid === "function") n += bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).length; } catch(e){}
+  return n;
+}
+function updateAppBadge(){
+  if (!("setAppBadge" in navigator)) return;
+  const n = appBadgeCount();
+  try { (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch(e){}
+}
+
 async function remCheck(out, test, setup){
   const line = (ok, t) => `<div class="ck ${ok === true ? "ok" : ok === false ? "bad" : ""}"><span>${ok === true ? "✅" : ok === false ? "❌" : "ℹ️"}</span><span>${t}</span></div>`;
   if (!LOCAL.url){ out.innerHTML = line(false, "This phone isn't connected to your Google script (⚙︎ → Sync)."); return; }
@@ -3268,10 +3336,17 @@ async function remCheck(out, test, setup){
   else if (ago == null || ago > 3) h += line(false, `The every-minute check is set but ${ago == null ? "has never run" : "last ran " + ago + " min ago"}. Run <b>setupReminders</b> again and allow access.`);
   else h += line(true, `Every-minute check is running (last run ${ago <= 0 ? "just now" : ago + " min ago"})`);
   if (r.lastErr) h += line(false, "Last check failed: " + esc(r.lastErr));
-  h += r.hasToken ? line(true, "Sending with your ntfy account") : line(null, "No ntfy account token yet. Without one, ntfy often refuses alerts from Google (error 429). Add it above.");
+  if (r.engine && r.engine !== "ok") h += line(false, "Your Google script can't make notifications: " + esc(r.engine));
+  const via = r.via || "ntfy";
+  if (via !== "ntfy") h += r.pushSubs ? line(true, `Home Base notifications are on for ${r.pushSubs} phone${r.pushSubs === 1 ? "" : "s"}`) : line(false, "Home Base notifications aren't turned on yet. Tap <b>Turn on notifications</b> above.");
+  if (via !== "push") h += r.hasToken ? line(true, "Sending to ntfy with your ntfy account") : line(null, "No ntfy account token yet. Without one, ntfy often refuses alerts from Google (error 429). Add it above.");
   h += r.topic === REM.topic ? line(true, "This phone and the script use the same ntfy topic") : line(false, "The script has a different ntfy topic from this phone. Pull down to refresh, then check again.");
   h += r.open ? line(true, `${r.open} reminder${r.open === 1 ? "" : "s"} saved in Google${r.next ? ` · next: ${esc(r.next.t)}, ${remWhen(r.next.at)}` : ""}`) : line(false, "Google has no reminders saved from this phone yet.");
   if (r.log && r.log.length) h += line(null, "Last alerts sent: " + r.log.slice(0, 3).map(x => `${esc(x.t)} at ${remHM(x.at)}${x.code === 200 ? "" : " (failed: " + esc(String(x.code)) + ")"}`).join("; "));
+  if (test && r.testLog){ const tl = r.testLog;
+    if (tl.push !== "" && tl.push !== undefined) h += tl.push === 200 ? line(true, "Home Base notification sent — check your phone") : line(false, "Home Base notification failed: " + esc(String(tl.push)));
+    if (tl.ntfy !== "" && tl.ntfy !== undefined) h += tl.ntfy === 200 ? line(true, "ntfy alert sent") : line(false, "ntfy alert failed: " + esc(String(tl.ntfy)));
+    test = false; }
   else h += line(null, "No alerts have been sent by the script yet.");
   if (test && r.test === 429) h += line(false, r.hasToken ? "ntfy is still limiting your account (429). Wait a minute and try again." : "ntfy refused it (429 = too many alerts from Google's shared address). Add your free ntfy token above, then test again.");
   else if (test) h += r.test === 200 ? line(true, "Test sent from Google — it should be on your phone now. If not, check you're subscribed to the topic in ntfy.") : line(false, "Google couldn't send the test: " + esc(String(r.test)));
@@ -3303,7 +3378,8 @@ remInit(); remSave(false);
 setTimeout(remSync, 900);
 setInterval(() => { if (!document.hidden) remSync(); }, 30000);
 setInterval(() => { if (!document.hidden && !interacting()) remRefresh(); }, 60000);
-document.addEventListener("visibilitychange", () => { if (!document.hidden) remSync(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden){ remSync(); updateAppBadge(); } });
+setTimeout(updateAppBadge, 2500);
 /* ================= Routines: checklists that reset every day ================= */
 const RT_ICONS = ["☀️","🌙","💊","🏋️","🧹","📚","🧘","🐶","🍳","🚿","👔","🛏️","🙏","💧"];
 const RT_TEMPLATES = {
