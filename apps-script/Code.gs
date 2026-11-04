@@ -128,6 +128,24 @@ function checkGasBottle() {
   props.setProperty('gas_alerted', last);
 }
 
+/* Bill alerts for a household without BillBell (BillBell sends its own): 2 days before and on the due day. */
+function checkBills_() {
+  if (NTFY_TOPIC) return;
+  const props = PropertiesService.getScriptProperties();
+  const today = Utilities.formatDate(new Date(), 'Australia/Sydney', 'yyyy-MM-dd');
+  const day = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); };
+  let data; try { data = bbData_(); } catch (e) { return; }
+  const names = {}; (data.providers || []).forEach(p => { names[p.id] = p.name; });
+  data.bills.forEach(b => {
+    if (b.status !== 'due' || String(b.autopay) === 'true' || !b.dueDate) return;
+    const left = day(b.dueDate) - day(today);
+    if (left !== 2 && left !== 0) return;
+    const key = 'bill_' + b.id + '_' + left; if (props.getProperty(key)) return;
+    hbBroadcast_('💸 ' + (names[b.provider] || 'Bill') + ' due ' + (left ? 'in 2 days' : 'today'), '$' + Number(b.amount || 0).toFixed(2) + ' due ' + b.dueDate.split('-').reverse().join('/'));
+    props.setProperty(key, '1');
+  });
+}
+
 /** Sends a test alert so you can check ntfy is working. */
 function testGasAlert() {
   const props = PropertiesService.getScriptProperties();
@@ -154,10 +172,14 @@ function bbSheet_() {
   const id = props.getProperty('bb_sheet');
   if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} }
   const it = DriveApp.getFilesByName(BILLBELL_SHEET);
-  if (!it.hasNext()) throw new Error('Could not find the "' + BILLBELL_SHEET + '" sheet in this Google account');
-  const f = it.next();
-  props.setProperty('bb_sheet', f.getId());
-  return SpreadsheetApp.openById(f.getId());
+  if (it.hasNext()) { const f = it.next(); props.setProperty('bb_sheet', f.getId()); return SpreadsheetApp.openById(f.getId()); }
+  // No BillBell yet (a new household): make the bills sheet in this Google Drive, ready for bills added in the app.
+  const ss = SpreadsheetApp.create(BILLBELL_SHEET);
+  const bills = ss.getSheets()[0]; bills.setName('Bills');
+  bills.getRange(1, 1, 1, 21).setValues([['id', 'provider', 'category', 'amount', 'dueDate', 'issueDate', 'period', 'status', 'paidDate', 'autopay', 'billerCode', 'bpayRef', 'accountNo', 'invoiceNo', 'notes', 'reason', 'flags', 'fileUrl', 'emailUrl', 'source', 'createdAt']]);
+  ss.insertSheet('Providers').getRange(1, 1, 1, 10).setValues([['id', 'name', 'category', 'colour', 'short', 'cycle', 'active', 'payUrl', 'domain', 'logo']]);
+  props.setProperty('bb_sheet', ss.getId());
+  return ss;
 }
 function bbTable_(name) {
   const sh = bbSheet_().getSheetByName(name);
@@ -304,6 +326,7 @@ function checkReminders() {
   if (remNow_().slice(11) >= '08:00' && props.getProperty('daily_done') !== today) {    // gas bottle + important dates, once a day after 8am
     props.setProperty('daily_done', today);
     try { checkGasBottle(); } catch (e) { Logger.log('Daily: ' + e.message); }
+    try { checkBills_(); } catch (e) { Logger.log('Bills: ' + e.message); }
   }
   try { checkReminders__(props); props.deleteProperty('rem_lasterr'); }
   catch (e) { props.setProperty('rem_lasterr', remNow_() + ' ' + e.message); throw e; }
