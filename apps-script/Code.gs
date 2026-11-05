@@ -70,7 +70,7 @@ function handle_(p) {
 
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
   if (p.op === 'remSetup') { try { return out_(remSetup_(p)); } catch (e) { return out_({ ok: false, error: 'setup: ' + e.message }); } }
-  if (p.op === 'remToken') { try { return out_(remToken_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
+  if (p.op === 'notify') { try { ['S', 'D'].forEach(w => { if (w !== p.who) wpSend_(w, { title: String(p.title || 'Home Base').slice(0, 80), body: String(p.message || '').slice(0, 200) }); }); return out_({ ok: true }); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'pushKey') { try { return out_({ ok: true, key: wpVapid_().pub }); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'pushSub') { try { return out_(wpSubscribe_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remStatus') { try { return out_(remStatus_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
@@ -93,21 +93,16 @@ function handle_(p) {
 }
 
 
-/* ---------- Daily gas bottle check (ntfy) ----------
- * Run setupDailyCheck() once from the editor (select it in the toolbar, press Run, allow access).
- * Every morning around 8am it checks the Gas bottle tracker and sends one ntfy alert when the
- * bottle reaches its average life. It uses the same ntfy topic as BillBell (Home Base picks it
- * up automatically once the Bills tab is connected). To use a different topic, put it below.
+/* ---------- Daily checks: gas bottle, important dates and bills ----------
+ * Run once a day after 8am by the every-minute check, and sent as Home Base notifications.
  */
-const NTFY_TOPIC = '';
 const APP_URL = 'https://bmpwestside.github.io/home-base/';
 
 function checkGasBottle() {
   const props = PropertiesService.getScriptProperties();
   const data = read_('house', Number(props.getProperty('ver_house') || 0));
   if (!data) return;
-  const topic = NTFY_TOPIC || data.ntfy;
-  try { checkDates_(data, topic); } catch (e) { Logger.log('Dates: ' + e.message); }
+  try { checkDates_(data); } catch (e) { Logger.log('Dates: ' + e.message); }
   const t = (data.trackers || []).find(x => /gas/i.test(x.name || '') || x.icon === '🔥');
   if (!t) return;
   const ch = (t.changes || []).slice().sort();
@@ -120,17 +115,12 @@ function checkGasBottle() {
   if (since < avg) return;
   if (props.getProperty('gas_alerted') === last) return;      // only once per bottle
   const gasMsg = since + ' days since the last change. Your bottles usually last about ' + avg + ' days.';
-  if (topic) UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
-    method: 'post', muteHttpExceptions: true, payload: gasMsg,
-    headers: ntfyAuth_({ Title: 'Gas bottle due - Home Base', Tags: 'fire', Click: APP_URL })
-  });
   hbBroadcast_('🔥 Gas bottle due', gasMsg);
   props.setProperty('gas_alerted', last);
 }
 
-/* Bill alerts for a household without BillBell (BillBell sends its own): 2 days before and on the due day. */
+/* Bill alerts: 2 days before and on the due day. */
 function checkBills_() {
-  if (NTFY_TOPIC) return;
   const props = PropertiesService.getScriptProperties();
   const today = Utilities.formatDate(new Date(), 'Australia/Sydney', 'yyyy-MM-dd');
   const day = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); };
@@ -146,15 +136,8 @@ function checkBills_() {
   });
 }
 
-/** Sends a test alert so you can check ntfy is working. */
-function testGasAlert() {
-  const props = PropertiesService.getScriptProperties();
-  const data = read_('house', Number(props.getProperty('ver_house') || 0)) || {};
-  const topic = NTFY_TOPIC || data.ntfy;
-  if (!topic) { Logger.log('No ntfy topic yet.'); return; }
-  UrlFetchApp.fetch('https://ntfy.sh/' + topic, { method: 'post', payload: 'Gas bottle alerts are working.', headers: ntfyAuth_({ Title: 'Home Base test', Tags: 'white_check_mark', Click: APP_URL }) });
-  Logger.log('Test sent to ' + topic);
-}
+/** Sends a test notification to every phone in the house that turned notifications on. */
+function testGasAlert() { hbBroadcast_('Home Base', 'Notifications are working ✅'); }
 
 function setupDailyCheck() {
   ScriptApp.getProjectTriggers().forEach(tr => { if (tr.getHandlerFunction() === 'checkGasBottle') ScriptApp.deleteTrigger(tr); });
@@ -206,7 +189,7 @@ function bbProviders_() { return bbTable_('Providers').filter(p => String(p.acti
 function bbData_() {
   const cutoff = Utilities.formatDate(new Date(Date.now() - 800 * 864e5), 'Australia/Sydney', 'yyyy-MM-dd');
   const bills = bbTable_('Bills').filter(b => b.status === 'due' || b.status === 'review' || (b.dueDate || b.paidDate || '') >= cutoff);
-  return { bills: bills, providers: bbProviders_(), settings: { ntfyTopic: NTFY_TOPIC }, generated: new Date().toISOString() };
+  return { bills: bills, providers: bbProviders_(), settings: {}, generated: new Date().toISOString() };
 }
 function bbAction_(action, body) {
   const lock = LockService.getScriptLock(); lock.waitLock(20000);
@@ -232,8 +215,8 @@ function bbAction_(action, body) {
 }
 
 
-/* ---------- Important dates reminders (ntfy, 7 days before, the day before and on the day) ---------- */
-function checkDates_(data, topic) {
+/* ---------- Important dates: a notification 3 days before ---------- */
+function checkDates_(data) {
   const props = PropertiesService.getScriptProperties();
   const today = Utilities.formatDate(new Date(), 'Australia/Sydney', 'yyyy-MM-dd');
   const day = s => { const p = s.split('-').map(Number); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); };
@@ -249,20 +232,15 @@ function checkDates_(data, topic) {
     const years = dt.yearly !== false && p[0] > 1900 ? Number(iso.slice(0, 4)) - p[0] : 0;
     const kind = dt.type || (dt.icon === '🎂' ? 'birthday' : dt.icon === '💍' ? 'anniversary' : 'other');
     const extra = years ? (kind === 'birthday' ? ' (turns ' + years + ')' : kind === 'anniversary' ? ' (' + years + ' years)' : ' (' + years + ' years)') : '';
-    if (topic) UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
-      method: 'post', muteHttpExceptions: true,
-      payload: 'In 3 days: ' + dt.name + extra,
-      headers: ntfyAuth_({ Title: 'Coming up - Home Base', Tags: 'tada', Click: APP_URL })
-    });
     hbBroadcast_((dt.icon || '🎉') + ' Coming up', 'In 3 days: ' + dt.name + extra);
     props.setProperty(key, '1');
   });
 }
 
 
-/* ---------- Reminders (private to each person, pushed through ntfy) ----------
+/* ---------- Reminders (private to each person, sent as Home Base notifications) ----------
  * Run setupReminders() once from the editor. It checks every minute and sends due reminders
- * to that person's own ntfy topic, with Done / 1 hour / Tomorrow buttons on the alert.
+ * to that person's phones as Home Base notifications.
  */
 const REM_TZ = 'Australia/Sydney';
 const remNow_ = () => Utilities.formatDate(new Date(), REM_TZ, "yyyy-MM-dd'T'HH:mm");
@@ -336,7 +314,7 @@ function checkReminders__(props) {
   const url = ScriptApp.getService().getUrl();
   ['S', 'D'].forEach(who => {
     let d; try { d = remRead_(who); } catch (e) { return; }
-    if (!d || !d.topic || (!(d.items || []).length && !(d.routines || []).length)) return;
+    if (!d || (!(d.items || []).length && !(d.routines || []).length && !(d.summary && d.summary.on))) return;
     const now = remNow_(), hm = now.slice(11);
     const q = d.quiet || {};
     if (q.on && q.from && q.to && (q.from < q.to ? (hm >= q.from && hm < q.to) : (hm >= q.from || hm < q.to))) return;   // quiet hours: hold until they end
@@ -367,29 +345,15 @@ function checkReminders__(props) {
     if (sm && sm.on && hm >= (sm.time || '07:00') && props.getProperty('remsum_' + who) !== today) {
       props.setProperty('remsum_' + who, today);
       const msg = remSummary_(d, now);
-      if (msg) remSend_(who, { topic: d.topic, title: 'Today', message: msg, tags: ['sunny'], ptitle: '☀️ Today', pbody: msg, tag: 'summary', badge: remBadge_(d) }, 'Summary', d);
+      if (msg) remSend_(who, { title: '☀️ Today', message: msg, tag: 'summary', badge: remBadge_(d) }, 'Summary', d);
     }
   });
 }
 
 function remPush_(d, it, kind, url, who) {
-  const act = a => url + '?op=remAct&who=' + who + '&id=' + encodeURIComponent(it.id) + '&a=' + a + '&k=' + encodeURIComponent(d.key);
-  const mins = it.early >= 1440 ? (it.early / 1440) + ' day' + (it.early > 1440 ? 's' : '') : it.early >= 60 ? (it.early / 60) + ' hour' + (it.early > 60 ? 's' : '') : it.early + ' min';
-  const title = d.hide ? 'Home Base' : kind === 'early' ? 'Coming up in ' + mins : kind === 'nag' ? 'Still to do' : 'Reminder';
-  const message = d.hide ? 'You have a reminder' : it.title + (kind === 'early' ? ' - ' + remWhen_(it.due) : '');
-  const body = {
-    topic: d.topic, title: title, message: message,
-    priority: it.hi ? 5 : kind === 'nag' ? 4 : 3, tags: [it.hi ? 'rotating_light' : 'alarm_clock'],
-    actions: kind === 'early' ? [] : [
-      { action: 'http', label: 'Done', url: act('done'), method: 'GET', clear: true },
-      { action: 'http', label: '1 hour', url: act('snooze'), method: 'GET', clear: true },
-      { action: 'http', label: 'Tomorrow', url: act('tmr'), method: 'GET', clear: true }
-    ]
-  };
-  body.badge = remBadge_(d); body.tag = it.id;
-  body.ptitle = d.hide ? 'Reminder' : '⏰ ' + it.title;
-  body.pbody = d.hide ? 'You have a reminder' : kind === 'early' ? 'Coming up · ' + remWhen_(it.due) : kind === 'nag' ? 'Still to do · tap to open' : 'Due ' + remWhen_(it.snooze || it.due);
-  return remSend_(who, body, it.title, d);
+  const title = d.hide ? 'Reminder' : '⏰ ' + it.title;
+  const message = d.hide ? 'You have a reminder' : kind === 'early' ? 'Coming up · ' + remWhen_(it.due) : kind === 'nag' ? 'Still to do · tap to open' : 'Due ' + remWhen_(it.snooze || it.due);
+  return remSend_(who, { title: title, message: message, tag: it.id, badge: remBadge_(d), priority: it.hi ? 5 : kind === 'nag' ? 4 : 3 }, it.title, d);
 }
 /* Number on the Home Base icon: overdue reminders plus bills due within 3 days. */
 function remBadge_(d) {
@@ -437,28 +401,10 @@ function remOk_(st, code) {
   return st.f >= 30;
 }
 function remSend_(who, body, label, d) {
-  const via = (d && d.via) || 'ntfy', hasPush = wpSubs_(who).length > 0;
-  let push = '', ntfy = '';
-  if (hasPush && via !== 'ntfy') push = wpSend_(who, { title: body.ptitle || body.title, body: body.pbody || body.message, tag: body.tag, badge: body.badge, urgent: body.priority >= 4 });
-  if (body.topic && (via !== 'push' || !hasPush)) ntfy = remNtfy_(body);
-  const code = push === 200 || ntfy === 200 ? 200 : (push || ntfy || 'nothing to send to');
+  const code = wpSubs_(who).length ? wpSend_(who, { title: body.title, body: body.message, tag: body.tag, badge: body.badge, urgent: body.priority >= 4 }) : 'notifications are not turned on';
   const props = PropertiesService.getScriptProperties(), k = 'remlog_' + who;
-  const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code, push: push, ntfy: ntfy });
+  const log = JSON.parse(props.getProperty(k) || '[]'); log.unshift({ at: remNow_(), t: label, code: code });
   props.setProperty(k, JSON.stringify(log.slice(0, 6)));
-  return code;
-}
-function remNtfy_(body) {
-  let code = 0;
-  // Publish to https://ntfy.sh/<topic> with headers (Google can't reach ntfy's JSON address).
-  const enc = t => /^[\x20-\x7e]*$/.test(t) ? t : '=?UTF-8?B?' + Utilities.base64Encode(t, Utilities.Charset.UTF_8) + '?=';
-  const headers = ntfyAuth_({ Title: enc(body.title || 'Home Base'), Priority: String(body.priority || 3), Tags: (body.tags || []).join(',') });
-  if (body.actions && body.actions.length) headers.Actions = JSON.stringify(body.actions);
-  const opts = { method: 'post', contentType: 'text/plain; charset=utf-8', payload: body.message || '', headers: headers, muteHttpExceptions: true };
-  for (let i = 0; i < 3 && code !== 200; i++) {
-    if (i) Utilities.sleep(2000 * i);
-    try { code = UrlFetchApp.fetch('https://ntfy.sh/' + encodeURIComponent(body.topic), opts).getResponseCode(); }
-    catch (e) { code = 'error: ' + e.message; }
-  }
   return code;
 }
 /* Gas bottle and important-date alerts go to everyone in the house who turned notifications on. */
@@ -471,37 +417,20 @@ function remSetup_(p) {
   checkReminders();
   return remStatus_(p);
 }
-/* Your own free ntfy.sh account token: ntfy limits anonymous senders by address, and Google's are shared. */
-function ntfyAuth_(headers) {
-  const t = PropertiesService.getScriptProperties().getProperty('ntfy_token');
-  if (t) headers.Authorization = 'Bearer ' + t;
-  return headers;
-}
-function remToken_(p) {
-  const props = PropertiesService.getScriptProperties(), t = String(p.token || '').trim();
-  if (t) props.setProperty('ntfy_token', t); else props.deleteProperty('ntfy_token');
-  return remStatus_(p);
-}
 function remStatus_(p) {
   const who = remWho_(p.who), props = PropertiesService.getScriptProperties(), d = remRead_(who) || {};
   const open = (d.items || []).filter(x => !x.done).sort((a, b) => ((a.snooze || a.due) < (b.snooze || b.due) ? -1 : 1));
   let res = { ok: true, version: 3, now: remNow_(), triggers: ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'checkReminders').length,
-    hasToken: !!props.getProperty('ntfy_token'), pushSubs: wpSubs_(who).length, via: d.via || 'ntfy', engine: wpSelfTest_(), lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', topic: d.topic || '', open: open.length,
+    pushSubs: wpSubs_(who).length, engine: wpSelfTest_(), lastRun: props.getProperty('rem_lastrun') || '', lastErr: props.getProperty('rem_lasterr') || '', open: open.length,
     next: open[0] ? { t: open[0].title, at: open[0].snooze || open[0].due } : null, log: JSON.parse(props.getProperty('remlog_' + who) || '[]') };
-  if (p.test) { res.test = remSend_(who, { topic: d.topic, title: 'Home Base', message: 'Test from your Google script ✅', tags: ['white_check_mark'], badge: remBadge_(d) }, 'Test', d); res.testLog = JSON.parse(props.getProperty('remlog_' + who) || '[]')[0]; }
+  if (p.test) { res.test = remSend_(who, { title: 'Home Base', message: 'Test from your Google script ✅', badge: remBadge_(d) }, 'Test', d); res.testLog = JSON.parse(props.getProperty('remlog_' + who) || '[]')[0]; }
   return res;
 }
 
 function remPushRoutine_(d, r, left, url, who) {
-  const all = url + '?op=remAct&who=' + who + '&id=' + encodeURIComponent(r.id) + '&a=rtdone&k=' + encodeURIComponent(d.key);
-  const body = {
-    topic: d.topic, title: d.hide ? 'Home Base' : (r.icon || '') + ' ' + r.name,
-    message: d.hide ? 'Time for your routine' : left.length + ' of ' + r.steps.length + ' to do: ' + left.slice(0, 4).map(s => s.text).join(', ') + (left.length > 4 ? '…' : ''),
-    priority: 3, tags: ['sunrise'],
-    actions: [{ action: 'http', label: 'All done', url: all, method: 'GET', clear: true }]
-  };
-  body.badge = remBadge_(d); body.tag = 'rt_' + r.id;
-  return remSend_(who, body, r.name, d);
+  const title = d.hide ? 'Home Base' : (r.icon || '') + ' ' + r.name;
+  const message = d.hide ? 'Time for your routine' : left.length + ' of ' + r.steps.length + ' to do: ' + left.slice(0, 4).map(s => s.text).join(', ') + (left.length > 4 ? '…' : '');
+  return remSend_(who, { title: title, message: message, tag: 'rt_' + r.id, badge: remBadge_(d) }, r.name, d);
 }
 
 function wpSelfTest_() {

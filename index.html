@@ -666,45 +666,72 @@
 </head>
 <body>
 <div id="splash" aria-hidden="true">
-  <div class="sp-logo">
-    <img class="sp-house" src="icons/splash/house.png" style="left:9.08%;top:-0.1%;width:83.54%" alt="">
-    <img class="sp-check" src="icons/splash/check.png" style="left:43.03%;top:30.58%;width:16.75%" alt="">
-    <img class="sp-list"  src="icons/splash/list.png"  style="left:41.18%;top:76.86%;width:18.45%" alt="">
-    <img class="sp-cart"  src="icons/splash/cart.png"  style="left:-0.52%;top:65.65%;width:26.2%" alt="">
-    <img class="sp-coin"  src="icons/splash/coin.png"  style="left:73.65%;top:61.47%;width:27.31%" alt="">
+  <i class="sp-orb o1"></i><i class="sp-orb o2"></i><i class="sp-orb o3"></i>
+  <div class="sp-stage">
+    <i class="sp-ring r1"></i><i class="sp-ring r2"></i>
+    <div class="sp-tile"><i class="sp-shine"></i>
+      <div class="sp-logo">
+        <img class="sp-house" src="icons/splash/house.png" style="left:9.08%;top:-0.1%;width:83.54%" alt="">
+        <img class="sp-check" src="icons/splash/check.png" style="left:43.03%;top:30.58%;width:16.75%" alt="">
+        <img class="sp-list"  src="icons/splash/list.png"  style="left:41.18%;top:76.86%;width:18.45%" alt="">
+        <img class="sp-cart"  src="icons/splash/cart.png"  style="left:-0.52%;top:65.65%;width:26.2%" alt="">
+        <img class="sp-coin"  src="icons/splash/coin.png"  style="left:73.65%;top:61.47%;width:27.31%" alt="">
+      </div>
+    </div>
   </div>
   <div class="sp-name">Home Base</div>
   <div class="sp-tag">Lists · Reminders · Bills</div>
 </div>
 <style>
-  #splash{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-    background:radial-gradient(120% 90% at 30% 20%,#fffdf8 0%,#f8f1e6 45%,#efe4d3 100%);transition:opacity .38s ease,transform .38s ease}
-  #splash.bye{opacity:0;transform:scale(1.05);pointer-events:none}
-  .sp-logo{position:relative;width:min(74vw,330px);aspect-ratio:1355/955;margin-bottom:18px}
+  #splash{position:fixed;top:-80px;bottom:-80px;left:0;right:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
+    background:linear-gradient(160deg,#0d2436 0%,#143f55 45%,#1b6b6a 100%);transition:opacity .45s ease}
+  #splash.bye{opacity:0;pointer-events:none}
+  #splash.bye .sp-stage{transform:scale(1.12);transition:transform .45s ease}
+  .sp-orb{position:absolute;border-radius:50%;filter:blur(50px);opacity:.75;will-change:transform}
+  .sp-orb.o1{width:70vmax;height:70vmax;left:-25vmax;bottom:-10vmax;background:radial-gradient(circle,#2fb3a0 0%,rgba(47,179,160,0) 65%);animation:spDrift1 7s ease-in-out infinite alternate}
+  .sp-orb.o2{width:60vmax;height:60vmax;right:-25vmax;top:-5vmax;background:radial-gradient(circle,#f5a46e 0%,rgba(245,164,110,0) 62%);opacity:.55;animation:spDrift2 8s ease-in-out infinite alternate}
+  .sp-orb.o3{width:45vmax;height:45vmax;left:20vmax;top:35vmax;background:radial-gradient(circle,#3c6fd6 0%,rgba(60,111,214,0) 65%);opacity:.35;animation:spDrift1 9s ease-in-out infinite alternate-reverse}
+  @keyframes spDrift1{to{transform:translate(8vmax,-6vmax) scale(1.1)}}
+  @keyframes spDrift2{to{transform:translate(-10vmax,8vmax) scale(1.15)}}
+  .sp-stage{position:relative;width:min(66vw,290px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:26px}
+  .sp-ring{position:absolute;inset:0;border-radius:30%;border:2px solid rgba(160,240,225,.55);opacity:0}
+  .sp-ring.r1{animation:spRing 1.6s .55s ease-out forwards}
+  .sp-ring.r2{animation:spRing 1.6s .85s ease-out forwards}
+  @keyframes spRing{0%{opacity:.8;transform:scale(.9)}100%{opacity:0;transform:scale(1.55)}}
+  .sp-tile{position:relative;width:100%;height:100%;border-radius:23%;overflow:hidden;display:grid;place-items:center;
+    background:radial-gradient(120% 100% at 25% 15%,#fffdf8 0%,#f7efe2 55%,#eadcc6 100%);
+    box-shadow:0 30px 60px -18px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.35) inset,0 0 70px rgba(120,220,200,.25);
+    opacity:0;transform:scale(.55) rotate(-8deg);animation:spTile .8s cubic-bezier(.2,1.25,.35,1) forwards}
+  @keyframes spTile{60%{opacity:1}100%{opacity:1;transform:none}}
+  .sp-shine{position:absolute;top:-50%;left:-80%;width:60%;height:200%;transform:rotate(25deg);z-index:3;pointer-events:none;
+    background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.75),rgba(255,255,255,0));animation:spShine .9s 1.35s ease-in-out forwards}
+  @keyframes spShine{to{left:140%}}
+  .sp-logo{position:relative;width:84%;aspect-ratio:1355/955;margin-top:4%}
   .sp-logo img{position:absolute;display:block;height:auto;opacity:0;will-change:transform,opacity}
-  .sp-name{font:800 34px/1.1 -apple-system,"SF Pro Rounded",system-ui,sans-serif;color:#1f3e58;letter-spacing:.3px;opacity:0;animation:spUp .5s 1.05s cubic-bezier(.2,.8,.2,1) forwards}
-  .sp-tag{font:700 13px/1 -apple-system,system-ui,sans-serif;color:#5aa999;letter-spacing:2px;text-transform:uppercase;opacity:0;animation:spUp .5s 1.25s cubic-bezier(.2,.8,.2,1) forwards}
-  .sp-house{animation:spHouse .75s .05s cubic-bezier(.2,.9,.25,1.15) forwards;transform-origin:50% 100%}
-  .sp-cart{animation:spCart .7s .4s cubic-bezier(.2,.9,.3,1.2) forwards}
-  .sp-coin{animation:spCoin .85s .5s cubic-bezier(.2,.8,.3,1.1) forwards}
-  .sp-check{animation:spDraw .45s .85s ease-out forwards}
-  .sp-list{animation:spDraw .5s 1s ease-out forwards}
-  @keyframes spHouse{0%{opacity:0;transform:translateY(34px) scale(.82)}100%{opacity:1;transform:none}}
-  @keyframes spCart{0%{opacity:0;transform:translateX(-70px) rotate(-10deg)}70%{opacity:1;transform:translateX(6px) rotate(2deg)}100%{opacity:1;transform:none}}
-  @keyframes spCoin{0%{opacity:0;transform:translateX(80px) rotate(300deg) scale(.6)}100%{opacity:1;transform:none}}
-  @keyframes spDraw{0%{opacity:1;clip-path:inset(0 100% 0 0);transform:scale(.9)}70%{transform:scale(1.08)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
-  @keyframes spUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}
-  @media (prefers-reduced-motion: reduce){.sp-logo img,.sp-name,.sp-tag{animation:none!important;opacity:1}}
+  .sp-house{animation:spHouse .7s .35s cubic-bezier(.2,.9,.25,1.15) forwards;transform-origin:50% 100%}
+  .sp-cart{animation:spCart .7s .65s cubic-bezier(.2,.9,.3,1.25) forwards}
+  .sp-coin{animation:spCoin .85s .75s cubic-bezier(.2,.8,.3,1.1) forwards}
+  .sp-check{animation:spDraw .45s 1.05s ease-out forwards}
+  .sp-list{animation:spDraw .5s 1.2s ease-out forwards}
+  @keyframes spHouse{0%{opacity:0;transform:translateY(30px) scale(.8)}100%{opacity:1;transform:none}}
+  @keyframes spCart{0%{opacity:0;transform:translateX(-60px) rotate(-12deg)}70%{opacity:1;transform:translateX(5px) rotate(2deg)}100%{opacity:1;transform:none}}
+  @keyframes spCoin{0%{opacity:0;transform:translateX(60px) rotate(320deg) scale(.5)}100%{opacity:1;transform:none}}
+  @keyframes spDraw{0%{opacity:1;clip-path:inset(0 100% 0 0);transform:scale(.9)}70%{transform:scale(1.1)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+  .sp-name{position:relative;font:800 36px/1.1 -apple-system,"SF Pro Rounded",system-ui,sans-serif;color:#fff;letter-spacing:.3px;opacity:0;
+    text-shadow:0 4px 18px rgba(0,0,0,.35);animation:spUp .55s 1.3s cubic-bezier(.2,.8,.2,1) forwards}
+  .sp-tag{position:relative;margin-top:8px;font:800 12.5px/1 -apple-system,system-ui,sans-serif;color:#9fe6d6;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:spUp .55s 1.5s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes spUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.sp-tile,.sp-logo img,.sp-name,.sp-tag{animation:none!important;opacity:1;transform:none}.sp-orb,.sp-ring,.sp-shine{display:none}}
 </style>
 <script>
 (function(){
   var sp = document.getElementById("splash"); if (!sp) return;
   var seen = false; try { seen = sessionStorage.getItem("hb_splash") === "1"; sessionStorage.setItem("hb_splash", "1"); } catch(e){}
-  var quick = seen || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   if (seen){ sp.remove(); return; }
-  var gone = false, go = function(){ if (gone) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 420); };
+  var quick = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gone = false, go = function(){ if (gone) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 480); };
   sp.addEventListener("click", go);
-  setTimeout(go, quick ? 600 : 2400);
+  setTimeout(go, quick ? 700 : 2700);
 })();
 </script>
 <div class="statusbg"></div>
@@ -901,7 +928,6 @@ function snapOf(){
   for (const t of (S.trackers||[])){ const { u, ...r } = t; m.set("t:"+t.id, JSON.stringify(r)); refs.set("t:"+t.id, t); }
   m.set("wed", String(S.lastWedReset||0));
   m.set("shop", JSON.stringify(S.atShop||null));
-  m.set("ntfy", S.ntfyTopic || "");
   return { m, refs };
 }
 function stamp(){
@@ -913,7 +939,7 @@ function stamp(){
     const r = refs.get(k);
     if (k.startsWith("ord:")){ S.ord[k.slice(4)] = now; dh = true; }
     else if (k === "cord"){ S.cord = now; dw = true; }
-    else if (k === "wed" || k === "shop" || k === "ntfy"){ dh = true; }
+    else if (k === "wed" || k === "shop"){ dh = true; }
     else if (k.startsWith("io:")){ r.iu = now; dh = true; }
     else if (k.startsWith("k:")){ r.u = now; dw = true; }
     else { r.u = now; dh = true; }
@@ -972,7 +998,6 @@ function mergeHouse(R){
   ord.dates = Math.max((S.ord || {}).dates || 0, (R.ord || {}).dates || 0);
   S.ord = ord; S.del = del;
   S.atShop = (((S.atShop||{}).u)||0) >= (((R.atShop||{}).u)||0) ? S.atShop : R.atShop;
-  S.ntfyTopic = S.ntfyTopic || R.ntfy || "";
   S.lastWedReset = Math.max(S.lastWedReset || 0, R.lastWedReset || 0) || S.lastWedReset;
 }
 function adoptHouse(R){
@@ -982,7 +1007,6 @@ function adoptHouse(R){
   S.dates = R.dates || [];
   S.ord = R.ord || {}; S.del = R.del || {};
   S.atShop = R.atShop || null;
-  S.ntfyTopic = R.ntfy || S.ntfyTopic || "";
   S.lastWedReset = R.lastWedReset || S.lastWedReset;
 }
 function mergeWork(R){
@@ -990,7 +1014,7 @@ function mergeWork(R){
   S.customers = mergeArr(S.customers, R.customers, S.cord, R.cord, cdel);
   S.cord = Math.max(S.cord || 0, R.cord || 0); S.cdel = cdel;
 }
-const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null, ntfy:S.ntfyTopic || "" });
+const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
 const workData  = () => clone({ customers:S.customers, cord:S.cord || 0, cdel:S.cdel || {} });
 
 /* ---- talking to the Apps Script web app ---- */
@@ -1549,11 +1573,10 @@ function renderBanner(){
 }
 setInterval(() => { if (!openId) renderBanner(); }, 60000);
 
-/* ================= ntfy family alerts ================= */
-function notifyFamily(title, message, tags){
-  const topic = S.ntfyTopic; if (!topic) return;
-  // JSON to the ntfy root needs no special headers, so the browser sends it straight away
-  try { fetch("https://ntfy.sh/", { method:"POST", body: JSON.stringify({ topic, title, message, tags: [tags || "bell"], click: location.origin + location.pathname }) }).catch(()=>{}); } catch(e){}
+/* ================= family alerts (Home Base notification to the other phone) ================= */
+function notifyFamily(title, message){
+  if (typeof api !== "function" || !LOCAL.url) return;
+  try { api({ doc:"house", key:keyFor(), op:"notify", who:whoAmI(), title, message }).catch(()=>{}); } catch(e){}
 }
 
 /* ================= weekly shop template ================= */
@@ -1648,7 +1671,7 @@ function renderDates(){
   const show = S._allDates ? all : soon;
   const row = x => `<button class="drow" data-did="${x.dt.id}"><span class="di">${x.dt.icon||"📅"}</span><span class="dm"><b>${esc(x.dt.name)}</b><span>${fmtDate(x.iso)}${x.years ? " · " + dateExtra(x.dt, x.years) : ""}</span></span><span class="dd ${x.days<=7?"soon":""}">${x.days===0?"Today 🎉":x.days===1?"Tomorrow":x.days+" days"}</span></button>`;
   let body = show.map(row).join("");
-  if (!all.length) body = `<div class="stats" style="margin-top:8px">Add birthdays and anniversaries. They show here in the week before, and ntfy reminds you 3 days before.</div>`;
+  if (!all.length) body = `<div class="stats" style="margin-top:8px">Add birthdays and anniversaries. They show here in the week before, and you get a notification 3 days before.</div>`;
   else if (!show.length) body = `<div class="stats" style="margin-top:4px">Nothing in the next 7 days.</div>`;
   const more = all.length > soon.length || S._allDates ? `<span class="ed dall" id="dMore">${S._allDates ? "Week" : "All"}</span>` : "";
   host.innerHTML = `<div class="gas dates"><div class="gh"><button data-dadd="1">🎉 Important dates</button>${more}<span class="ed add" data-dadd="1">＋</span></div>${body}</div>`;
@@ -2179,7 +2202,7 @@ function refreshAll(){ applyTheme(); if (S.tab!=="work"){ renderBands(); renderB
 applyTextSize();
 /* ================= Bills tab (BillBell inside Home Base) =================
  * Bills keep coming from the BillBell scanner (Apps Script in sm466991234@gmail.com),
- * which reads the "Billbell" Gmail label and sends ntfy reminders.
+ * which reads the "Billbell" Gmail label.
  * Home Base just shows them and sends your changes back.
  */
 const BB = { bills:[], providers:[], settings:{}, view:"due", loading:false, err:"", at:0 };
@@ -2266,8 +2289,6 @@ function bbNormalise(data){
   BB.bills = (data.bills||[]).map(b => Object.assign({}, b, { amount: Number(b.amount)||0, autopay: String(b.autopay) === "true" }));
   BB.settings = data.settings || {};
   BB.at = Date.now();
-  // share the ntfy topic with the sync script so the gas bottle alert goes to the same place
-  if (BB.settings.ntfyTopic && S.ntfyTopic !== BB.settings.ntfyTopic && typeof save === "function"){ S.ntfyTopic = BB.settings.ntfyTopic; setTimeout(save, 0); }
 }
 try { const c = localStorage.getItem(BB_CACHE); if (c) bbNormalise(JSON.parse(c)); } catch(e){}
 // Bills come through the Home Base sync script (it reads the BillBell Data sheet); the BillBell link is the fallback.
@@ -3031,7 +3052,7 @@ var RL = (function(){
   }
   return { pad, toMs, addMin, dow, wallNow, minsBetween, nextDue, complete, snooze, merge, parse, repText, repeats, at, ord };
 })();
-/* ================= Reminders (private to this phone's owner, pushed through ntfy) ================= */
+/* ================= Reminders (private to this phone's owner, sent as Home Base notifications) ================= */
 const REM_DEFAULT_LISTS = [{ id:"general", name:"General", icon:"💡", color:"#f6c945" }, { id:"bills", name:"Bills", icon:"💳", color:"#ec5141" }];
 const REM_COLORS = ["#ec5141","#f59a3b","#f6c945","#3ccf7a","#2bb7a8","#4aa3e8","#6c6cf0","#b06cf0","#ef6fa8","#8e8e93"];
 const REM_ICONS = ["💡","💳","🏠","🛒","💊","🚗","💼","🎓","👨‍👩‍👦","🐶","🌱","✈️","🏋️","🎉","📞","🔧","📦","⭐"];
@@ -3106,7 +3127,7 @@ function renderRems(){
     return `<button class="rl" data-rl="${l.id}"><span class="rli" style="background:${l.color}">${l.icon}</span><span class="rln">${esc(l.name)}</span><span class="rlc ${late ? "late" : ""}">${mine.length}</span><span class="rlx">›</span></button>`;
   }).join("");
   const warn = !REM_SYNC.ok && REM_SYNC.err !== "offline" ? `<button class="rwarn bad" id="rWarn">⚠️ ${REM_SYNC.err === "unknown op" ? "Your Google script needs the reminders update" : "Reminders aren't reaching your Google script"} · tap to check</button>`
-    : !LOCAL.remTested && !LOCAL.pushOn ? `<button class="rwarn" id="rWarn">🔔 Turn on notifications for this phone</button>` : "";
+    : !LOCAL.pushOn ? `<button class="rwarn" id="rWarn">🔔 Turn on notifications for this phone</button>` : "";
   host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
     ${warn}${remSmartHTML()}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
@@ -3301,12 +3322,6 @@ function showRemSettings(){
       <div class="rsh">1 · Home Base notifications</div>
       <div class="rnote" style="margin:0 0 6px">Alerts come from the Home Base icon, with a number on the icon for things that are due.</div>
       <div id="rPushBox"></div>
-      <label style="display:block;font-size:12px;color:var(--soft);font-weight:700;margin:10px 0 3px">Send my alerts by</label>
-      <select class="set-sel" id="rVia" style="width:100%;margin:0"><option value="push" ${REM.via === "push" ? "selected" : ""}>Home Base notifications</option><option value="both" ${REM.via === "both" ? "selected" : ""}>Home Base and ntfy</option><option value="ntfy" ${!REM.via || REM.via === "ntfy" ? "selected" : ""}>ntfy app only</option></select>
-      <details class="rdet"${REM.via === "push" ? "" : " open"}><summary>ntfy app (optional)</summary>
-      <ol class="rsteps"><li>Install the free <b>ntfy</b> app from the App Store.</li><li>In ntfy tap <b>＋</b>, paste the topic below and tap <b>Subscribe</b>.</li><li>Tap <b>Send test</b> to check it works.</li></ol>
-      <div class="rtopic"><code id="rTop">${esc(REM.topic)}</code><button id="rCp">Copy</button></div>
-      <button class="rbtn ghost" id="rTest">🔔 Send ntfy test</button></details>
       <div class="rnote">Your reminders are private to you. D's phone doesn't see them.</div>
       <div class="rsh">2 · Quiet hours</div>
       <label class="rtog"><input type="checkbox" id="rQ" ${q0.on ? "checked" : ""}><span>Hold alerts during quiet hours</span></label>
@@ -3321,9 +3336,6 @@ function showRemSettings(){
       <button class="rbtn" id="rSiri" ${LOCAL.url ? "" : "disabled"}>📋 Copy Siri link</button>
       <div class="rnote">Keep this link to yourself: it can add reminders to your list.</div>
       <div class="rsh">5 · Check alerts</div>
-      <div class="rnote" style="margin:0 0 6px">ntfy's free server limits how many alerts Google can send without an account. Add your free ntfy access token so alerts always get through:</div>
-      <ol class="rsteps"><li>Go to <b>ntfy.sh</b> → <b>Sign up</b> (free) and log in.</li><li><b>Account</b> → <b>Access tokens</b> → <b>Create access token</b> (never expires), and copy it (starts with tk_).</li><li>Paste it here and tap Save.</li></ol>
-      <div class="rtopic"><input id="rTok" placeholder="tk_…" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="rTokS">Save</button></div>
       <button class="rbtn" id="rChk">🩺 Check everything</button>
       <div class="rchk2" id="rChkOut"></div>
     </div>
@@ -3331,28 +3343,12 @@ function showRemSettings(){
   const $ = s => menu.querySelector(s);
   const setQ = () => { REM.quiet = { on:$("#rQ").checked, from:$("#rQf").value || "22:00", to:$("#rQt").value || "07:00" }; REM.su = Date.now(); remSave(); };
   pushBox($("#rPushBox"));
-  $("#rVia").onchange = () => { REM.via = $("#rVia").value; REM.su = Date.now(); remSave(); toast("Saved"); };
   $("#rQ").onchange = setQ;
   const setSum = () => { REM.summary = { on:$("#rSum").checked, time:$("#rSumT").value || "07:00" }; REM.su = Date.now(); remSave(); };
   $("#rSum").onchange = setSum; $("#rSumT").onchange = setSum; $("#rQf").onchange = setQ; $("#rQt").onchange = setQ;
   $("#rHide").onchange = () => { REM.hide = $("#rHide").checked; REM.su = Date.now(); remSave(); };
-  $("#rCp").onclick = () => remCopy(REM.topic, "Topic copied — paste it in ntfy");
-  $("#rTest").onclick = async () => {
-    try {
-      await fetch("https://ntfy.sh/", { method:"POST", body:JSON.stringify({ topic:REM.topic, title:"Home Base", message:"Reminders are working ✅", tags:["alarm_clock"] }) });
-      LOCAL.remTested = 1; saveLocal(); toast("Test sent — check your phone"); renderRems();
-    } catch(e){ toast("Couldn't send — check your connection"); }
-  };
   $("#rSiri").onclick = () => remCopy(remSiriLink(), "Siri link copied");
   $("#rChk").onclick = () => remCheck($("#rChkOut"));
-  $("#rTokS").onclick = async () => {
-    const t = $("#rTok").value.trim();
-    if (t && !/^tk_[A-Za-z0-9]{20,}$/.test(t)){ toast("That doesn't look like an ntfy token (tk_…)"); return; }
-    try { const r = await api({ doc:"house", key:keyFor(), op:"remToken", who:whoAmI(), token:t });
-      if (r && r.ok){ $("#rTok").value = ""; toast(t ? "Token saved in your Google script" : "Token removed"); remCheck($("#rChkOut"), !!t); }
-      else toast(r && r.error === "unknown op" ? "Update your Google script first" : "Couldn't save: " + ((r && r.error) || "no reply"));
-    } catch(e){ toast("Couldn't reach your Google script"); }
-  };
   $("#rSd").onclick = () => { closeMenu(); renderRems(); };
   openMenu();
 }
@@ -3369,7 +3365,7 @@ function pushBox(host){
   else { state = ""; btn = `<button class="rbtn" id="rPush">🔔 Turn on notifications</button>`; }
   host.innerHTML = (state ? `<div class="rnote" style="margin:0 0 4px;color:var(--ink)">${state}</div>` : "") + btn;
   const b = host.querySelector("#rPush") || host.querySelector("#rPushRe");
-  if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Turning on…"; const ok = await enablePush(); pushBox(host); const v = document.getElementById("rVia"); if (ok && v) v.value = REM.via; };
+  if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Turning on…"; await enablePush(); pushBox(host); };
 }
 async function enablePush(){
   try {
@@ -3388,7 +3384,6 @@ async function enablePush(){
     const r = await apiPost({ doc:"house", key:keyFor(), op:"pushSub", who:whoAmI(), sub:JSON.stringify(sub) });
     if (!r || !r.ok){ toast("Couldn't save: " + ((r && r.error) || "no reply")); return false; }
     LOCAL.pushOn = 1; saveLocal();
-    if (!REM.via || REM.via === "ntfy"){ REM.via = "push"; REM.su = Date.now(); remSave(); }
     toast("Notifications are on 🔔"); updateAppBadge(); renderRems();
     return true;
   } catch(e){ toast("Couldn't turn on notifications: " + e.message); return false; }
@@ -3427,19 +3422,11 @@ async function remCheck(out, test, setup){
   else h += line(true, `Every-minute check is running (last run ${ago <= 0 ? "just now" : ago + " min ago"})`);
   if (r.lastErr) h += line(false, "Last check failed: " + esc(r.lastErr));
   if (r.engine && r.engine !== "ok") h += line(false, "Your Google script can't make notifications: " + esc(r.engine));
-  const via = r.via || "ntfy";
-  if (via !== "ntfy") h += r.pushSubs ? line(true, `Home Base notifications are on for ${r.pushSubs} phone${r.pushSubs === 1 ? "" : "s"}`) : line(false, "Home Base notifications aren't turned on yet. Tap <b>Turn on notifications</b> above.");
-  if (via !== "push") h += r.hasToken ? line(true, "Sending to ntfy with your ntfy account") : line(null, "No ntfy account token yet. Without one, ntfy often refuses alerts from Google (error 429). Add it above.");
-  h += r.topic === REM.topic ? line(true, "This phone and the script use the same ntfy topic") : line(false, "The script has a different ntfy topic from this phone. Pull down to refresh, then check again.");
+  h += r.pushSubs ? line(true, `Home Base notifications are on for ${r.pushSubs} phone${r.pushSubs === 1 ? "" : "s"}`) : line(false, "Home Base notifications aren't turned on yet. Tap <b>Turn on notifications</b> above.");
   h += r.open ? line(true, `${r.open} reminder${r.open === 1 ? "" : "s"} saved in Google${r.next ? ` · next: ${esc(r.next.t)}, ${remWhen(r.next.at)}` : ""}`) : line(false, "Google has no reminders saved from this phone yet.");
   if (r.log && r.log.length) h += line(null, "Last alerts sent: " + r.log.slice(0, 3).map(x => `${esc(x.t)} at ${remHM(x.at)}${x.code === 200 ? "" : " (failed: " + esc(String(x.code)) + ")"}`).join("; "));
-  if (test && r.testLog){ const tl = r.testLog;
-    if (tl.push !== "" && tl.push !== undefined) h += tl.push === 200 ? line(true, "Home Base notification sent — check your phone") : line(false, "Home Base notification failed: " + esc(String(tl.push)));
-    if (tl.ntfy !== "" && tl.ntfy !== undefined) h += tl.ntfy === 200 ? line(true, "ntfy alert sent") : line(false, "ntfy alert failed: " + esc(String(tl.ntfy)));
-    test = false; }
   else h += line(null, "No alerts have been sent by the script yet.");
-  if (test && r.test === 429) h += line(false, r.hasToken ? "ntfy is still limiting your account (429). Wait a minute and try again." : "ntfy refused it (429 = too many alerts from Google's shared address). Add your free ntfy token above, then test again.");
-  else if (test) h += r.test === 200 ? line(true, "Test sent from Google — it should be on your phone now. If not, check you're subscribed to the topic in ntfy.") : line(false, "Google couldn't send the test: " + esc(String(r.test)));
+  if (test) h += r.test === 200 ? line(true, "Test sent from Google — it should be on your phone now.") : line(false, "Google couldn't send the test: " + esc(String(r.test)));
   else h += `<button class="rbtn ghost" id="rChkT">Send a test from Google</button>`;
   out.innerHTML = h;
   const t = out.querySelector("#rChkT"); if (t) t.onclick = () => remCheck(out, true);
@@ -3532,7 +3519,7 @@ function editRoutine(id){
         <label>Steps (one per line)</label><textarea id="rtS" rows="5" placeholder="Make bed&#10;Vitamins&#10;Drink water">${esc(v.steps.join("\n"))}</textarea>
         <label>Days</label><div class="rdays">${[1,2,3,4,5,6,0].map(d => `<button type="button" data-wd="${d}" class="${v.days.indexOf(d) >= 0 ? "on" : ""}">${DL[d]}</button>`).join("")}</div>
         <div class="r2"><div><label>Time</label><input id="rtT" type="time" value="${v.time}"></div><div></div></div>
-        <label class="rtog"><input type="checkbox" id="rtA" ${v.alert ? "checked" : ""}><span>ntfy alert at this time if it isn't finished</span></label>
+        <label class="rtog"><input type="checkbox" id="rtA" ${v.alert ? "checked" : ""}><span>Notify me at this time if it isn't finished</span></label>
         <label>Colour</label><div class="rcols">${REM_COLORS.map(c => `<button type="button" data-c="${c}" class="${c === v.color ? "on" : ""}" style="background:${c}"></button>`).join("")}</div>
         <label>Icon</label><div class="emojis" style="padding:0">${RT_ICONS.map(e => `<button type="button" data-e="${e}" class="${e === v.icon ? "on" : ""}">${e}</button>`).join("")}</div>
         <div class="acts">${r ? `<button type="button" class="del" id="rtDel">Delete</button>` : ""}<button type="submit" class="save">${r ? "Save" : "Add routine"}</button></div>
