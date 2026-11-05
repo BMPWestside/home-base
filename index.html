@@ -665,6 +665,48 @@
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true">
+  <div class="sp-logo">
+    <img class="sp-house" src="icons/splash/house.png" style="left:9.08%;top:-0.1%;width:83.54%" alt="">
+    <img class="sp-check" src="icons/splash/check.png" style="left:43.03%;top:30.58%;width:16.75%" alt="">
+    <img class="sp-list"  src="icons/splash/list.png"  style="left:41.18%;top:76.86%;width:18.45%" alt="">
+    <img class="sp-cart"  src="icons/splash/cart.png"  style="left:-0.52%;top:65.65%;width:26.2%" alt="">
+    <img class="sp-coin"  src="icons/splash/coin.png"  style="left:73.65%;top:61.47%;width:27.31%" alt="">
+  </div>
+  <div class="sp-name">Home Base</div>
+  <div class="sp-tag">Lists · Reminders · Bills</div>
+</div>
+<style>
+  #splash{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    background:radial-gradient(120% 90% at 30% 20%,#fffdf8 0%,#f8f1e6 45%,#efe4d3 100%);transition:opacity .38s ease,transform .38s ease}
+  #splash.bye{opacity:0;transform:scale(1.05);pointer-events:none}
+  .sp-logo{position:relative;width:min(74vw,330px);aspect-ratio:1355/955;margin-bottom:18px}
+  .sp-logo img{position:absolute;display:block;height:auto;opacity:0;will-change:transform,opacity}
+  .sp-name{font:800 34px/1.1 -apple-system,"SF Pro Rounded",system-ui,sans-serif;color:#1f3e58;letter-spacing:.3px;opacity:0;animation:spUp .5s 1.05s cubic-bezier(.2,.8,.2,1) forwards}
+  .sp-tag{font:700 13px/1 -apple-system,system-ui,sans-serif;color:#5aa999;letter-spacing:2px;text-transform:uppercase;opacity:0;animation:spUp .5s 1.25s cubic-bezier(.2,.8,.2,1) forwards}
+  .sp-house{animation:spHouse .75s .05s cubic-bezier(.2,.9,.25,1.15) forwards;transform-origin:50% 100%}
+  .sp-cart{animation:spCart .7s .4s cubic-bezier(.2,.9,.3,1.2) forwards}
+  .sp-coin{animation:spCoin .85s .5s cubic-bezier(.2,.8,.3,1.1) forwards}
+  .sp-check{animation:spDraw .45s .85s ease-out forwards}
+  .sp-list{animation:spDraw .5s 1s ease-out forwards}
+  @keyframes spHouse{0%{opacity:0;transform:translateY(34px) scale(.82)}100%{opacity:1;transform:none}}
+  @keyframes spCart{0%{opacity:0;transform:translateX(-70px) rotate(-10deg)}70%{opacity:1;transform:translateX(6px) rotate(2deg)}100%{opacity:1;transform:none}}
+  @keyframes spCoin{0%{opacity:0;transform:translateX(80px) rotate(300deg) scale(.6)}100%{opacity:1;transform:none}}
+  @keyframes spDraw{0%{opacity:1;clip-path:inset(0 100% 0 0);transform:scale(.9)}70%{transform:scale(1.08)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+  @keyframes spUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.sp-logo img,.sp-name,.sp-tag{animation:none!important;opacity:1}}
+</style>
+<script>
+(function(){
+  var sp = document.getElementById("splash"); if (!sp) return;
+  var seen = false; try { seen = sessionStorage.getItem("hb_splash") === "1"; sessionStorage.setItem("hb_splash", "1"); } catch(e){}
+  var quick = seen || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if (seen){ sp.remove(); return; }
+  var gone = false, go = function(){ if (gone) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 420); };
+  sp.addEventListener("click", go);
+  setTimeout(go, quick ? 600 : 2400);
+})();
+</script>
 <div class="statusbg"></div>
 <header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1><button class="gear" id="gear" aria-label="Settings">⚙︎</button></header>
 
