@@ -345,6 +345,11 @@
   .rtopic input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font-size:14px;outline:none;padding:4px 0;font-family:ui-monospace,Menlo,monospace}
   .rdet{margin-top:10px}
   .rdet summary{font-size:13px;font-weight:800;color:var(--acc);cursor:pointer;padding:4px 0}
+  .rtrow.late{background:rgba(255,90,78,.12)}
+  .rtrow.late .rln small,.rtrow.late .rlc{color:#ff8a80;font-weight:800}
+  .rtrow.late .rtbar i{background:#ff5a4e !important}
+  .rtrow.late .rli{box-shadow:0 0 0 2px #ff5a4e}
+  .rtlate{margin:0 2px 8px;padding:7px 10px;border-radius:10px;background:rgba(255,90,78,.16);color:#ff9a8f;font-size:13px;font-weight:800}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -3308,6 +3313,7 @@ async function enablePush(){
 function appBadgeCount(){
   let n = 0;
   try { const now = remNow(); n += remOpen().filter(it => RL.at(it) <= now).length; } catch(e){}
+  try { n += (REM.routines || []).filter(rtLate).length; } catch(e){}
   try { if (typeof BB !== "undefined" && typeof bbUnpaid === "function") n += bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).length; } catch(e){}
   return n;
 }
@@ -3390,11 +3396,13 @@ const RT_TEMPLATES = {
 const rtToday = () => remNow().slice(0,10);
 function rtDoneSteps(r){ const x = (REM.rdone || {})[r.id]; return x && x.date === rtToday() ? (x.steps || []).filter(id => (r.steps || []).some(st => st.id === id)) : []; }
 function rtActiveToday(r){ return !r.days || !r.days.length || r.days.indexOf(RL.dow(rtToday() + "T00:00")) >= 0; }
+/* A routine whose time has passed today and isn't finished: shown in red until it's done. */
+function rtLate(r){ return !!(r.time && rtActiveToday(r) && (r.steps || []).length && rtDoneSteps(r).length < r.steps.length && remNow() >= rtToday() + "T" + r.time); }
 function rtSet(r, steps){ REM.rdone = REM.rdone || {}; REM.rdone[r.id] = { date:rtToday(), steps }; REM.su = Date.now(); remSave(); }
 function rtRowsHTML(){
   return (REM.routines || []).map(r => {
-    const n = rtDoneSteps(r).length, t = (r.steps || []).length, on = rtActiveToday(r), all = t && n >= t;
-    return `<button class="rl rtrow" data-rt="${r.id}"><span class="rli" style="background:${r.color || "#f59a3b"}">${r.icon || "☀️"}</span><span class="rln">${esc(r.name)}${r.time ? `<small>${remHM("2000-01-01T" + r.time)}</small>` : ""}</span>${on ? `<span class="rtbar"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color || "#f59a3b"}"></i></span><span class="rlc ${all ? "ok" : ""}">${all ? "✓" : n + "/" + t}</span>` : `<span class="rlc">Rest day</span>`}<span class="rlx">›</span></button>`;
+    const n = rtDoneSteps(r).length, t = (r.steps || []).length, on = rtActiveToday(r), all = t && n >= t, late = rtLate(r);
+    return `<button class="rl rtrow ${late ? "late" : ""}" data-rt="${r.id}"><span class="rli" style="background:${r.color || "#f59a3b"}">${r.icon || "☀️"}</span><span class="rln">${esc(r.name)}${r.time ? `<small>${remHM("2000-01-01T" + r.time)}</small>` : ""}</span>${on ? `<span class="rtbar"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color || "#f59a3b"}"></i></span><span class="rlc ${all ? "ok" : ""}">${all ? "✓" : n + "/" + t}</span>` : `<span class="rlc">Rest day</span>`}<span class="rlx">›</span></button>`;
   }).join("");
 }
 function rtCelebrate(r){ toast(`${r.name} done 🎉`); try { confetti(); } catch(e){} }
@@ -3405,7 +3413,7 @@ function openRoutine(id){
   const sched = (r.days && r.days.length && r.days.length < 7 ? r.days.slice().sort((a,b) => ((a+6)%7) - ((b+6)%7)).map(d => DN[d]).join(", ") : "Every day") + (r.time ? " · " + remHM("2000-01-01T" + r.time) + (r.alert ? " 🔔" : "") : "");
   menu.innerHTML = `<div class="rlhead"><span class="rli big" style="background:${r.color}">${r.icon}</span><b style="color:${r.color}">${esc(r.name)}</b><button id="rtEdit">Edit</button></div>
     <div class="rlbody">
-      <div class="rtsub">${sched}${rtActiveToday(r) ? "" : " · rest day today"}</div>
+      <div class="rtsub">${sched}${rtActiveToday(r) ? "" : " · rest day today"}</div>${rtLate(r) ? `<div class="rtlate">⏰ Past ${remHM("2000-01-01T" + r.time)} — tick the rest off to clear it</div>` : ""}
       <div class="rtprog"><span class="rtbar big"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color}"></i></span><b>${n}/${t}</b></div>
       ${r.steps.map(st => `<button class="rtstep ${done.indexOf(st.id) >= 0 ? "on" : ""}" data-st="${st.id}"><span class="rchk"></span><span>${esc(st.text)}</span></button>`).join("") || `<div class="stats" style="margin:8px 2px">No steps yet. Tap Edit to add some.</div>`}
     </div>
@@ -3472,7 +3480,7 @@ function rtTodayRows(){
   return (REM.routines || []).filter(r => r.time && rtActiveToday(r) && r.steps.length).map(r => {
     const at = rtToday() + "T" + r.time, n = rtDoneSteps(r).length, t = r.steps.length;
     if (n >= t || RL.addMin(at, -60) > remNow()) return null;
-    return { k:"rem", name:r.icon + " " + esc(r.name), key:`${n}/${t}`, val:remHM(at), pct:Math.max(5, n / t * 100), tone: remNow() >= at ? "orange" : "green" };
+    return { k:"rem", name:r.icon + " " + esc(r.name), key:`${n}/${t}`, val: rtLate(r) ? "late" : remHM(at), pct:Math.max(5, n / t * 100), tone: rtLate(r) ? "red" : RL.minsBetween(remNow(), at) <= 30 ? "orange" : "green" };
   }).filter(Boolean);
 }
 /* ================= sync & sharing setup ================= */
