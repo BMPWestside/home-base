@@ -301,6 +301,7 @@ function remRemote_(p) {
     if (p.a === 'rtdone') {
       const r = (d.routines || []).find(x => x.id === p.id); if (!r) return 'Routine not found';
       d.rdone = d.rdone || {}; d.rdone[r.id] = { date: now.slice(0, 10), steps: (r.steps || []).map(s => s.id) }; d.su = stamp;
+      d.rhist = d.rhist || {}; d.rhist[r.id] = (d.rhist[r.id] || []).filter(x => x !== now.slice(0, 10)).concat([now.slice(0, 10)]).sort().slice(-120);
       remWrite_(who, d); return 'All done: ' + r.name;
     }
     const it = (d.items || []).find(x => x.id === p.id);
@@ -367,6 +368,12 @@ function checkReminders__(props) {
       keep[k] = prev;
     });
     props.setProperty('remsent_' + who, JSON.stringify(keep));
+    const sm = d.summary;
+    if (sm && sm.on && hm >= (sm.time || '07:00') && props.getProperty('remsum_' + who) !== today) {
+      props.setProperty('remsum_' + who, today);
+      const msg = remSummary_(d, now);
+      if (msg) remSend_(who, { topic: d.topic, title: 'Today', message: msg, tags: ['sunny'], ptitle: '☀️ Today', pbody: msg, tag: 'summary', badge: remBadge_(d) }, 'Summary', d);
+    }
   });
 }
 
@@ -392,8 +399,33 @@ function remPush_(d, it, kind, url, who) {
 /* Number on the Home Base icon: overdue reminders plus bills due within 3 days. */
 function remBadge_(d) {
   const now = remNow_(); let n = (d.items || []).filter(x => !x.done && (x.snooze || x.due) <= now).length;
+  n += (d.routines || []).filter(r => remRoutineLate_(d, r, now)).length;
   try { n += bbUrgent_(); } catch (e) {}
   return n;
+}
+function remRoutineOn_(r, day) { return !r.days || !r.days.length || r.days.indexOf(RL.dow(day + 'T00:00')) >= 0; }
+function remRoutineLate_(d, r, now) {
+  const day = now.slice(0, 10);
+  if (!r.time || !(r.steps || []).length || !remRoutineOn_(r, day) || now < day + 'T' + r.time) return false;
+  const done = d.rdone && d.rdone[r.id] && d.rdone[r.id].date === day ? d.rdone[r.id].steps || [] : [];
+  return r.steps.some(s => done.indexOf(s.id) < 0);
+}
+/* The morning summary: today's reminders, routines and bills due soon, in one notification. */
+function remSummary_(d, now) {
+  const day = now.slice(0, 10), parts = [];
+  const due = (d.items || []).filter(x => !x.done && (x.snooze || x.due).slice(0, 10) <= day);
+  if (due.length) parts.push(due.length + ' reminder' + (due.length > 1 ? 's' : '') + ': ' + due.slice(0, 3).map(x => x.title).join(', ') + (due.length > 3 ? '…' : ''));
+  const rts = (d.routines || []).filter(r => (r.steps || []).length && remRoutineOn_(r, day));
+  if (rts.length) parts.push('Routines: ' + rts.map(r => r.name).join(', '));
+  try {
+    if (typeof BILLS_ENABLED === 'undefined' || BILLS_ENABLED) {
+      const lim = RL.addMin(day + 'T00:00', 2 * 1440).slice(0, 10), data = bbData_(), names = {};
+      (data.providers || []).forEach(p => { names[p.id] = p.name; });
+      const bills = data.bills.filter(b => b.status === 'due' && b.dueDate && b.dueDate <= lim && String(b.autopay) !== 'true');
+      if (bills.length) parts.push('Bills: ' + bills.slice(0, 3).map(b => (names[b.provider] || 'Bill') + ' $' + Number(b.amount || 0).toFixed(0) + (b.dueDate < day ? ' (overdue)' : b.dueDate === day ? ' (today)' : '')).join(', '));
+    }
+  } catch (e) {}
+  return parts.join(' · ');
 }
 function bbUrgent_() {
   if (typeof BILLS_ENABLED !== 'undefined' && !BILLS_ENABLED) return 0;
@@ -800,7 +832,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","lists","routines","rdone","via","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","routines","rdone","rhist","via","summary","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);

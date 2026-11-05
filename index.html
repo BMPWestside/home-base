@@ -350,6 +350,34 @@
   .rtrow.late .rtbar i{background:#ff5a4e !important}
   .rtrow.late .rli{box-shadow:0 0 0 2px #ff5a4e}
   .rtlate{margin:0 2px 8px;padding:7px 10px;border-radius:10px;background:rgba(255,90,78,.16);color:#ff9a8f;font-size:13px;font-weight:800}
+  .rsmart{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:6px}
+  .rsmart button{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:8px;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.06);text-align:left;color:var(--ink)}
+  .rsmart .rli{grid-row:1/3;width:26px;height:26px;font-size:13px}
+  .rsmart b{font-size:17px;font-weight:900;line-height:1}
+  .rsmart em{font-style:normal;font-size:11.5px;font-weight:700;color:var(--soft)}
+  .rsmart button.hot b{color:#ff8a80}
+  .rldot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .rrow{position:relative;background-clip:padding-box;border-radius:10px}
+  .rrow.sw-done{background:rgba(60,207,122,.28)}
+  .rrow.sw-snz{background:rgba(255,165,58,.28)}
+  .rlinks{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+  .rlink{display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.12);color:var(--ink);font-weight:800;font-size:13.5px;text-decoration:none}
+  .rln small.fire{color:#ffb05e;font-weight:900}
+  .rtstreak{margin:0 2px 8px;font-size:14px;font-weight:700;color:#ffb05e}
+  .rtstreak b{font-size:17px}
+  .rtcal{margin:8px 0 4px}
+  .rtcalh,.rtcalg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;justify-items:center}
+  .rtcalh span{font-size:10.5px;font-weight:800;color:var(--soft)}
+  .rtcalg{margin-top:4px}
+  .rtcal i{display:block;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.1)}
+  .rtcal i.done{background:#3ccf7a}
+  .rtcal i.miss{background:rgba(255,90,78,.55)}
+  .rtcal i.rest{background:rgba(255,255,255,.04)}
+  .rtcal i.fut{background:transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  .rtcal i.now{box-shadow:0 0 0 2px var(--acc)}
+  .rtcalk{display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:11px;color:var(--soft);font-weight:700}
+  .rtcalk span{display:flex;align-items:center;gap:4px}
+  .rtcalk i{width:9px;height:9px}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -2257,6 +2285,7 @@ function renderBillsSafe(){
   if (S.tab === "shopping" && !bbTyping()) renderToday();
   if (S.tab === "bills"){ if (!bbTyping()) renderBills(); else setTimeout(renderBillsSafe, 1500); }
   updateBillsBadge();
+  if (typeof remBillSweep === "function") try { remBillSweep(); } catch(e){}
 }
 const bbUpdate = (id, patch) => bbCall("update", { id, patch });
 
@@ -2667,8 +2696,10 @@ function bbQuickPay(pid){
       ${b.bpayRef ? `<div><span>Reference</span><b>${esc(b.bpayRef)}</b></div><button data-copy="${esc(b.bpayRef)}" data-what="Reference">Copy</button>` : ""}</div>
       <button class="sdone" style="margin:10px 0 0;width:100%" id="copyBoth">Copy biller code, reference & amount</button></div>` : `<div class="note">No BPAY details on this bill.</div>`}
     <div class="acts2">${p.payUrl && !b.autopay ? `<a class="pill" style="text-align:center;padding:12px" href="${esc(p.payUrl)}" target="_blank" rel="noopener">↗ Pay online</a>` : ""}<button data-paid="${esc(b.id)}" style="background:var(--acc);color:var(--onacc)">✓ Mark paid</button></div>
+    ${typeof remAddForBill === "function" ? (remForBill(b) ? `<div class="note" style="text-align:center">🔔 Reminder set for ${remWhen(RL.at(remForBill(b)))}</div>` : `<button class="sdone" id="bRem" style="background:rgba(255,255,255,.1);color:var(--ink);margin-top:8px">🔔 Remind me 2 days before</button>`) : ""}
     <button class="sdone" id="cx" style="background:rgba(255,255,255,.1);color:var(--ink)">Close</button>`;
   bbBindSheet();
+  const br = menu.querySelector("#bRem"); if (br) br.onclick = () => { const it = remAddForBill(b); closeMenu(); toast("Reminder set · " + remWhen(it.due)); };
   const cb = menu.querySelector("#copyBoth");
   if (cb) cb.onclick = async () => {
     const txt = `Biller code: ${b.billerCode}${b.bpayRef ? "\nReference: " + b.bpayRef : ""}\nAmount: ${money(b.amount)}`;
@@ -2853,7 +2884,7 @@ var RL = (function(){
     const cut = Date.now() - 90 * 864e5; Object.keys(del).forEach(k => { if (del[k] < cut) delete del[k]; });
     out.del = del;
     const sa = a.su || 0, sb = b.su || 0, s = sb > sa ? b : a;
-    ["topic","key","quiet","hide","lists","routines","rdone","via","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
+    ["topic","key","quiet","hide","lists","routines","rdone","rhist","via","summary","su"].forEach(k => { if (s[k] !== undefined) out[k] = s[k]; else if ((s === a ? b : a)[k] !== undefined) out[k] = (s === a ? b : a)[k]; });
     const h = {}; (a.hist || []).concat(b.hist || []).forEach(x => { h[x.id] = x; });
     const hc = Math.max(a.hc || 0, b.hc || 0);
     out.hist = Object.keys(h).map(k => h[k]).filter(x => (x.ms || 0) > hc).sort((x, y) => x.at < y.at ? 1 : -1).slice(0, 60);
@@ -2969,6 +3000,8 @@ let REM = (() => { try { return JSON.parse(localStorage.getItem(remKey()) || "nu
 const remRnd = n => { const a = new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a).map(x => "abcdefghijkmnpqrstuvwxyz23456789"[x % 32]).join(""); };
 function remInit(){
   REM.items = REM.items || []; REM.del = REM.del || {}; REM.hist = REM.hist || [];
+  if (!REM.summary) REM.summary = { on:true, time:"07:00" };
+  REM.rhist = REM.rhist || {};
   if (!Array.isArray(REM.lists) || !REM.lists.length) REM.lists = REM_DEFAULT_LISTS.map(x => Object.assign({}, x));
   if (!REM.topic){ REM.topic = "hb-" + whoAmI().toLowerCase() + "-" + remRnd(18); REM.key = remRnd(24); REM.su = REM.su || 1; REM.quiet = REM.quiet || { on:false, from:"22:00", to:"07:00" }; REM.hide = !!REM.hide; }
 }
@@ -2987,7 +3020,7 @@ async function remSync(){
     if (r && r.ok && r.data){
       if (!REM_SYNC.ok){ REM_SYNC = { ok:true }; remRefresh(); }
       const before = JSON.stringify(REM);
-      REM = RL.merge(REM, r.data); remInit();
+      REM = RL.merge(REM, r.data); remInit(); try { remBillSweep(); } catch(e){}
       try { localStorage.setItem(remKey(), JSON.stringify(REM)); } catch(e){}
       if (JSON.stringify(REM) !== before) remRefresh();
     }
@@ -3018,9 +3051,9 @@ function remRel(w){
 }
 const remOpen = () => (REM.items || []).filter(x => !x.done).sort((a,b) => RL.at(a) < RL.at(b) ? -1 : 1);
 
-function remRowHTML(it){
-  const w = RL.at(it), late = w <= remNow(), rt = RL.repText(it);
-  return `<div class="rrow ${late ? "late" : ""}"><button class="rchk" data-rdone="${it.id}" aria-label="Done"></button><button class="rm" data-redit="${it.id}"><b>${esc(it.title)}</b><span>${remWhen(w)}${it.snooze ? " · 💤" : ""}${rt ? " · 🔁 " + rt : ""}${it.nag ? " · 🔔" : ""}${it.hi ? " · ❗" : ""}</span></button><span class="rd">${remRel(w)}</span></div>`;
+function remRowHTML(it, showList){
+  const w = RL.at(it), late = w <= remNow(), rt = RL.repText(it), l = showList ? remListById(remListOf(it)) : null;
+  return `<div class="rrow ${late ? "late" : ""}"><button class="rchk" data-rdone="${it.id}" aria-label="Done"></button><button class="rm" data-redit="${it.id}"><b>${l ? `<i class="rldot" style="background:${l.color}"></i>` : ""}${esc(it.title)}</b><span>${remWhen(w)}${it.snooze ? " · 💤" : ""}${rt ? " · 🔁 " + rt : ""}${it.nag ? " · 🔔" : ""}${it.hi ? " · ❗" : ""}${it.notes ? " · 📝" : ""}${it.billId ? " · 💸" : ""}</span></button><span class="rd">${remRel(w)}</span></div>`;
 }
 function renderRems(){
   const host = document.getElementById("rems"); if (!host) return;
@@ -3034,7 +3067,7 @@ function renderRems(){
     : !LOCAL.remTested && !LOCAL.pushOn ? `<button class="rwarn" id="rWarn">🔔 Turn on notifications for this phone</button>` : "";
   host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
-    ${warn}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
+    ${warn}${remSmartHTML()}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
   const q = s => host.querySelector(s);
   remBindQuick(q("#rqIn"), q("#rq"), q("#rqP"), "general");
   host.querySelectorAll("[data-rl]").forEach(b => b.onclick = () => openRemList(b.dataset.rl));
@@ -3045,6 +3078,7 @@ function renderRems(){
   q("#rNewL").onclick = () => editRemList(null);
   q("#rNewR").onclick = () => editRoutine(null);
   host.querySelectorAll("[data-rt]").forEach(b => b.onclick = () => openRoutine(b.dataset.rt));
+  host.querySelectorAll("[data-sm]").forEach(b => b.onclick = () => openRemSmart(b.dataset.sm));
   const rw = q("#rWarn"); if (rw) rw.onclick = showRemSettings;
 }
 function remBindQuick(inp, form, prev, listId, after){
@@ -3072,6 +3106,7 @@ function openRemList(id){
   remBindQuick($("#rlqIn"), $("#rlq"), $("#rlqP"), l.id, () => openRemList(l.id));
   menu.querySelectorAll("[data-rdone]").forEach(b => b.onclick = () => { remDone(b.dataset.rdone); openRemList(l.id); });
   menu.querySelectorAll("[data-redit]").forEach(b => b.onclick = () => editRem(b.dataset.redit, null, l.id));
+  attachRemSwipe(menu, () => openRemList(l.id));
   $("#rlEdit").onclick = () => editRemList(l.id);
   $("#rlDone").onclick = closeMenu;
   if (!menu.classList.contains("on")) openMenu();
@@ -3141,6 +3176,7 @@ function editRem(id, pre, back){
   const DL = ["S","M","T","W","T","F","S"];
   menu.innerHTML = `<div class="mt">${it ? "Edit reminder" : "New reminder"}</div>
     <form class="ed rform" id="rf" style="padding-top:0">
+      ${it && it.notes && remLinks(it.notes) ? `<div class="rlinks">${remLinks(it.notes)}</div>` : ""}
       <label>Remind me to</label><input id="rT" value="${esc(base.title)}" placeholder="e.g. Pay rego" autocomplete="off">
       <label>List</label><select class="set-sel" id="rL">${REM.lists.map(l => `<option value="${l.id}" ${l.id === curList ? "selected" : ""}>${l.icon} ${esc(l.name)}</option>`).join("")}</select>
       <div class="r2"><div><label>Date</label><input id="rD" type="date" value="${dflt.slice(0,10)}"></div><div><label>Time</label><input id="rH" type="time" value="${dflt.slice(11,16)}"></div></div>
@@ -3149,6 +3185,7 @@ function editRem(id, pre, back){
       <div id="rN" class="r2"><div><label id="rNl">Every how many days?</label><input id="rNv" type="number" min="1" max="365" inputmode="numeric" value="${r.n || (r.f === "monthly" ? 1 : 2)}"></div></div>
       <div id="rEnd"><label>Ends</label><div class="r2"><div><select class="set-sel" id="rE"><option value="never">Never</option><option value="date" ${endMode === "date" ? "selected" : ""}>On a date</option><option value="count" ${endMode === "count" ? "selected" : ""}>After a number of times</option></select></div>
         <div><input id="rEd" type="date" value="${r.end || ""}"><input id="rEc" type="number" min="1" inputmode="numeric" placeholder="Times" value="${r.count || ""}"></div></div></div>
+      <label>Notes</label><textarea id="rNo" rows="2" placeholder="Phone number, link or details — they become tappable">${esc(base.notes || "")}</textarea>
       <label>Early alert</label><select class="set-sel" id="rEa">${EARLY_OPTS.map(([v,l]) => `<option value="${v}" ${+base.early === v ? "selected" : ""}>${l}</option>`).join("")}</select>
       <label class="rtog"><input type="checkbox" id="rNag" ${base.nag ? "checked" : ""}><span>Keep reminding every 15 min until done</span></label>
       <label class="rtog"><input type="checkbox" id="rHi" ${base.hi ? "checked" : ""}><span>Important (high-priority alert)</span></label>
@@ -3182,7 +3219,7 @@ function editRem(id, pre, back){
     let due = d + "T" + h;
     if (f === "weekly" && rep.days.length && rep.days.indexOf(RL.dow(due)) < 0){ let x = due; for (let i = 0; i < 7; i++){ x = RL.addMin(x, 1440); if (rep.days.indexOf(RL.dow(x)) >= 0) break; } due = x; }
     if (f === "weekdays") while (RL.dow(due) === 0 || RL.dow(due) === 6) due = RL.addMin(due, 1440);
-    return { title, due, rep, list:$("#rL").value, early:+$("#rEa").value, nag:$("#rNag").checked, hi:$("#rHi").checked };
+    return { title, due, rep, list:$("#rL").value, notes:$("#rNo").value.trim(), early:+$("#rEa").value, nag:$("#rNag").checked, hi:$("#rHi").checked };
   }
   menu.querySelectorAll("[data-wd]").forEach(b => b.onclick = () => {
     const d = +b.dataset.wd, i = days.indexOf(d);
@@ -3199,11 +3236,11 @@ function editRem(id, pre, back){
       const moved = v.due !== it.due || JSON.stringify(v.rep) !== JSON.stringify(it.rep);
       Object.assign(it, v, { u:Date.now() });
       if (moved){ it.snooze = null; it.anchor = v.due; it.done = false; }
-      remSave(); renderRems(); back ? openRemList(back) : closeMenu();
-    } else { remAdd(v); back ? openRemList(back) : closeMenu(); }
+      remSave(); renderRems(); remBack(back);
+    } else { const n = remAdd(v); if (v.notes){ n.notes = v.notes; remSave(); } remBack(back); }
   };
   if (it){
-    const after = () => back ? openRemList(back) : closeMenu();
+    const after = () => remBack(back);
     $("#rDo").onclick = () => { remDone(it.id); after(); };
     $("#rSn").onclick = () => { RL.snooze(it, remNow(), 60); remSave(); renderRems(); after(); toast("Snoozed until " + remHM(it.snooze)); };
     $("#rDel").onclick = () => { remDelete(it); after(); };
@@ -3232,6 +3269,9 @@ function showRemSettings(){
       <div class="rsh">2 · Quiet hours</div>
       <label class="rtog"><input type="checkbox" id="rQ" ${q0.on ? "checked" : ""}><span>Hold alerts during quiet hours</span></label>
       <div class="r2"><div><label>From</label><input type="time" id="rQf" value="${q0.from}"></div><div><label>Until</label><input type="time" id="rQt" value="${q0.to}"></div></div>
+      <div class="rsh">Morning summary</div>
+      <label class="rtog"><input type="checkbox" id="rSum" ${REM.summary && REM.summary.on ? "checked" : ""}><span>Send me a summary of the day</span></label>
+      <div class="r2"><div><label>At</label><input type="time" id="rSumT" value="${(REM.summary && REM.summary.time) || "07:00"}"></div><div></div></div>
       <div class="rsh">3 · Lock screen</div>
       <label class="rtog"><input type="checkbox" id="rHide" ${REM.hide ? "checked" : ""}><span>Hide what the reminder says (shows "You have a reminder")</span></label>
       <div class="rsh">4 · Add with Siri</div>
@@ -3250,7 +3290,9 @@ function showRemSettings(){
   const setQ = () => { REM.quiet = { on:$("#rQ").checked, from:$("#rQf").value || "22:00", to:$("#rQt").value || "07:00" }; REM.su = Date.now(); remSave(); };
   pushBox($("#rPushBox"));
   $("#rVia").onchange = () => { REM.via = $("#rVia").value; REM.su = Date.now(); remSave(); toast("Saved"); };
-  $("#rQ").onchange = setQ; $("#rQf").onchange = setQ; $("#rQt").onchange = setQ;
+  $("#rQ").onchange = setQ;
+  const setSum = () => { REM.summary = { on:$("#rSum").checked, time:$("#rSumT").value || "07:00" }; REM.su = Date.now(); remSave(); };
+  $("#rSum").onchange = setSum; $("#rSumT").onchange = setSum; $("#rQf").onchange = setQ; $("#rQt").onchange = setQ;
   $("#rHide").onchange = () => { REM.hide = $("#rHide").checked; REM.su = Date.now(); remSave(); };
   $("#rCp").onclick = () => remCopy(REM.topic, "Topic copied — paste it in ntfy");
   $("#rTest").onclick = async () => {
@@ -3398,11 +3440,11 @@ function rtDoneSteps(r){ const x = (REM.rdone || {})[r.id]; return x && x.date =
 function rtActiveToday(r){ return !r.days || !r.days.length || r.days.indexOf(RL.dow(rtToday() + "T00:00")) >= 0; }
 /* A routine whose time has passed today and isn't finished: shown in red until it's done. */
 function rtLate(r){ return !!(r.time && rtActiveToday(r) && (r.steps || []).length && rtDoneSteps(r).length < r.steps.length && remNow() >= rtToday() + "T" + r.time); }
-function rtSet(r, steps){ REM.rdone = REM.rdone || {}; REM.rdone[r.id] = { date:rtToday(), steps }; REM.su = Date.now(); remSave(); }
+function rtSet(r, steps){ REM.rdone = REM.rdone || {}; REM.rdone[r.id] = { date:rtToday(), steps }; rtMark(r, steps.length >= (r.steps || []).length); REM.su = Date.now(); remSave(); }
 function rtRowsHTML(){
   return (REM.routines || []).map(r => {
     const n = rtDoneSteps(r).length, t = (r.steps || []).length, on = rtActiveToday(r), all = t && n >= t, late = rtLate(r);
-    return `<button class="rl rtrow ${late ? "late" : ""}" data-rt="${r.id}"><span class="rli" style="background:${r.color || "#f59a3b"}">${r.icon || "☀️"}</span><span class="rln">${esc(r.name)}${r.time ? `<small>${remHM("2000-01-01T" + r.time)}</small>` : ""}</span>${on ? `<span class="rtbar"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color || "#f59a3b"}"></i></span><span class="rlc ${all ? "ok" : ""}">${all ? "✓" : n + "/" + t}</span>` : `<span class="rlc">Rest day</span>`}<span class="rlx">›</span></button>`;
+    return `<button class="rl rtrow ${late ? "late" : ""}" data-rt="${r.id}"><span class="rli" style="background:${r.color || "#f59a3b"}">${r.icon || "☀️"}</span><span class="rln">${esc(r.name)}${r.time ? `<small>${remHM("2000-01-01T" + r.time)}</small>` : ""}${rtStreak(r) >= 2 ? `<small class="fire">🔥${rtStreak(r)}</small>` : ""}</span>${on ? `<span class="rtbar"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color || "#f59a3b"}"></i></span><span class="rlc ${all ? "ok" : ""}">${all ? "✓" : n + "/" + t}</span>` : `<span class="rlc">Rest day</span>`}<span class="rlx">›</span></button>`;
   }).join("");
 }
 function rtCelebrate(r){ toast(`${r.name} done 🎉`); try { confetti(); } catch(e){} }
@@ -3414,9 +3456,11 @@ function openRoutine(id){
   menu.innerHTML = `<div class="rlhead"><span class="rli big" style="background:${r.color}">${r.icon}</span><b style="color:${r.color}">${esc(r.name)}</b><button id="rtEdit">Edit</button></div>
     <div class="rlbody">
       <div class="rtsub">${sched}${rtActiveToday(r) ? "" : " · rest day today"}</div>${rtLate(r) ? `<div class="rtlate">⏰ Past ${remHM("2000-01-01T" + r.time)} — tick the rest off to clear it</div>` : ""}
+      ${rtStreak(r) ? `<div class="rtstreak">🔥 <b>${rtStreak(r)}</b> day${rtStreak(r) === 1 ? "" : "s"} in a row</div>` : ""}
       <div class="rtprog"><span class="rtbar big"><i style="width:${t ? Math.round(n / t * 100) : 0}%;background:${r.color}"></i></span><b>${n}/${t}</b></div>
       ${r.steps.map(st => `<button class="rtstep ${done.indexOf(st.id) >= 0 ? "on" : ""}" data-st="${st.id}"><span class="rchk"></span><span>${esc(st.text)}</span></button>`).join("") || `<div class="stats" style="margin:8px 2px">No steps yet. Tap Edit to add some.</div>`}
     </div>
+    <div class="rlbody">${rtCalendarHTML(r)}</div>
     <div class="r3" style="padding:0 8px 4px">${n ? `<button id="rtReset">Start over</button>` : ""}${n < t ? `<button id="rtAll">✓ All done</button>` : ""}</div>
     <button class="sdone" id="rtDone">Done</button>`;
   const $ = s => menu.querySelector(s);
@@ -3465,7 +3509,7 @@ function editRoutine(id){
       const steps = v.steps.map(text => { const m = old.find(x => x.text === text); return m || { id:uid(), text }; });
       const data = { name:v.name.trim(), icon:v.icon, color:v.color, time:v.time, alert:!!(v.alert && v.time), days:v.days.length === 7 ? [] : v.days.slice(), steps };
       REM.routines = REM.routines || [];
-      let tgt = r; if (r) Object.assign(r, data); else { tgt = Object.assign({ id:uid() }, data); REM.routines.push(tgt); }
+      let tgt = r; if (r) Object.assign(r, data); else { tgt = Object.assign({ id:uid(), created:rtToday() }, data); REM.routines.push(tgt); }
       REM.su = Date.now(); remSave(); renderRems(); openRoutine(tgt.id);
     };
     const del = $("#rtDel");
@@ -3482,6 +3526,118 @@ function rtTodayRows(){
     if (n >= t || RL.addMin(at, -60) > remNow()) return null;
     return { k:"rem", name:r.icon + " " + esc(r.name), key:`${n}/${t}`, val: rtLate(r) ? "late" : remHM(at), pct:Math.max(5, n / t * 100), tone: rtLate(r) ? "red" : RL.minsBetween(remNow(), at) <= 30 ? "orange" : "green" };
   }).filter(Boolean);
+}
+/* ================= Reminders extras: streaks, swipe, smart rows, bill reminders, notes ================= */
+
+/* ---- routine streaks ---- */
+const rtPrev = d => RL.addMin(d + "T00:00", -1440).slice(0,10);
+function rtHist(r){ return (REM.rhist || {})[r.id] || []; }
+function rtMark(r, done){
+  REM.rhist = REM.rhist || {};
+  const h = rtHist(r).filter(x => x !== rtToday());
+  if (done) h.push(rtToday());
+  REM.rhist[r.id] = h.sort().slice(-120);
+}
+function rtOn(r, iso){ return !r.days || !r.days.length || r.days.indexOf(RL.dow(iso + "T00:00")) >= 0; }
+function rtStreak(r){
+  const h = new Set(rtHist(r)); let d = rtToday(), n = 0;
+  if (!h.has(d)) d = rtPrev(d);
+  for (let i = 0; i < 400; i++){ if (!rtOn(r, d)){ d = rtPrev(d); continue; } if (h.has(d)){ n++; d = rtPrev(d); } else break; }
+  return n;
+}
+function rtCalendarHTML(r){
+  const h = new Set(rtHist(r)), today = rtToday(), first = [rtHist(r).slice().sort()[0], r.created].filter(Boolean).sort()[0] || today;
+  // five weeks, Monday first, ending this week
+  let end = today; while (RL.dow(end + "T00:00") !== 0) end = RL.addMin(end + "T00:00", 1440).slice(0,10);
+  let d = end; const days = []; for (let i = 0; i < 35; i++){ days.unshift(d); d = rtPrev(d); }
+  const cells = days.map(x => {
+    let c = "";
+    if (x > today) c = "fut"; else if (!rtOn(r, x)) c = "rest"; else if (h.has(x)) c = "done"; else if (x < today && x >= first) c = "miss";
+    return `<i class="${c}${x === today ? " now" : ""}" title="${x}"></i>`;
+  }).join("");
+  return `<div class="rtcal"><div class="rtcalh">${["M","T","W","T","F","S","S"].map(x => `<span>${x}</span>`).join("")}</div><div class="rtcalg">${cells}</div>
+    <div class="rtcalk"><span><i class="done"></i>Done</span><span><i class="miss"></i>Missed</span><span><i class="rest"></i>Rest day</span></div></div>`;
+}
+
+/* ---- swipe a reminder: right = done, left = snooze 1 hour ---- */
+function attachRemSwipe(root, after){
+  root.querySelectorAll(".rrow").forEach(row => {
+    const chk = row.querySelector("[data-rdone]"); if (!chk) return;
+    const id = chk.dataset.rdone;
+    let x0 = 0, y0 = 0, dx = 0, mode = null;
+    row.addEventListener("touchstart", e => { const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; dx = 0; mode = null; row.style.transition = "none"; }, { passive:true });
+    row.addEventListener("touchmove", e => {
+      const t = e.touches[0], mx = t.clientX - x0, my = t.clientY - y0;
+      if (!mode){ if (Math.abs(mx) > 10 && Math.abs(mx) > Math.abs(my) * 1.3) mode = "h"; else if (Math.abs(my) > 10) mode = "v"; }
+      if (mode === "h"){ e.preventDefault(); dx = Math.max(-140, Math.min(140, mx)); row.style.transform = `translateX(${dx}px)`;
+        row.classList.toggle("sw-done", dx > 70); row.classList.toggle("sw-snz", dx < -70); }
+    }, { passive:false });
+    row.addEventListener("touchend", () => {
+      row.style.transition = "transform .2s"; row.style.transform = "";
+      const was = mode; mode = null; row.classList.remove("sw-done", "sw-snz");
+      if (was !== "h") return;
+      if (dx > 80){ try { navigator.vibrate && navigator.vibrate(10); } catch(_){} remDone(id); if (after) after(); }
+      else if (dx < -80){
+        const it = REM.items.find(x => x.id === id); if (!it) return;
+        RL.snooze(it, remNow(), 60); remSave(); renderRems(); updateAppBadge(); toast("Snoozed until " + remHM(it.snooze)); if (after) after();
+      }
+    });
+  });
+}
+
+/* ---- smart rows: Today / Overdue / All ---- */
+const SMART = {
+  today:  { name:"Today",   icon:"📅", color:"#4aa3e8", pick: (it, now) => RL.at(it) <= now.slice(0,10) + "T23:59" },
+  overdue:{ name:"Overdue", icon:"⏰", color:"#ec5141", pick: (it, now) => RL.at(it) <= now },
+  all:    { name:"All",     icon:"🗂", color:"#8e8e93", pick: () => true }
+};
+function remSmartHTML(){
+  const now = remNow(), open = remOpen();
+  return `<div class="rsmart">${Object.keys(SMART).map(k => { const s = SMART[k], n = open.filter(it => s.pick(it, now)).length;
+    return `<button data-sm="${k}" class="${k === "overdue" && n ? "hot" : ""}"><span class="rli" style="background:${s.color}">${s.icon}</span><b>${n}</b><em>${s.name}</em></button>`; }).join("")}</div>`;
+}
+function openRemSmart(k){
+  const s = SMART[k]; if (!s) return;
+  const now = remNow(), items = remOpen().filter(it => s.pick(it, now));
+  menu.innerHTML = `<div class="rlhead"><span class="rli big" style="background:${s.color}">${s.icon}</span><b style="color:${s.color}">${s.name}</b></div>
+    <div class="rlbody">${items.map(it => remRowHTML(it, true)).join("") || `<div class="stats" style="margin:10px 2px">Nothing here 🎉</div>`}
+    <div class="rnote" style="margin-top:8px">Swipe right to tick off, left to snooze an hour.</div></div>
+    <button class="sdone" id="smDone">Done</button>`;
+  menu.querySelectorAll("[data-rdone]").forEach(b => b.onclick = () => { remDone(b.dataset.rdone); openRemSmart(k); });
+  menu.querySelectorAll("[data-redit]").forEach(b => b.onclick = () => editRem(b.dataset.redit, null, "smart:" + k));
+  attachRemSwipe(menu, () => openRemSmart(k));
+  menu.querySelector("#smDone").onclick = closeMenu;
+  if (!menu.classList.contains("on")) openMenu();
+}
+function remBack(back){ if (!back) return closeMenu(); if (String(back).indexOf("smart:") === 0) return openRemSmart(back.slice(6)); openRemList(back); }
+
+/* ---- bill → reminder (clears itself when the bill is paid) ---- */
+function remForBill(b){ return (REM.items || []).find(it => it.billId === b.id && !it.done); }
+function remAddForBill(b){
+  const p = bbProv(b.provider);
+  let due = b.dueDate ? RL.addMin(b.dueDate + "T09:00", -2 * 1440) : null;
+  if (!due || due <= remNow()) due = RL.addMin(remNow().slice(0,13) + ":00", 60);
+  const it = remAdd({ title:`Pay ${p.name} ${money(b.amount)}`, due, list: REM.lists.some(l => l.id === "bills") ? "bills" : "general", rep:{ f:"none" } });
+  it.billId = b.id; it.u = Date.now(); remSave();
+  return it;
+}
+function remBillSweep(){
+  if (typeof BB === "undefined" || !BB.bills || !BB.bills.length) return;
+  let changed = false;
+  (REM.items || []).forEach(it => {
+    if (!it.billId || it.done) return;
+    const b = BB.bills.find(x => x.id === it.billId);
+    if (b && b.status === "paid"){ it.done = true; it.doneAt = remNow(); it.u = Date.now(); REM.hist = [{ t:it.title, at:remNow(), id:it.id + "@" + remNow(), ms:Date.now() }].concat(REM.hist || []).slice(0, 60); changed = true; }
+  });
+  if (changed){ remSave(); renderRems(); updateAppBadge(); }
+}
+
+/* ---- notes: phone numbers and links become tappable ---- */
+function remLinks(text){
+  const out = [], seen = {};
+  String(text || "").replace(/https?:\/\/[^\s]+|www\.[^\s]+/gi, u => { const href = /^http/i.test(u) ? u : "https://" + u; if (!seen[href]){ seen[href] = 1; out.push(`<a class="rlink" href="${esc(href)}" target="_blank" rel="noopener">🔗 ${esc(u.replace(/^https?:\/\//, "").slice(0, 28))}</a>`); } return u; });
+  String(text || "").replace(/(\+?61[\s-]?|0)[2-478](?:[\s-]?\d){8}\b|\b1[38]00(?:[\s-]?\d){6}\b|\b13(?:[\s-]?\d){4}\b/g, n => { const tel = n.replace(/[^\d+]/g, ""); if (!seen[tel]){ seen[tel] = 1; out.push(`<a class="rlink" href="tel:${tel}">📞 ${esc(n.trim())}</a>`); } return n; });
+  return out.join("");
 }
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
