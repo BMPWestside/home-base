@@ -671,11 +671,11 @@
     <i class="sp-ring r1"></i><i class="sp-ring r2"></i>
     <div class="sp-tile"><i class="sp-shine"></i>
       <div class="sp-logo">
-        <img class="sp-house" src="icons/splash/house.png" style="left:9.08%;top:-0.1%;width:83.54%" alt="">
-        <img class="sp-check" src="icons/splash/check.png" style="left:43.03%;top:30.58%;width:16.75%" alt="">
-        <img class="sp-list"  src="icons/splash/list.png"  style="left:41.18%;top:76.86%;width:18.45%" alt="">
-        <img class="sp-cart"  src="icons/splash/cart.png"  style="left:-0.52%;top:65.65%;width:26.2%" alt="">
-        <img class="sp-coin"  src="icons/splash/coin.png"  style="left:73.65%;top:61.47%;width:27.31%" alt="">
+        <img class="sp-base" src="icons/splash2/base.png" style="left:0.0%;top:0.0%;width:100.0%" alt="">
+        <img class="sp-chk c0" src="icons/splash2/chk0.png" style="left:51.143%;top:42.547%;width:28.378%" alt="">
+        <img class="sp-chk c1" src="icons/splash2/chk1.png" style="left:51.143%;top:51.553%;width:28.378%" alt="">
+        <img class="sp-chk c2" src="icons/splash2/chk2.png" style="left:51.143%;top:60.352%;width:28.378%" alt="">
+        <img class="sp-rcpt" src="icons/splash2/receipt.png" style="left:48.025%;top:69.979%;width:34.096%" alt="">
       </div>
     </div>
   </div>
@@ -684,54 +684,54 @@
 </div>
 <style>
   #splash{position:fixed;top:-80px;bottom:-80px;left:0;right:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
-    background:linear-gradient(160deg,#0d2436 0%,#143f55 45%,#1b6b6a 100%);transition:opacity .45s ease}
+    background:linear-gradient(165deg,#0b2230 0%,#0f3a45 50%,#0d5a5c 100%);transition:opacity .45s ease}
   #splash.bye{opacity:0;pointer-events:none}
   #splash.bye .sp-stage{transform:scale(1.12);transition:transform .45s ease}
-  .sp-orb{position:absolute;border-radius:50%;filter:blur(50px);opacity:.75;will-change:transform}
-  .sp-orb.o1{width:70vmax;height:70vmax;left:-25vmax;bottom:-10vmax;background:radial-gradient(circle,#2fb3a0 0%,rgba(47,179,160,0) 65%);animation:spDrift1 7s ease-in-out infinite alternate}
-  .sp-orb.o2{width:60vmax;height:60vmax;right:-25vmax;top:-5vmax;background:radial-gradient(circle,#f5a46e 0%,rgba(245,164,110,0) 62%);opacity:.55;animation:spDrift2 8s ease-in-out infinite alternate}
-  .sp-orb.o3{width:45vmax;height:45vmax;left:20vmax;top:35vmax;background:radial-gradient(circle,#3c6fd6 0%,rgba(60,111,214,0) 65%);opacity:.35;animation:spDrift1 9s ease-in-out infinite alternate-reverse}
+  .sp-orb{position:absolute;border-radius:50%;filter:blur(50px);will-change:transform}
+  .sp-orb.o1{width:70vmax;height:70vmax;left:-28vmax;bottom:-12vmax;background:radial-gradient(circle,#11a39a 0%,rgba(17,163,154,0) 65%);opacity:.8;animation:spDrift1 7s ease-in-out infinite alternate}
+  .sp-orb.o2{width:60vmax;height:60vmax;right:-26vmax;top:-6vmax;background:radial-gradient(circle,#7fe0cf 0%,rgba(127,224,207,0) 62%);opacity:.45;animation:spDrift2 8s ease-in-out infinite alternate}
+  .sp-orb.o3{width:40vmax;height:40vmax;left:25vmax;top:40vmax;background:radial-gradient(circle,#57d3c3 0%,rgba(87,211,195,0) 65%);opacity:.3;animation:spDrift1 9s ease-in-out infinite alternate-reverse}
   @keyframes spDrift1{to{transform:translate(8vmax,-6vmax) scale(1.1)}}
   @keyframes spDrift2{to{transform:translate(-10vmax,8vmax) scale(1.15)}}
   .sp-stage{position:relative;width:min(66vw,290px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:26px}
-  .sp-ring{position:absolute;inset:0;border-radius:30%;border:2px solid rgba(160,240,225,.55);opacity:0}
-  .sp-ring.r1{animation:spRing 1.6s .55s ease-out forwards}
-  .sp-ring.r2{animation:spRing 1.6s .85s ease-out forwards}
-  @keyframes spRing{0%{opacity:.8;transform:scale(.9)}100%{opacity:0;transform:scale(1.55)}}
+  .sp-ring{position:absolute;inset:0;border-radius:24%;border:2px solid rgba(160,240,225,.6);opacity:0}
+  .sp-ring.r1{animation:spRing 1.6s .6s ease-out forwards}
+  .sp-ring.r2{animation:spRing 1.6s .9s ease-out forwards}
+  @keyframes spRing{0%{opacity:.85;transform:scale(.9)}100%{opacity:0;transform:scale(1.55)}}
   .sp-tile{position:relative;width:100%;height:100%;border-radius:23%;overflow:hidden;display:grid;place-items:center;
-    background:radial-gradient(120% 100% at 25% 15%,#fffdf8 0%,#f7efe2 55%,#eadcc6 100%);
-    box-shadow:0 30px 60px -18px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.35) inset,0 0 70px rgba(120,220,200,.25);
+    background:radial-gradient(120% 110% at 22% 12%,#e9fbf7 0%,#bfeee5 50%,#93d8cb 100%);
+    box-shadow:0 30px 60px -18px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.35) inset,0 0 80px rgba(147,216,203,.3);
     opacity:0;transform:scale(.55) rotate(-8deg);animation:spTile .8s cubic-bezier(.2,1.25,.35,1) forwards}
   @keyframes spTile{60%{opacity:1}100%{opacity:1;transform:none}}
   .sp-shine{position:absolute;top:-50%;left:-80%;width:60%;height:200%;transform:rotate(25deg);z-index:3;pointer-events:none;
-    background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.75),rgba(255,255,255,0));animation:spShine .9s 1.35s ease-in-out forwards}
+    background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.7),rgba(255,255,255,0));animation:spShine .9s 1.9s ease-in-out forwards}
   @keyframes spShine{to{left:140%}}
-  .sp-logo{position:relative;width:84%;aspect-ratio:1355/955;margin-top:4%}
+  .sp-logo{position:relative;width:80%;aspect-ratio:962/966}
   .sp-logo img{position:absolute;display:block;height:auto;opacity:0;will-change:transform,opacity}
-  .sp-house{animation:spHouse .7s .35s cubic-bezier(.2,.9,.25,1.15) forwards;transform-origin:50% 100%}
-  .sp-cart{animation:spCart .7s .65s cubic-bezier(.2,.9,.3,1.25) forwards}
-  .sp-coin{animation:spCoin .85s .75s cubic-bezier(.2,.8,.3,1.1) forwards}
-  .sp-check{animation:spDraw .45s 1.05s ease-out forwards}
-  .sp-list{animation:spDraw .5s 1.2s ease-out forwards}
-  @keyframes spHouse{0%{opacity:0;transform:translateY(30px) scale(.8)}100%{opacity:1;transform:none}}
-  @keyframes spCart{0%{opacity:0;transform:translateX(-60px) rotate(-12deg)}70%{opacity:1;transform:translateX(5px) rotate(2deg)}100%{opacity:1;transform:none}}
-  @keyframes spCoin{0%{opacity:0;transform:translateX(60px) rotate(320deg) scale(.5)}100%{opacity:1;transform:none}}
-  @keyframes spDraw{0%{opacity:1;clip-path:inset(0 100% 0 0);transform:scale(.9)}70%{transform:scale(1.1)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+  .sp-base{animation:spBase .95s .3s cubic-bezier(.2,.9,.25,1.1) forwards}
+  @keyframes spBase{0%{opacity:1;clip-path:circle(0% at 50% 50%);transform:rotate(-140deg) scale(.7)}100%{opacity:1;clip-path:circle(75% at 50% 50%);transform:none}}
+  .sp-chk{transform-origin:12% 50%}
+  .sp-chk.c0{animation:spChk .42s 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
+  .sp-chk.c1{animation:spChk .42s 1.22s cubic-bezier(.2,1.4,.4,1) forwards}
+  .sp-chk.c2{animation:spChk .42s 1.39s cubic-bezier(.2,1.4,.4,1) forwards}
+  @keyframes spChk{0%{opacity:1;clip-path:inset(0 100% 0 0);transform:scale(.6)}55%{clip-path:inset(0 30% 0 0);transform:scale(1.12)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+  .sp-rcpt{animation:spRcpt .7s 1.55s cubic-bezier(.2,1.2,.35,1) forwards;transform-origin:50% 0}
+  @keyframes spRcpt{0%{opacity:1;clip-path:inset(0 0 100% 0);transform:translateY(-12%)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
   .sp-name{position:relative;font:800 36px/1.1 -apple-system,"SF Pro Rounded",system-ui,sans-serif;color:#fff;letter-spacing:.3px;opacity:0;
-    text-shadow:0 4px 18px rgba(0,0,0,.35);animation:spUp .55s 1.3s cubic-bezier(.2,.8,.2,1) forwards}
-  .sp-tag{position:relative;margin-top:8px;font:800 12.5px/1 -apple-system,system-ui,sans-serif;color:#9fe6d6;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:spUp .55s 1.5s cubic-bezier(.2,.8,.2,1) forwards}
+    text-shadow:0 4px 18px rgba(0,0,0,.35);animation:spUp .55s 1.75s cubic-bezier(.2,.8,.2,1) forwards}
+  .sp-tag{position:relative;margin-top:8px;font:800 12.5px/1 -apple-system,system-ui,sans-serif;color:#9fe6d6;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:spUp .55s 1.95s cubic-bezier(.2,.8,.2,1) forwards}
   @keyframes spUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
-  @media (prefers-reduced-motion: reduce){.sp-tile,.sp-logo img,.sp-name,.sp-tag{animation:none!important;opacity:1;transform:none}.sp-orb,.sp-ring,.sp-shine{display:none}}
+  @media (prefers-reduced-motion: reduce){.sp-tile,.sp-logo img,.sp-name,.sp-tag{animation:none!important;opacity:1;transform:none;clip-path:none}.sp-orb,.sp-ring,.sp-shine{display:none}}
 </style>
 <script>
 (function(){
   var sp = document.getElementById("splash"); if (!sp) return;
   var seen = false; try { seen = sessionStorage.getItem("hb_splash") === "1"; sessionStorage.setItem("hb_splash", "1"); } catch(e){}
-  if (seen){ sp.remove(); return; }
+  if (seen && !window.HB_SPLASH_PREVIEW){ sp.remove(); return; }
   var quick = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var gone = false, go = function(){ if (gone) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 480); };
+  var gone = false, go = function(){ if (gone || window.HB_SPLASH_PREVIEW) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 480); };
   sp.addEventListener("click", go);
-  setTimeout(go, quick ? 700 : 2700);
+  setTimeout(go, quick ? 700 : 3000);
 })();
 </script>
 <div class="statusbg"></div>
