@@ -3346,15 +3346,11 @@ function showRemSettings(){
       <div class="rsh">2 · Quiet hours</div>
       <label class="rtog"><input type="checkbox" id="rQ" ${q0.on ? "checked" : ""}><span>Hold alerts during quiet hours</span></label>
       <div class="r2"><div><label>From</label><input type="time" id="rQf" value="${q0.from}"></div><div><label>Until</label><input type="time" id="rQt" value="${q0.to}"></div></div>
-      <div class="rsh">Morning summary</div>
+      <div class="rsh">3 · Morning summary</div>
       <label class="rtog"><input type="checkbox" id="rSum" ${REM.summary && REM.summary.on ? "checked" : ""}><span>Send me a summary of the day</span></label>
       <div class="r2"><div><label>At</label><input type="time" id="rSumT" value="${(REM.summary && REM.summary.time) || "07:00"}"></div><div></div></div>
-      <div class="rsh">3 · Lock screen</div>
+      <div class="rsh">4 · Lock screen</div>
       <label class="rtog"><input type="checkbox" id="rHide" ${REM.hide ? "checked" : ""}><span>Hide what the reminder says (shows "You have a reminder")</span></label>
-      <div class="rsh">4 · Add with Siri</div>
-      <ol class="rsteps"><li>Open <b>Shortcuts</b> → <b>＋</b> → name it <b>Home Base reminder</b>.</li><li>Add <b>Dictate Text</b>.</li><li>Add <b>Get Contents of URL</b>: paste the link below, then add <b>Dictated Text</b> at the end of it.</li><li>Add <b>Show Result</b>. Now say "Hey Siri, Home Base reminder".</li></ol>
-      <button class="rbtn" id="rSiri" ${LOCAL.url ? "" : "disabled"}>📋 Copy Siri link</button>
-      <div class="rnote">Keep this link to yourself: it can add reminders to your list.</div>
       <div class="rsh">5 · Check alerts</div>
       <button class="rbtn" id="rChk">🩺 Check everything</button>
       <div class="rchk2" id="rChkOut"></div>
@@ -3367,7 +3363,6 @@ function showRemSettings(){
   const setSum = () => { REM.summary = { on:$("#rSum").checked, time:$("#rSumT").value || "07:00" }; REM.su = Date.now(); remSave(); };
   $("#rSum").onchange = setSum; $("#rSumT").onchange = setSum; $("#rQf").onchange = setQ; $("#rQt").onchange = setQ;
   $("#rHide").onchange = () => { REM.hide = $("#rHide").checked; REM.su = Date.now(); remSave(); };
-  $("#rSiri").onclick = () => remCopy(remSiriLink(), "Siri link copied");
   $("#rChk").onclick = () => remCheck($("#rChkOut"));
   $("#rSd").onclick = () => { closeMenu(); renderRems(); };
   openMenu();
