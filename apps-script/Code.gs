@@ -71,6 +71,7 @@ function handle_(p) {
   if (p.op === 'ver') return out_({ ok: true, version: ver() });
   if (p.op === 'remSetup') { try { return out_(remSetup_(p)); } catch (e) { return out_({ ok: false, error: 'setup: ' + e.message }); } }
   if (p.op === 'notify') { try { ['S', 'D'].forEach(w => { if (w !== p.who) wpSend_(w, { title: String(p.title || 'Home Base').slice(0, 80), body: String(p.message || '').slice(0, 200) }); }); return out_({ ok: true }); } catch (e) { return out_({ ok: false, error: e.message }); } }
+  if (p.op === 'billLog') { try { const rows = bbTable_('Log').slice(-40).reverse().map(r => ({ date: r.date instanceof Date ? Utilities.formatDate(r.date, 'Australia/Sydney', "yyyy-MM-dd'T'HH:mm") : String(r.date || ''), subject: r.subject, result: r.result })); return out_({ ok: true, rows: rows }); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'pushKey') { try { return out_({ ok: true, key: wpVapid_().pub }); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'pushSub') { try { return out_(wpSubscribe_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }
   if (p.op === 'remStatus') { try { return out_(remStatus_(p)); } catch (e) { return out_({ ok: false, error: e.message }); } }

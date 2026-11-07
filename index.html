@@ -253,6 +253,12 @@
   .acts4 button{padding:11px 2px;border-radius:12px;background:rgba(255,255,255,.1);font-size:13px;font-weight:700;color:var(--ink)}
   .pbars.bnextbars{margin:0 0 12px}
   .bnextbars .pi{display:grid;place-items:center}
+  .blog{display:block;margin:14px auto 4px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--ink);font-size:13px;font-weight:800}
+  .lglist{max-height:55vh;overflow:auto;padding:0 12px}
+  .lgrow{display:flex;flex-direction:column;gap:2px;padding:8px 2px;border-top:1px solid rgba(255,255,255,.07)}
+  .lgrow b{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lgrow span{font-size:12px;color:var(--soft);font-weight:600}
+  .lgrow.ok span{color:#7fe0a8}.lgrow.warn span{color:#ffc46b}.lgrow.skip span{color:#ff9a8f}
 
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
@@ -2489,6 +2495,7 @@ function renderBills(){
   });
   host.querySelectorAll("[data-day]").forEach(d => d.onclick = () => bbOpenDay(d.dataset.day));
   const rt = host.querySelector("#bbRetry"); if (rt) rt.onclick = () => billsRefresh(true);
+  const lg = host.querySelector("#bbLog"); if (lg) lg.onclick = bbShowLog;
   const rl = host.querySelector("#bbRelink"); if (rl) rl.onclick = () => { LOCAL.bbApi = ""; LOCAL.bbKey = ""; saveLocal(); BB.err = ""; renderBills(); };
   if (BB.view === "review") bbBindReview(host);
 }
@@ -2515,8 +2522,21 @@ function bbDueHTML(){
   h += `<div class="bgrid">` + tiles.map((t, i) =>
     `<button class="btile" style="--i:${i}" data-prov="${esc(t.p.id)}" aria-label="${esc(t.p.name)}, ${label[t.st]}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bcat" title="${esc(t.p.category)}">${bbCatIcon(t.p.category)}</span></button>`
   ).join("") + `</div>
-  <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>`;
+  <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>
+  <button class="blog" id="bbLog">📨 Bill emails — what was read</button>`;
   return h;
+}
+/* Which bill emails the BillBell reader looked at, and what it did with each one. */
+async function bbShowLog(){
+  menu.innerHTML = `<div class="mt">Bill emails</div><div class="note" id="lgBody">Loading…</div><button class="sdone" id="lgX">Close</button>`;
+  menu.querySelector("#lgX").onclick = closeMenu; openMenu();
+  let r; try { r = await api({ doc:"house", key:keyFor(), op:"billLog" }); } catch(e){ r = null; }
+  const body = menu.querySelector("#lgBody"); if (!body) return;
+  if (!r || !r.ok){ body.innerHTML = r && r.error === "unknown op" ? "Update your Google script (latest Code.gs) to see this." : "Couldn't load the email log."; return; }
+  const tone = s => /^(due|paid|receipt|added|saved)/i.test(s) ? "ok" : /review|unread|check/i.test(s) ? "warn" : /skip|dup|ignore|no amount|not a bill/i.test(s) ? "skip" : "";
+  body.outerHTML = r.rows.length ? `<div class="lglist">${r.rows.map(x => `<div class="lgrow ${tone(String(x.result))}"><b>${esc(String(x.subject || "(no subject)"))}</b><span>${esc(String(x.date || "").slice(0, 16).replace("T", " "))} · ${esc(String(x.result || ""))}</span></div>`).join("")}</div>
+      <div class="note">Don't see a bill email here? BillBell never received it. In Gmail, add the <b>Billbell</b> label to that email (or forward it to your BillBell address) and it's picked up within 15 minutes.</div>`
+    : `<div class="note">No bill emails read yet. Emails with the <b>Billbell</b> label in Gmail are read every 15 minutes.</div>`;
 }
 function bbPaidHTML(){
   const list = bbPaid().sort((a,b) => (b.paidDate||b.dueDate||"") > (a.paidDate||a.dueDate||"") ? 1 : -1);
@@ -2650,9 +2670,9 @@ function bbOpenBill(id){
 }
 function bbOpenAdd(){
   menu.innerHTML = `<div class="mt">Add a bill</div>
-    <div class="note">Snap a paper bill or pick a PDF — BillBell reads it into Review for you to check.</div>
+    ${bbLinked() ? `<div class="note">Snap a paper bill or pick a PDF — BillBell reads it into Review for you to check.</div>
     <label class="sdone" style="cursor:pointer">📷 Take photo / choose file<input id="bbFile" type="file" accept="image/*,application/pdf" hidden></label>
-    <div class="sep"></div><div class="mt">Or type it in</div>
+    <div class="sep"></div><div class="mt">Or type it in</div>` : ""}
     <form class="ed" id="bbMan" style="padding-top:0">
       <label>Provider</label><select class="set-sel" style="width:100%;margin:0" name="provider" data-newprov>${bbProvOptions("")}</select>${bbNewProv()}
       <div class="sg2" style="gap:8px"><div><label>Amount ($)</label><input name="amount" inputmode="decimal" placeholder="0.00"></div><div><label>Due date</label><input name="dueDate" type="date" value="${new Date(Date.now()+14*864e5).toISOString().slice(0,10)}"></div></div>
@@ -3693,7 +3713,7 @@ function showSetup(first){
     <form class="ed" id="sf" style="padding-top:0">
       <label>Apps Script web app URL</label><input id="sUrl" value="${esc(LOCAL.url||"")}" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" autocapitalize="off">
       <label>Household key</label><input id="sHouse" value="${esc(LOCAL.house||"")}" autocomplete="off" autocapitalize="off">
-      <label>BillBell setup link ${LOCAL.bbApi ? "(connected ✓)" : "(for the Bills tab)"}</label><input id="sBB" placeholder="${LOCAL.bbApi ? "Paste a new link only to change it" : "From your “BillBell setup link” email"}" autocomplete="off" autocapitalize="off">
+
       <label>This phone belongs to</label><select class="set-sel" id="sWho" style="width:100%;margin:0"><option value="S">S</option><option value="D" ${LOCAL.who==="D"?"selected":""}>D</option></select>
       <div class="acts"><button type="submit" class="save">${LOCAL.url ? "Save & sync" : "Connect"}</button></div>
     </form>
@@ -3708,7 +3728,7 @@ function showSetup(first){
     if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)){ toast("Paste the Apps Script /exec URL"); return; }
     if (!house){ toast("Enter the household key"); return; }
     const changed = url !== LOCAL.url || house !== LOCAL.house;
-    const bbTxt = menu.querySelector("#sBB").value.trim();
+    const bbEl = menu.querySelector("#sBB"), bbTxt = bbEl ? bbEl.value.trim() : "";
     if (bbTxt){ const bc = parseBillBellLink(bbTxt); if (!bc){ toast("That BillBell link doesn't look right"); return; } LOCAL.bbApi = bc.api; LOCAL.bbKey = bc.key; setTimeout(() => billsRefresh(false), 300); }
     LOCAL.url = url; LOCAL.house = house; LOCAL.offline = false; LOCAL.who = menu.querySelector("#sWho").value;
     if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
