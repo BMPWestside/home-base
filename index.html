@@ -2474,7 +2474,7 @@ function renderBills(){
       <button data-bv="due" class="${BB.view==="due"?"on":""}">Due</button>
       <button data-bv="paid" class="${BB.view==="paid"?"on":""}">Paid</button>
       <button data-bv="review" class="${BB.view==="review"?"on":""}">Review${rv?`<i>${rv}</i>`:""}</button>
-      <button id="bbAdd" aria-label="Add a bill">＋</button>
+      <button id="bbAdd" aria-label="Add a bill" title="Add a bill">＋</button>
     </div>`;
   if (BB.err) h += `<div class="bfix"><b>Couldn't load your bills</b><span>${esc(BB.err)}.</span>
       <span>${hbBills() ? `Bills now load through your <b>Home Base</b> sync script. Paste the latest <b>Code.gs</b> into that project at script.google.com, run <b>setupDailyCheck</b> once (allow access), then <b>Deploy → Manage deployments</b> → ✎ Edit → Version <b>New version</b> → Deploy.` : `Paste the BillBell setup link again, or update your Home Base sync script.`}</span>
@@ -2681,7 +2681,7 @@ function bbOpenAdd(){
     </form>`;
   bbBindNewProv(menu);
   menu.querySelector("#cx").onclick = closeMenu;
-  menu.querySelector("#bbFile").onchange = e => { const f = e.target.files && e.target.files[0]; if (f) bbUpload(f); };
+  const bf = menu.querySelector("#bbFile"); if (bf) bf.onchange = e => { const f = e.target.files && e.target.files[0]; if (f) bbUpload(f); };
   menu.querySelector("#bbMan").onsubmit = e => {
     e.preventDefault();
     const f = e.target, g = n => f.querySelector(`[name=${n}]`).value;
