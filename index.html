@@ -261,6 +261,8 @@
   .lgrow.ok span{color:#7fe0a8}.lgrow.warn span{color:#ffc46b}.lgrow.skip span{color:#ff9a8f}
   .bcatpick{display:flex;align-items:center;gap:10px;margin:2px 4px 10px;font-size:13px;font-weight:800;color:var(--soft)}
   .bcatpick select{flex:1;padding:8px 10px;border-radius:10px;border:0;background:rgba(255,255,255,.1);color:var(--ink);font-size:14px;font-weight:700}
+  .blogo{display:flex;gap:6px;flex-wrap:wrap;margin:0 4px 10px}
+  .blogo .pill{cursor:pointer}
 
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
@@ -2431,7 +2433,7 @@ const BB_CAT_ICON = {
   "Rego":'<path d="M5 17h14v-5l-2-5H7l-2 5zM5 12h14"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/>',
   "Strata":'<path d="M5 21V4h10v17M15 9h4v12M8 8h1M11 8h1M8 12h1M11 12h1M8 16h1M11 16h1M3 21h18"/>',
   "Subscriptions":'<path d="M4 7h16v12H4zM8 3h8M6 5h12"/>',
-  "Sports":'<circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3.5 9h17M3.5 15h17"/>',
+  "Sports":'<circle cx="12" cy="12" r="9"/><path d="M7.2 5.4l11.4 11.4M5.4 7.2l11.4 11.4"/><path stroke-width="1.3" d="M9.6 6.2l1-1M12 8.6l1-1M14.4 11l1-1M16.8 13.4l1-1M6.2 9.6l-1 1M8.6 12l-1 1M11 14.4l-1 1M13.4 16.8l-1 1"/>',
   "_custom":'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8" r="1.4"/>'
 };
 const bbCatIcon = c => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${BB_CAT_ICON[c] || (c && c !== "Other" ? BB_CAT_ICON._custom : '<circle cx="12" cy="12" r="8"/>')}</svg>`;
@@ -2682,13 +2684,35 @@ function bbOpenProvider(pid){
   const list = bbUnpaid().filter(b => b.provider === pid).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1);
   const lastPaid = bbPaid().filter(b => b.provider === pid).sort((a,b) => (a.paidDate||"") < (b.paidDate||"") ? 1 : -1)[0];
   menu.innerHTML = `<div class="bsh">${bbAv(p,"sm")}<div><b>${esc(p.name)}</b><span>${esc(p.category)}</span></div></div>` +
-    (BB.providers.some(x => x.id === pid) ? `<label class="bcatpick">Category <select id="pCat">${bbCatOptions(p.category)}</select></label>` : "") +
+    (BB.providers.some(x => x.id === pid) ? `<label class="bcatpick">Category <select id="pCat">${bbCatOptions(p.category)}</select></label>
+      <div class="blogo"><label class="pill">🖼 Change logo<input id="pLogo" type="file" accept="image/*" hidden></label><button class="pill" id="pWeb">🌐 Website icon</button>${p.logo || p.domain ? `<button class="pill" id="pNoLogo">Initials</button>` : ""}</div>` : "") +
     (list.length ? list.map(bbBillCard).join("") : (lastPaid ? bbBillCard(lastPaid) : `<div class="bempty">No bills yet.</div>`)) +
     bbHistory(pid) + `<button class="sdone" id="cx">Close</button>`;
   bbBindSheet(); openMenu();
+  const saveProv = (patch, msg) => bbRun(() => bbCall("provider", { provider: Object.assign({ id:p.id, name:p.name }, patch) }), msg).then(() => { renderBillsSafe(); bbOpenProvider(pid); });
+  const pl = menu.querySelector("#pLogo");
+  if (pl) pl.onchange = async () => { const f = pl.files && pl.files[0]; if (!f) return;
+    try { const url = await bbLogoFromFile(f); saveProv({ logo:url }, "Logo updated"); } catch(e){ toast("Couldn't use that picture"); } };
+  const pw = menu.querySelector("#pWeb");
+  if (pw) pw.onclick = () => { const d = (prompt("Company website (e.g. agl.com.au)", p.domain || "") || "").trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    if (d) saveProv({ domain:d, logo:"" }, "Using the " + d + " icon"); };
+  const pn = menu.querySelector("#pNoLogo"); if (pn) pn.onclick = () => saveProv({ logo:"", domain:"" }, "Showing initials");
   const pc = menu.querySelector("#pCat");
   if (pc) pc.addEventListener("input", () => { if (pc.value === "__newcat") return; const c = pc.value; if (c === p.category) return;
     bbRun(() => bbCall("provider", { provider:{ id:p.id, name:p.name, category:c } }), p.name + " → " + c).then(() => { const sp = menu.querySelector(".bsh > div > span"); if (sp) sp.textContent = c; }); });
+}
+/* Turns a photo into a small square logo (kept under the sheet's cell size). */
+function bbLogoFromFile(file){
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => { try {
+      const s = Math.min(img.naturalWidth, img.naturalHeight), c = document.createElement("canvas"); c.width = c.height = 160;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, 160, 160);
+      let out = c.toDataURL("image/png"); if (out.length > 38000) out = c.toDataURL("image/jpeg", 0.85);
+      if (out.length > 45000){ c.width = c.height = 112; c.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, 112, 112); out = c.toDataURL("image/jpeg", 0.8); }
+      URL.revokeObjectURL(u); res(out); } catch(e){ rej(e); } };
+    img.onerror = rej; img.src = u;
+  });
 }
 function bbOpenBill(id){
   const b = BB.bills.find(x => x.id === id); if (!b) return;
