@@ -259,6 +259,8 @@
   .lgrow b{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .lgrow span{font-size:12px;color:var(--soft);font-weight:600}
   .lgrow.ok span{color:#7fe0a8}.lgrow.warn span{color:#ffc46b}.lgrow.skip span{color:#ff9a8f}
+  .bcatpick{display:flex;align-items:center;gap:10px;margin:2px 4px 10px;font-size:13px;font-weight:800;color:var(--soft)}
+  .bcatpick select{flex:1;padding:8px 10px;border-radius:10px;border:0;background:rgba(255,255,255,.1);color:var(--ink);font-size:14px;font-weight:700}
 
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
@@ -2213,8 +2215,28 @@ applyTextSize();
  */
 const BB = { bills:[], providers:[], settings:{}, view:"due", loading:false, err:"", at:0 };
 const BB_CACHE = "hb_bills_cache";
-const BB_CATS = ["Electricity","Gas","Water","Internet","Telecommunications","Council Rates","Insurance","Rego","Strata","Subscriptions","Other"];
-const BB_CAT_COL = {"Insurance":"#8E44AD","Rego":"#D9822B","Strata":"#6D4C41","Subscriptions":"#B03A5B","Electricity":"#E2A93B","Gas":"#2E9D62","Internet":"#139C9F","Telecommunications":"#5B6BD6","Council Rates":"#C0563A","Water":"#3A8FD9","Other":"#8A94AD"};
+const BB_CATS = ["Electricity","Gas","Water","Internet","Telecommunications","Council Rates","Insurance","Rego","Strata","Subscriptions","Sports","Other"];
+const BB_CAT_COL = {"Insurance":"#8E44AD","Rego":"#D9822B","Strata":"#6D4C41","Subscriptions":"#B03A5B","Electricity":"#E2A93B","Gas":"#2E9D62","Internet":"#139C9F","Telecommunications":"#5B6BD6","Council Rates":"#C0563A","Water":"#3A8FD9","Sports":"#27AE60","Other":"#8A94AD"};
+/* Your own categories: any category a provider uses that isn't built in, plus ones you've just made. */
+const BB_CAT_EXTRA = [];
+function bbAllCats(){
+  const extra = [];
+  (BB.providers || []).forEach(p => { const c = String(p.category || "").trim(); if (c && BB_CATS.indexOf(c) < 0 && extra.indexOf(c) < 0) extra.push(c); });
+  BB_CAT_EXTRA.forEach(c => { if (BB_CATS.indexOf(c) < 0 && extra.indexOf(c) < 0) extra.push(c); });
+  return BB_CATS.filter(c => c !== "Other").concat(extra.sort(), ["Other"]);
+}
+const bbCatCol = c => BB_CAT_COL[c] || ["#D35400","#16A085","#8E44AD","#2C82C9","#C0392B","#7F8C8D","#B7950B"][[...String(c)].reduce((s, ch) => s + ch.charCodeAt(0), 0) % 7];
+const bbCatOptions = sel => bbAllCats().map(c => `<option${c === sel ? " selected" : ""}>${esc(c)}</option>`).join("") + '<option value="__newcat">＋ New category…</option>';
+/* Picking "New category…" in any category list asks for the name and adds it. */
+document.addEventListener("change", e => {
+  const s = e.target; if (!s || s.tagName !== "SELECT" || s.value !== "__newcat") return;
+  const name = (prompt("New category name (e.g. Kids activities)") || "").trim().replace(/\s+/g, " ").slice(0, 30);
+  if (!name){ s.selectedIndex = 0; return; }
+  const nice = name[0].toUpperCase() + name.slice(1);
+  if (BB_CAT_EXTRA.indexOf(nice) < 0) BB_CAT_EXTRA.push(nice);
+  const o = document.createElement("option"); o.textContent = nice; s.insertBefore(o, s.querySelector('option[value="__newcat"]')); s.value = nice;
+  s.dispatchEvent(new Event("input", { bubbles:true }));
+}, true);
 const BB_PCOL = ["#5B6BD6","#139C9F","#C0563A","#2E7D32","#8E44AD","#D9822B","#0077C8","#B03A5B","#3A7D7B","#6D4C41"];
 const MONS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const DOWS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -2408,9 +2430,11 @@ const BB_CAT_ICON = {
   "Insurance":'<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/>',
   "Rego":'<path d="M5 17h14v-5l-2-5H7l-2 5zM5 12h14"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/>',
   "Strata":'<path d="M5 21V4h10v17M15 9h4v12M8 8h1M11 8h1M8 12h1M11 12h1M8 16h1M11 16h1M3 21h18"/>',
-  "Subscriptions":'<path d="M4 7h16v12H4zM8 3h8M6 5h12"/>'
+  "Subscriptions":'<path d="M4 7h16v12H4zM8 3h8M6 5h12"/>',
+  "Sports":'<circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3.5 9h17M3.5 15h17"/>',
+  "_custom":'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8" r="1.4"/>'
 };
-const bbCatIcon = c => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${BB_CAT_ICON[c] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
+const bbCatIcon = c => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${BB_CAT_ICON[c] || (c && c !== "Other" ? BB_CAT_ICON._custom : '<circle cx="12" cy="12" r="8"/>')}</svg>`;
 function bbRingHTML(){
   const k = mKey(isoToday()), [y, m] = k.split("-").map(Number);
   const prevK = m === 1 ? (y-1) + "-12" : y + "-" + String(m-1).padStart(2,"0");
@@ -2553,7 +2577,7 @@ function bbPaidHTML(){
 const bbProvOptions = sel => BB.providers.map(p => `<option value="${esc(p.id)}"${p.id===sel?" selected":""}>${esc(p.name)} — ${esc(p.category)}</option>`).join("") +
   (sel === "unknown" || !sel ? '<option value="unknown" selected>Choose provider…</option>' : "") + '<option value="__new">+ New provider…</option>';
 const bbNewProv = () => `<div class="newprov" hidden><label>New provider name<input name="pname" placeholder="e.g. Apple" autocomplete="off"></label>
-  <label>Category<select name="pcat">${BB_CATS.map(c=>`<option>${c}</option>`).join("")}</select></label></div>`;
+  <label>Category<select name="pcat">${bbCatOptions("")}</select></label></div>`;
 const bbDrafts = {};
 function bbReviewHTML(){
   const list = bbReview();
@@ -2658,9 +2682,13 @@ function bbOpenProvider(pid){
   const list = bbUnpaid().filter(b => b.provider === pid).sort((a,b) => (a.dueDate||"") < (b.dueDate||"") ? -1 : 1);
   const lastPaid = bbPaid().filter(b => b.provider === pid).sort((a,b) => (a.paidDate||"") < (b.paidDate||"") ? 1 : -1)[0];
   menu.innerHTML = `<div class="bsh">${bbAv(p,"sm")}<div><b>${esc(p.name)}</b><span>${esc(p.category)}</span></div></div>` +
+    (BB.providers.some(x => x.id === pid) ? `<label class="bcatpick">Category <select id="pCat">${bbCatOptions(p.category)}</select></label>` : "") +
     (list.length ? list.map(bbBillCard).join("") : (lastPaid ? bbBillCard(lastPaid) : `<div class="bempty">No bills yet.</div>`)) +
     bbHistory(pid) + `<button class="sdone" id="cx">Close</button>`;
   bbBindSheet(); openMenu();
+  const pc = menu.querySelector("#pCat");
+  if (pc) pc.addEventListener("input", () => { if (pc.value === "__newcat") return; const c = pc.value; if (c === p.category) return;
+    bbRun(() => bbCall("provider", { provider:{ id:p.id, name:p.name, category:c } }), p.name + " → " + c).then(() => { const sp = menu.querySelector(".bsh > div > span"); if (sp) sp.textContent = c; }); });
 }
 function bbOpenBill(id){
   const b = BB.bills.find(x => x.id === id); if (!b) return;
@@ -2730,7 +2758,7 @@ function bbOpenStats(){
   const inRange = bills.filter(b => keys.includes(bbMonth(b))), total = inRange.reduce((s,b)=>s+b.amount, 0);
   const nm = Math.max(1, per.filter(v => v > 0).length);
   const byCat = {}, byProv = {};
-  inRange.forEach(b => { const c = b.category || bbProv(b.provider).category; byCat[c] = (byCat[c]||0) + b.amount;
+  inRange.forEach(b => { const c = bbProv(b.provider).category || b.category; byCat[c] = (byCat[c]||0) + b.amount;
     (byProv[b.provider] = byProv[b.provider] || { sum:0, n:0 }); byProv[b.provider].sum += b.amount; byProv[b.provider].n++; });
   const cats = Object.entries(byCat).sort((a,b) => b[1]-a[1]);
   const provs = Object.entries(byProv).sort((a,b) => b[1].sum - a[1].sum);
@@ -2744,7 +2772,7 @@ function bbOpenStats(){
     <div class="bstat"><span>${label}</span><b>${money(total)}</b><span>${inRange.length} bill${inRange.length===1?"":"s"} · about ${money(total/nm)} a month</span></div>
     <div class="chart">${chart}</div>
     <div class="mt">By category</div>
-    <div class="bcats">${cats.map(([c,v]) => `<div><span><i style="background:${BB_CAT_COL[c]||"#8A94AD"}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${total ? v/total*100 : 0}%;background:${BB_CAT_COL[c]||"#8A94AD"}"></em></div>`).join("") || `<div class="note">No bills in this period.</div>`}</div>
+    <div class="bcats">${cats.map(([c,v]) => `<div><span><i style="background:${bbCatCol(c)}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${total ? v/total*100 : 0}%;background:${bbCatCol(c)}"></em></div>`).join("") || `<div class="note">No bills in this period.</div>`}</div>
     ${provs.length ? `<div class="mt">By provider</div><div class="bcats">${provs.map(([id, v]) => { const pp = bbProv(id); return `<div><span><i style="background:${esc(pp.colour||"#8A94AD")}"></i>${esc(pp.name)}</span><b>${money0(v.sum)}</b><span style="grid-column:1/-1;font-size:11.5px;color:var(--soft);font-weight:600">${v.n} bill${v.n>1?"s":""} · average ${money(v.sum/v.n)}</span></div>`; }).join("")}</div>` : ""}
     <div class="acts2"><button id="csvBtn">⬇︎ Export CSV</button><button id="cx">Done</button></div>`;
   menu.querySelectorAll("[data-sm]").forEach(b => b.onclick = () => { BBSTAT.mode = b.dataset.sm; bbOpenStats(); });
