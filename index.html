@@ -1747,8 +1747,11 @@ function editDate(id){
   };
   const vf = $("#dVcf");
   if (vf) vf.onchange = async () => { const f = vf.files[0]; if (!f) return; vf.value = "";
-    const list = vcfParse(await f.text());
-    if (!list.length){ toast("No contacts found in that file"); return; }
+    const buf = new Uint8Array(await f.arrayBuffer()); let txt;
+    if (buf[0] === 0xFF && buf[1] === 0xFE) txt = new TextDecoder("utf-16le").decode(buf); else if (buf[0] === 0xFE && buf[1] === 0xFF) txt = new TextDecoder("utf-16be").decode(buf); else txt = new TextDecoder("utf-8").decode(buf);
+    txt = txt.replace(/^\ufeff/, "").replace(/\r(?!\n)/g, "\n");
+    const list = vcfParse(txt);
+    if (!list.length){ toast(f.name.match(/\.occasions$/i) ? "That's the backup file — pick the .csv one" : "No contacts found in that file"); return; }
     if (list.length === 1){ const c = list[0]; $("#dName").value = c.name;
       if (c.date){ $("#dDate").value = c.date; hint(); toast("Filled from " + c.name); } else toast("No birth year saved for " + c.name + " — pick the date"); return; }
     vcfChoose(list, type);
@@ -1759,7 +1762,7 @@ function editDate(id){
 /* Reads contact cards (.vcf) saved from the Contacts app: name + birthday. */
 function vcfParse(txt){
   const out = [];
-  if (/^\ufeff?\s*name\s*,\s*type/i.test(txt)){
+  if (/^\s*"?name"?\s*[,;\t]\s*"?type/i.test(txt)){
     const rows = []; let row = [], cur = "", q = false;
     for (let i = 0; i < txt.length; i++){ const ch = txt[i];
       if (q){ if (ch === '"'){ if (txt[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += ch; }
