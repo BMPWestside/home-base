@@ -1696,6 +1696,7 @@ function editDate(id){
     <form class="ed" id="df" style="padding-top:0">
       <label>Type</label><div class="seg3" id="dType">${Object.keys(DATE_TYPES).map(k => `<button type="button" data-t="${k}" class="${k===type?"on":""}">${DATE_TYPES[k].icon} ${DATE_TYPES[k].label}</button>`).join("")}</div>
       <label>Name</label><input id="dName" value="${esc(dt ? dt.name : "")}" placeholder="${DATE_TYPES[type].ph}" autocomplete="off">
+      ${dt ? "" : `<button type="button" class="pill" id="dPick" style="margin:6px 0 2px">📇 Pick from contacts</button><input id="dVcf" type="file" accept=".vcf,.vcard,text/vcard,text/x-vcard,text/plain" hidden>`}
       <label id="dAsk">${DATE_TYPES[type].ask}</label><input id="dDate" type="date" value="${dt ? dt.date : ""}" max="${type==="other" ? "" : isoToday()}">
       <div id="dRepW" style="${type==="other" ? "" : "display:none"}"><label>Repeats</label><select class="set-sel" id="dRep" style="width:100%;margin:0"><option value="1">Every year</option><option value="0" ${dt && !dt.yearly ? "selected" : ""}>Just once</option></select></div>
       <div class="stats" id="dHint" style="margin:8px 2px 0"></div>
@@ -1730,8 +1731,51 @@ function editDate(id){
   const del = $("#dDel");
   if (del) del.onclick = () => { const idx = S.dates.indexOf(dt); S.dates.splice(idx,1); save(); closeMenu(); renderDates();
     undoToast("Deleted " + dt.name, () => { S.dates.splice(idx,0,dt); save(); renderDates(); }); };
+  const pk = $("#dPick");
+  if (pk) pk.onclick = async () => {
+    if (navigator.contacts && navigator.contacts.select){
+      try { const r = await navigator.contacts.select(["name"], { multiple:false });
+        if (r && r[0] && r[0].name && r[0].name[0]){ $("#dName").value = r[0].name[0]; toast("Name added — now pick the date"); } return; } catch(e){}
+    }
+    $("#dVcf").click();
+  };
+  const vf = $("#dVcf");
+  if (vf) vf.onchange = async () => { const f = vf.files[0]; if (!f) return; vf.value = "";
+    const list = vcfParse(await f.text());
+    if (!list.length){ toast("No contacts found in that file"); return; }
+    if (list.length === 1){ const c = list[0]; $("#dName").value = c.name;
+      if (c.date){ $("#dDate").value = c.date; hint(); toast("Filled from " + c.name); } else toast("No birth year saved for " + c.name + " — pick the date"); return; }
+    vcfChoose(list, type);
+  };
   openMenu();
   if (!dt) setTimeout(() => $("#dName").focus(), 60);
+}
+/* Reads contact cards (.vcf) saved from the Contacts app: name + birthday. */
+function vcfParse(txt){
+  const out = [];
+  txt.replace(/\r?\n[ \t]/g, "").split(/BEGIN:VCARD/i).slice(1).forEach(card => {
+    const g = k => { const m = card.match(new RegExp("^(?:item\\d+\\.)?" + k + "[;:][^\\r\\n]*", "im")); return m ? m[0].slice(m[0].indexOf(":") + 1).trim() : ""; };
+    let name = g("FN"); if (!name){ const n = g("N").split(";"); name = ((n[1]||"") + " " + (n[0]||"")).trim(); }
+    if (!name) return;
+    let b = g("BDAY").replace(/[^0-9-]/g, ""), date = "";
+    let m = b.match(/^(\d{4})-?(\d{2})-?(\d{2})/);
+    if (m && +m[1] > 1700) date = m[1] + "-" + m[2] + "-" + m[3];
+    out.push({ name, date });
+  });
+  return out;
+}
+function vcfChoose(list, type){
+  list.sort((a,b) => a.name.localeCompare(b.name));
+  menu.innerHTML = `<div class="mt">Add from contacts</div><div style="padding:0 4px 6px;max-height:55vh;overflow:auto">` +
+    list.map((c,i) => `<label class="vrow" style="display:flex;flex-direction:row;gap:12px;align-items:center;text-align:left;padding:9px 6px;${c.date ? "" : "opacity:.45"}"><input type="checkbox" data-i="${i}" ${c.date ? "" : "disabled"} style="width:22px;height:22px;flex:none;margin:0"><span style="flex:1;text-align:left"><b>${esc(c.name)}</b><br><small>${c.date ? fmtDate(c.date) : "no birth year saved"}</small></span></label>`).join("") +
+    `</div><form class="ed" style="padding-top:0" onsubmit="return false"><div class="acts"><button type="button" class="del" id="vX">Cancel</button><button type="button" class="save" id="vOk">Add selected</button></div></form>`;
+  menu.querySelector("#vX").onclick = () => editDate();
+  menu.querySelector("#vOk").onclick = () => {
+    const sel = [...menu.querySelectorAll("input:checked")].map(x => list[+x.dataset.i]);
+    if (!sel.length){ toast("Tick at least one"); return; }
+    sel.forEach(c => { if (!S.dates.some(d => d.name === c.name && d.date === c.date)) S.dates.push({ id:uid(), name:c.name, date:c.date, yearly:true, icon:"🎂", type:"birthday" }); });
+    save(); closeMenu(); renderDates(); toast(sel.length + " birthday" + (sel.length > 1 ? "s" : "") + " added");
+  };
 }
 
 /* ================= Today card (top of Shopping) ================= */
