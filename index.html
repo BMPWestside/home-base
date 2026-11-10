@@ -1696,7 +1696,7 @@ function editDate(id){
     <form class="ed" id="df" style="padding-top:0">
       <label>Type</label><div class="seg3" id="dType">${Object.keys(DATE_TYPES).map(k => `<button type="button" data-t="${k}" class="${k===type?"on":""}">${DATE_TYPES[k].icon} ${DATE_TYPES[k].label}</button>`).join("")}</div>
       <label>Name</label><input id="dName" value="${esc(dt ? dt.name : "")}" placeholder="${DATE_TYPES[type].ph}" autocomplete="off">
-      ${dt ? "" : `<button type="button" class="pill" id="dPick" style="margin:6px 0 2px">📇 Pick from contacts</button><input id="dVcf" type="file" accept=".vcf,.vcard,text/vcard,text/x-vcard,text/plain" hidden>
+      ${dt ? "" : `<button type="button" class="pill" id="dPick" style="margin:6px 0 2px">📇 Pick from contacts</button><input id="dVcf" type="file" accept=".vcf,.vcard,.csv,text/vcard,text/x-vcard,text/plain,text/csv" hidden>
       <details class="stats" style="margin:4px 2px"><summary style="cursor:pointer">How to bring in your contacts' birthdays (iPhone)</summary><ol style="margin:6px 0 0;padding-left:20px;line-height:1.5">
         <li>Open <b>Shortcuts</b> → ＋ new shortcut, name it <b>Birthdays</b>.</li>
         <li><b>Find Contacts</b> → add filter <b>Birthday · has any value</b>.</li>
@@ -1759,9 +1759,22 @@ function editDate(id){
 /* Reads contact cards (.vcf) saved from the Contacts app: name + birthday. */
 function vcfParse(txt){
   const out = [];
+  if (/^\ufeff?\s*name\s*,\s*type/i.test(txt)){
+    const rows = []; let row = [], cur = "", q = false;
+    for (let i = 0; i < txt.length; i++){ const ch = txt[i];
+      if (q){ if (ch === '"'){ if (txt[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += ch; }
+      else if (ch === '"') q = true; else if (ch === ","){ row.push(cur); cur = ""; }
+      else if (ch === "\n"){ row.push(cur); rows.push(row); row = []; cur = ""; } else if (ch !== "\r") cur += ch; }
+    if (cur || row.length){ row.push(cur); rows.push(row); }
+    rows.slice(1).forEach(r => { const name = (r[0]||"").trim(), y = +r[2], m = +r[3], d = +r[4]; if (!name || !m || !d) return;
+      const t = (r[1]||"").trim().toLowerCase(), type = t === "birthday" ? "birthday" : t === "anniversary" ? "anniversary" : "other";
+      const pad = n => String(n).padStart(2,"0");
+      out.push({ name, type, date: y > 1700 ? y + "-" + pad(m) + "-" + pad(d) : "" }); });
+    return out;
+  }
   if (!/BEGIN:VCARD/i.test(txt)){
     txt.split(/\r?\n/).forEach(l => { const i = l.lastIndexOf("|"); if (i < 1) return; const name = l.slice(0,i).trim(), m = l.slice(i+1).match(/(\d{4})-(\d{2})-(\d{2})/);
-      if (name) out.push({ name, date: m && +m[1] > 1700 ? m[0] : "" }); });
+      if (name) out.push({ name, type:"birthday", date: m && +m[1] > 1700 ? m[0] : "" }); });
     return out;
   }
   txt.replace(/\r?\n[ \t]/g, "").split(/BEGIN:VCARD/i).slice(1).forEach(card => {
@@ -1771,21 +1784,24 @@ function vcfParse(txt){
     let b = g("BDAY").replace(/[^0-9-]/g, ""), date = "";
     let m = b.match(/^(\d{4})-?(\d{2})-?(\d{2})/);
     if (m && +m[1] > 1700) date = m[1] + "-" + m[2] + "-" + m[3];
-    out.push({ name, date });
+    out.push({ name, type:"birthday", date });
   });
   return out;
 }
 function vcfChoose(list, type){
-  list.sort((a,b) => a.name.localeCompare(b.name));
-  menu.innerHTML = `<div class="mt">Add from contacts</div><div style="padding:0 4px 6px;max-height:55vh;overflow:auto">` +
-    list.map((c,i) => `<label class="vrow" style="display:flex;flex-direction:row;gap:12px;align-items:center;text-align:left;padding:9px 6px;${c.date ? "" : "opacity:.45"}"><input type="checkbox" data-i="${i}" ${c.date ? "" : "disabled"} style="width:22px;height:22px;flex:none;margin:0"><span style="flex:1;text-align:left"><b>${esc(c.name)}</b><br><small>${c.date ? fmtDate(c.date) : "no birth year saved"}</small></span></label>`).join("") +
-    `</div><form class="ed" style="padding-top:0" onsubmit="return false"><div class="acts"><button type="button" class="del" id="vX">Cancel</button><button type="button" class="save" id="vOk">Add selected</button></div></form>`;
+  list.sort((a,b) => a.name.localeCompare(b.name) || a.type.localeCompare(b.type));
+  menu.innerHTML = `<div class="mt">Add from file · ${list.length} found</div><div style="padding:0 4px 6px;max-height:50vh;overflow:auto">` +
+    list.map((c,i) => `<label class="vrow" style="display:flex;flex-direction:row;gap:12px;align-items:center;text-align:left;padding:8px 6px;${c.date ? "" : "opacity:.45"}"><input type="checkbox" data-i="${i}" ${c.date ? "checked" : "disabled"} style="width:22px;height:22px;flex:none;margin:0"><span style="flex:1;text-align:left"><b>${esc(c.name)}</b><br><small>${DATE_TYPES[c.type].icon} ${DATE_TYPES[c.type].label} · ${c.date ? fmtDate(c.date) : "no year saved"}</small></span></label>`).join("") +
+    `</div><form class="ed" style="padding-top:0" onsubmit="return false"><div class="acts"><button type="button" class="del" id="vX">Cancel</button><button type="button" class="del" id="vAll">None</button><button type="button" class="save" id="vOk">Add selected</button></div></form>`;
   menu.querySelector("#vX").onclick = () => editDate();
+  let on = true; menu.querySelector("#vAll").onclick = e => { on = !on; menu.querySelectorAll("input:not(:disabled)").forEach(x => x.checked = on); e.target.textContent = on ? "None" : "All"; };
   menu.querySelector("#vOk").onclick = () => {
     const sel = [...menu.querySelectorAll("input:checked")].map(x => list[+x.dataset.i]);
     if (!sel.length){ toast("Tick at least one"); return; }
-    sel.forEach(c => { if (!S.dates.some(d => d.name === c.name && d.date === c.date)) S.dates.push({ id:uid(), name:c.name, date:c.date, yearly:true, icon:"🎂", type:"birthday" }); });
-    save(); closeMenu(); renderDates(); toast(sel.length + " birthday" + (sel.length > 1 ? "s" : "") + " added");
+    let n = 0;
+    sel.forEach(c => { if (!S.dates.some(d => d.name === c.name && d.date === c.date && dateType(d) === c.type)){ n++;
+      S.dates.push({ id:uid(), name:c.name, date:c.date, yearly:true, icon:DATE_TYPES[c.type].icon, type:c.type }); } });
+    save(); closeMenu(); renderDates(); toast(n + " date" + (n === 1 ? "" : "s") + " added");
   };
 }
 
