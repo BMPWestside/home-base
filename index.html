@@ -1696,7 +1696,13 @@ function editDate(id){
     <form class="ed" id="df" style="padding-top:0">
       <label>Type</label><div class="seg3" id="dType">${Object.keys(DATE_TYPES).map(k => `<button type="button" data-t="${k}" class="${k===type?"on":""}">${DATE_TYPES[k].icon} ${DATE_TYPES[k].label}</button>`).join("")}</div>
       <label>Name</label><input id="dName" value="${esc(dt ? dt.name : "")}" placeholder="${DATE_TYPES[type].ph}" autocomplete="off">
-      ${dt ? "" : `<button type="button" class="pill" id="dPick" style="margin:6px 0 2px">📇 Pick from contacts</button><input id="dVcf" type="file" accept=".vcf,.vcard,text/vcard,text/x-vcard,text/plain" hidden>`}
+      ${dt ? "" : `<button type="button" class="pill" id="dPick" style="margin:6px 0 2px">📇 Pick from contacts</button><input id="dVcf" type="file" accept=".vcf,.vcard,text/vcard,text/x-vcard,text/plain" hidden>
+      <details class="stats" style="margin:4px 2px"><summary style="cursor:pointer">How to bring in your contacts' birthdays (iPhone)</summary><ol style="margin:6px 0 0;padding-left:20px;line-height:1.5">
+        <li>Open <b>Shortcuts</b> → ＋ new shortcut, name it <b>Birthdays</b>.</li>
+        <li><b>Find Contacts</b> → add filter <b>Birthday · has any value</b>.</li>
+        <li><b>Repeat with Each</b> (Contacts). Inside it: <b>Format Date</b> (Birthday of Repeat Item) → Custom <b>yyyy-MM-dd</b>; then <b>Text</b>: <i>Repeat Item</i> <b>|</b> <i>Formatted Date</i>; then <b>Add to Variable</b> "Lines".</li>
+        <li>After the loop: <b>Combine Text</b> (Lines, New Lines) → <b>Save File</b> (turn off Ask Where to Save, name it birthdays.txt, Overwrite on).</li>
+        <li>Run it once. Then tap <b>Pick from contacts</b> and choose birthdays.txt.</li></ol></details>`}
       <label id="dAsk">${DATE_TYPES[type].ask}</label><input id="dDate" type="date" value="${dt ? dt.date : ""}" max="${type==="other" ? "" : isoToday()}">
       <div id="dRepW" style="${type==="other" ? "" : "display:none"}"><label>Repeats</label><select class="set-sel" id="dRep" style="width:100%;margin:0"><option value="1">Every year</option><option value="0" ${dt && !dt.yearly ? "selected" : ""}>Just once</option></select></div>
       <div class="stats" id="dHint" style="margin:8px 2px 0"></div>
@@ -1753,6 +1759,11 @@ function editDate(id){
 /* Reads contact cards (.vcf) saved from the Contacts app: name + birthday. */
 function vcfParse(txt){
   const out = [];
+  if (!/BEGIN:VCARD/i.test(txt)){
+    txt.split(/\r?\n/).forEach(l => { const i = l.lastIndexOf("|"); if (i < 1) return; const name = l.slice(0,i).trim(), m = l.slice(i+1).match(/(\d{4})-(\d{2})-(\d{2})/);
+      if (name) out.push({ name, date: m && +m[1] > 1700 ? m[0] : "" }); });
+    return out;
+  }
   txt.replace(/\r?\n[ \t]/g, "").split(/BEGIN:VCARD/i).slice(1).forEach(card => {
     const g = k => { const m = card.match(new RegExp("^(?:item\\d+\\.)?" + k + "[;:][^\\r\\n]*", "im")); return m ? m[0].slice(m[0].indexOf(":") + 1).trim() : ""; };
     let name = g("FN"); if (!name){ const n = g("N").split(";"); name = ((n[1]||"") + " " + (n[0]||"")).trim(); }
