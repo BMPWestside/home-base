@@ -388,6 +388,10 @@
   .rtcalk{display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:11px;color:var(--soft);font-weight:700}
   .rtcalk span{display:flex;align-items:center;gap:4px}
   .rtcalk i{width:9px;height:9px}
+  .r2 > div{min-width:0}
+  .r2 input[type=date],.r2 input[type=time]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;height:52px;margin:0;padding:0 10px;text-align:center;line-height:52px;overflow:hidden}
+  .r2 input[type=date]::-webkit-date-and-time-value,.r2 input[type=time]::-webkit-date-and-time-value{text-align:center;min-width:0;margin:0}
+  .r2 input[type=date]::-webkit-calendar-picker-indicator,.r2 input[type=time]::-webkit-calendar-picker-indicator{display:none}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
