@@ -484,6 +484,11 @@
   .setr .sc{font-size:24px;color:var(--soft)}
   nav.tabs .tab{position:relative}
   .nbadge{position:absolute;top:2px;right:calc(50% - 20px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff5a4e;color:#fff;font-size:11px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px rgba(0,0,0,.25)}
+  header{padding-bottom:22px !important}
+  .hwel{display:flex;align-items:center;justify-content:space-between;margin:0 14px 12px;padding:14px 16px;color:var(--ink)}
+  .hwl{display:flex;flex-direction:column;gap:1px}.hwl b{font-size:20px;font-weight:900}.hwl span{font-size:14px;color:var(--soft)}
+  .hwl #hDay{font-weight:800;color:var(--ink);margin-top:3px;font-size:15px}
+  .hclock{font-size:34px;font-weight:900;letter-spacing:-1px;color:var(--acc);white-space:nowrap;font-variant-numeric:tabular-nums}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -1274,7 +1279,7 @@ function undoToast(msg, undo){
 function applyTheme(){
   const b = document.body;
   b.className = S.tab;
-  { const g = document.getElementById("gear"); if (g) g.style.visibility = ["personal","shopping","bills"].includes(S.tab) ? "" : "hidden"; }
+  { const h = document.querySelector("header h1"); if (h) h.textContent = ({home:"Home",personal:"Reminders",shopping:"Lists",bills:"Expense Hub",expenses:"Insights",settings:"Settings"})[S.tab] || "Home Base"; }
   const keys = ["top","bottom","acc","soft","ink","onacc","menu"];
   const root = document.documentElement;
   const tm = document.querySelector('meta[name="theme-color"]');
@@ -2717,8 +2722,7 @@ function bbDueHTML(){
   h += `<div class="bgrid">` + tiles.map((t, i) =>
     `<button class="btile" style="--i:${i}" data-prov="${esc(t.p.id)}" aria-label="${esc(t.p.name)}, ${label[t.st]}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bcat" title="${esc(t.p.category)}">${bbCatIcon(t.p.category)}</span></button>`
   ).join("") + `</div>
-  <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>
-  <button class="blog" id="bbLog">📨 Bill emails — what was read</button>`;
+  <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>`;
   return h;
 }
 /* Which bill emails the BillBell reader looked at, and what it did with each one. */
@@ -4108,6 +4112,7 @@ function renderHome(){
   const dd = n => n === 0 ? "today" : n === 1 ? "tomorrow" : "in " + n + " days";
   const when = it => { const a = RL.at(it), d = a.slice(0,10); return a <= now ? (d < today ? "Overdue" : "Now") : d === today ? a.slice(11,16) : fmtDate(d) + " " + a.slice(11,16); };
   host.innerHTML = `
+    <div class="exc hwel"><div class="hwl"><b>Welcome back</b><span id="hDay">${new Date().toLocaleDateString("en-AU", { weekday:"long" })}</span><span id="hDate">${new Date().toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" })}</span></div><div class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</div></div>
     <div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>
     <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Next reminders</span><em>${open.length ? open.length + " open" : "All clear"}</em></div>
       ${next.map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${when(it)}</small></div>`).join("") || `<div class="hl mute">Nothing coming up</div>`}
@@ -4125,6 +4130,10 @@ function renderHome(){
   host.querySelector('[data-q="exp"]').onclick = () => { HUB = "exp"; goTab("bills", () => openExpense()); };
   host.querySelector('[data-q="item"]').onclick = () => goTab("shopping");
   renderToday();
+  clearInterval(window._hClk);
+  window._hClk = setInterval(() => { const t = document.getElementById("hTime"); if (!t){ clearInterval(window._hClk); return; }
+    const n = new Date(); t.textContent = n.toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" });
+    document.getElementById("hDay").textContent = n.toLocaleDateString("en-AU", { weekday:"long" }); document.getElementById("hDate").textContent = n.toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" }); }, 15000);
 }
 
 function renderSettingsPage(){
