@@ -453,6 +453,39 @@
   .insdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
   #ins .chart svg{width:100%;height:auto}
 
+  main#view{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  nav.tabs{position:fixed !important;top:auto !important;bottom:0;left:0;right:0;margin:0 !important;border-radius:0 !important;padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;z-index:25;gap:2px !important;
+    background:color-mix(in srgb,var(--bottom) 58%,transparent) !important;-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);border-top:1px solid rgba(255,255,255,.16);box-shadow:0 -6px 24px rgba(0,0,0,.18)}
+  nav.tabs .tab{flex:1;height:46px;padding:0 !important;border-radius:15px;display:grid;place-items:center;color:var(--soft);font-size:0;letter-spacing:0}
+  nav.tabs .tab svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  nav.tabs .tab.on{background:var(--acc);color:var(--onacc)}
+  .toast{bottom:calc(92px + env(safe-area-inset-bottom)) !important}
+  .gear{font-size:34px !important;letter-spacing:-2px;line-height:1;padding-bottom:10px}
+  .hgreet{padding:2px 18px 10px;display:flex;flex-direction:column;color:var(--ink)}.hgreet b{font-size:24px;font-weight:900}.hgreet span{font-size:14px;color:var(--soft)}
+  .hquick{display:flex;gap:8px;padding:0 14px 12px}
+  .hquick button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 4px;border-radius:16px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);font-weight:800;font-size:13px;color:var(--ink)}
+  .hquick button span{font-size:22px}
+  #home #today{padding:0}
+  .hcard{display:block;width:calc(100% - 28px);margin:0 14px 10px;padding:12px 14px;text-align:left;color:var(--ink)}
+  .hcard .hh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .hcard .hh span{font-size:13px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--soft)}
+  .hcard .hh em{font-style:normal;font-weight:900;font-size:18px;color:var(--acc)}
+  .hcard .hl{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.08);font-size:15px}
+  .hcard .hl b{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hcard .hl small{color:var(--soft);font-size:13px;white-space:nowrap}
+  .hcard .hl.late small{color:#ff9a8a;font-weight:800}.hcard .hl.mute{color:var(--soft)}
+  .hcard .hmore{font-size:12.5px;color:var(--soft);padding-top:4px}
+  #setpg{padding:4px 14px}
+  .setc{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:20px;-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);padding:12px 12px 6px;margin-bottom:12px;color:var(--ink)}
+  .sth{font-size:12.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--soft);padding:0 4px 8px}
+  .sg2x{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:8px}
+  .setr{display:flex;align-items:center;gap:12px;width:100%;padding:11px 4px;border-top:1px solid rgba(255,255,255,.08);text-align:left;color:var(--ink)}
+  .setr.plain{cursor:default}
+  .setr .si{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.1);font-size:18px;flex:none}
+  .setr .sm{flex:1;min-width:0;display:flex;flex-direction:column}.setr .sm b{font-size:16px;font-weight:700}.setr .sm small{font-size:12.5px;color:var(--soft);line-height:1.35}
+  .setr .sc{font-size:24px;color:var(--soft)}
+  nav.tabs .tab{position:relative}
+  .nbadge{position:absolute;top:2px;right:calc(50% - 20px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff5a4e;color:#fff;font-size:11px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px rgba(0,0,0,.25)}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -810,13 +843,15 @@
 })();
 </script>
 <div class="statusbg"></div>
-<header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1><button class="gear" id="gear" aria-label="Settings">⚙︎</button></header>
+<header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1><button class="gear" id="gear" aria-label="Page settings">⋯</button></header>
 
 <nav class="tabs" id="tabs">
-  <button class="tab" data-tab="shopping">Lists</button>
-  <button class="tab" data-tab="personal">Reminders</button>
-  <button class="tab" data-tab="bills">Expense Hub</button>
-  <button class="tab" data-tab="expenses">Insights</button>
+  <button class="tab" data-tab="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
+  <button class="tab" data-tab="personal" aria-label="Reminders"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
+  <button class="tab" data-tab="shopping" aria-label="Lists"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
+  <button class="tab" data-tab="bills" aria-label="Expense Hub"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
+  <button class="tab" data-tab="expenses" aria-label="Insights"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
+  <button class="tab" data-tab="settings" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
 </nav>
 
 <main id="view"></main>
@@ -849,6 +884,7 @@ const THEMES = {
   teal:    { name:"Teal",     top:"#08403f", bottom:"#05192a", acc:"#4fe0d0", soft:"#9fd9d3", ink:"#eafffc", onacc:"#04302e", menu:"#0c3038", a:"#0b5552", b:"#0a2a40", fa:"#5eeadb", fb:"#b9f1ff", row:"rgba(150,255,240,.08)" },
   lavender:{ name:"Lavender", top:"#2e2160", bottom:"#120d2b", acc:"#b59cff", soft:"#cfc2f5", ink:"#f4f0ff", onacc:"#1d1240", menu:"#241a4d", a:"#4b3a96", b:"#17123a", fa:"#d4c6ff", fb:"#ece6ff", row:"rgba(200,180,255,.09)" },
   forest:  { name:"Forest",   top:"#1f3a16", bottom:"#0b1708", acc:"#a6e36b", soft:"#c6dfb0", ink:"#f4ffe9", onacc:"#1a2e0a", menu:"#1a2f13", a:"#3b6b28", b:"#10200b", fa:"#c8f29a", fb:"#e6f7d4", row:"rgba(200,255,170,.08)" },
+  logoNavy:  { name:"Logo Navy",   top:"#16306e", bottom:"#0a1230", acc:"#9ab8ff", soft:"#c4d3ff", ink:"#f1f5ff", onacc:"#0b1640", menu:"#16265a", a:"#4a78ff", b:"#14265f", fa:"#b5cbff", fb:"#e6eeff", row:"rgba(150,180,255,.12)" },
   logoOrange:{ name:"Logo Orange", top:"#8a3d07", bottom:"#2a1203", acc:"#ff9a2e", soft:"#ffd2a0", ink:"#fff6ec", onacc:"#3a1a02", menu:"#4a2008", a:"#ff8a1f", b:"#4a1c06", fa:"#ffc27a", fb:"#ffe8d0", row:"rgba(255,170,90,.12)" },
   logoPurple:{ name:"Logo Purple", top:"#4b1a8a", bottom:"#170a33", acc:"#c07bff", soft:"#dcc3ff", ink:"#f8f0ff", onacc:"#250a4a", menu:"#2c1257", a:"#8b3bdb", b:"#26104d", fa:"#d9a8ff", fb:"#f0e0ff", row:"rgba(190,130,255,.12)" },
   logoBlue:  { name:"Logo Blue",   top:"#0b4f9a", bottom:"#061a36", acc:"#4db8ff", soft:"#a9dcff", ink:"#eef8ff", onacc:"#032748", menu:"#0b2f5c", a:"#1e9bfa", b:"#0a2a55", fa:"#8fd2ff", fb:"#d6eeff", row:"rgba(120,200,255,.12)" },
@@ -963,7 +999,8 @@ try { const raw = localStorage.getItem(LS_KEY); if (raw) S = Object.assign(S, JS
 const SEED_CUSTOMERS = [];   // customers come from your backup / sync, not the public code
 function cleanup(){
   S.customers = [];
-  S.themes = Object.assign({shopping:"logoOrange", personal:"logoPurple", bills:"logoBlue", expenses:"logoGreen"}, S.themes||{});
+  S.themes = Object.assign({shopping:"logoOrange", personal:"logoPurple", bills:"logoBlue", expenses:"logoGreen", home:"logoNavy", settings:"logoNavy"}, S.themes||{});
+  if (!S.navV1){ S.themes.home = "logoNavy"; S.themes.settings = "logoNavy"; S.tab = "home"; S.navV1 = 1; }
   if (!S.logoThemes){ S.themes.shopping = "logoOrange"; S.themes.personal = "logoPurple"; S.themes.bills = "logoBlue"; S.themes.expenses = "logoGreen"; S.logoThemes = 1; }
   if (!THEMES[S.themes.expenses]) S.themes.expenses = "logoGreen";
   if (!Array.isArray(S.exp)) S.exp = [];
@@ -1253,6 +1290,7 @@ function undoToast(msg, undo){
 function applyTheme(){
   const b = document.body;
   b.className = S.tab;
+  { const g = document.getElementById("gear"); if (g) g.style.visibility = ["personal","shopping","bills"].includes(S.tab) ? "" : "hidden"; }
   const keys = ["top","bottom","acc","soft","ink","onacc","menu"];
   const root = document.documentElement;
   const tm = document.querySelector('meta[name="theme-color"]');
@@ -1265,12 +1303,14 @@ function applyTheme(){
 /* ================= main view ================= */
 const view = document.getElementById("view");
 function render(){
-  if (S.tab !== "shopping" && S.tab !== "personal" && S.tab !== "bills" && S.tab !== "expenses") S.tab = "shopping";
+  if (S.tab !== "shopping" && S.tab !== "personal" && S.tab !== "bills" && S.tab !== "expenses" && S.tab !== "home" && S.tab !== "settings") S.tab = "home";
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
+  if (S.tab === "home"){ view.innerHTML = `<div id="shopban"></div><div id="home"></div>`; renderBanner(); renderHome(); return; }
+  if (S.tab === "settings"){ view.innerHTML = `<div id="setpg"></div>`; renderSettingsPage(); return; }
   if (S.tab === "expenses"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="ins"></div>`; renderInsights(); return; }
   if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>${HUB === "exp" ? "Pull to add" : "Pull to refresh"}</span></div><div class="hubseg">${LOCAL.noBills ? "" : `<button data-hub="bills" class="${HUB === "bills" ? "on" : ""}">🧾 Bills</button>`}<button data-hub="exp" class="${HUB === "exp" ? "on" : ""}">💳 Expenses</button></div>${HUB === "exp" ? `<div id="exp"></div>` : `<div id="bills"></div>`}`; view.querySelectorAll("[data-hub]").forEach(b => b.onclick = () => { HUB = b.dataset.hub; try { localStorage.setItem("hb_hub", HUB); } catch(e){} render(); }); if (HUB === "exp") renderExpenses(); else renderBills(); return; }
-  view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>`:""}${S.tab==="personal"?`<div id="rems"></div><div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
+  view.innerHTML = `<div id="shopban"></div>${S.tab==="personal"?`<div id="rems"></div><div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal"){ renderRems(); renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
   renderBanner();
   if (S.tab==="shopping") renderToday();
@@ -2190,7 +2230,7 @@ function openMenu(){ menu._at = Date.now(); scrim.classList.add("on"); menu.clas
 function closeMenu(){ scrim.classList.remove("on"); menu.classList.remove("on"); }
 scrim.onclick = () => { if (Date.now() - (menu._at||0) > 450) closeMenu(); };
 const openSettings = () => showSettings(null);
-document.getElementById("gear").onclick = openSettings;
+document.getElementById("gear").onclick = () => pageMenu();
 
 // Make the logo's plain background transparent: flood-fill from the edges, removing pixels
 // close to the edge colour (white, or any solid colour a screenshot has around the logo).
@@ -2252,7 +2292,7 @@ function resizeLogo(file){
 })();
 
 function showSettings(listId, sub){
-  const onLists = S.tab !== "work" && S.tab !== "bills" && S.tab !== "expenses";
+  const onLists = S.tab === "shopping" || S.tab === "personal";
   const list = onLists ? cards() : [];
   let c = list.find(x=>x.id===listId) || list[0] || null;
   const themeSel = tab => `<select class="set-sel" data-theme="${tab}">${Object.entries(THEMES).map(([k,t])=>`<option value="${k}" ${S.themes[tab]===k?"selected":""}>${t.name}</option>`).join("")}</select>`;
@@ -2270,10 +2310,7 @@ function showSettings(listId, sub){
     openMenu(); return;
   }
 
-  let html = `<div class="mt">Themes</div>
-    <div class="sg4"><div><div class="sl">Lists</div>${themeSel("shopping")}</div><div><div class="sl">Reminders</div>${themeSel("personal")}</div><div><div class="sl">Expense Hub</div>${themeSel("bills")}</div><div><div class="sl">Insights</div>${themeSel("expenses")}</div></div>
-    <div class="sg2"><div><div class="sl">Text size</div><select class="set-sel" id="tsz"><option value="normal">Normal</option><option value="large" ${S.textSize==="large"?"selected":""}>Large</option><option value="xl" ${S.textSize==="xl"?"selected":""}>Extra large</option></select></div>
-      <div><div class="sl">Shopping by aisle</div><select class="set-sel" id="ais"><option value="0">Off</option><option value="1" ${S.aisles?"selected":""}>On</option></select></div></div>`;
+  let html = `<div class="mt">List settings</div>`;
   if (onLists && c){
     const regs = c.items.filter(x=>(x.bought||0)>=REGULAR_MIN).length;
     html += `<div class="sep"></div><div class="mt">List</div>
@@ -2289,17 +2326,10 @@ function showSettings(listId, sub){
         <button data-a="delete" class="danger">🗑 Delete list</button>
       </div>`;
   }
-  html += `<div class="acts4"><button id="sy">🔄 Sync</button><button id="lkS">🔒 Lock</button><button id="bk">⬇︎ Backup</button><button id="rs">⬆︎ Restore</button></div><button class="sdone" id="cx">Done</button>`;
+  html += `<button class="sdone" id="cx">Done</button>`;
   menu.innerHTML = html;
 
-  menu.querySelectorAll("[data-theme]").forEach(sel => sel.onchange = () => { S.themes[sel.dataset.theme] = sel.value; save(); refreshAll(); });
-  menu.querySelector("#tsz").onchange = e => { S.textSize = e.target.value; save(); applyTextSize(); };
-  menu.querySelector("#ais").onchange = e => { S.aisles = e.target.value === "1"; save(); refreshAll(); };
   menu.querySelector("#cx").onclick = closeMenu;
-  menu.querySelector("#bk").onclick = showBackup;
-  menu.querySelector("#sy").onclick = () => showSetup(false);
-  menu.querySelector("#lkS").onclick = showLockSettings;
-  menu.querySelector("#rs").onclick = showRestore;
   if (onLists && c){
     menu.querySelector("#listSel").onchange = e => showSettings(e.target.value);
     menu.querySelector("#rn").onsubmit = e => { e.preventDefault(); const v = menu.querySelector("#rnIn").value.trim(); if (v){ c.title = v; save(); refreshAll(); toast("Renamed"); showSettings(c.id); } };
@@ -2339,7 +2369,7 @@ function showBackup(){
     try { await navigator.clipboard.writeText(txt); toast("Backup copied"); }
     catch(e){ const ta = menu.querySelector("textarea"); ta.focus(); ta.select(); toast("Select all and copy"); }
   };
-  menu.querySelector("#back").onclick = () => showSettings(null);
+  menu.querySelector("#back").onclick = closeMenu;
   openMenu();
 }
 function showRestore(){
@@ -2352,7 +2382,7 @@ function showRestore(){
     if (!d || !d.tabs || !d.tabs.shopping){ toast("That isn't a My Lists backup"); return; }
     restoreData(d); closeMenu(); toast("Restored");
   };
-  menu.querySelector("#back").onclick = () => showSettings(null);
+  menu.querySelector("#back").onclick = closeMenu;
   openMenu();
 }
 function restoreData(d){
@@ -2574,7 +2604,8 @@ function bbMissing(){
 function updateBillsBadge(){
   const t = document.querySelector('.tab[data-tab="bills"]'); if (!t) return;
   const urgent = bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).length + bbReview().length;
-  void urgent; t.textContent = "Expense Hub";
+  let bd = t.querySelector(".nbadge");
+  if (urgent > 0){ if (!bd){ bd = document.createElement("span"); bd.className = "nbadge"; t.appendChild(bd); } bd.textContent = urgent > 9 ? "9+" : urgent; } else if (bd) bd.remove();
 }
 
 const BB_CAT_ICON = {
@@ -4073,6 +4104,101 @@ function insReports(body){
   body.querySelector("#insShare").onclick = async () => { const t = insReportText(keys, d, title); try { if (navigator.share){ await navigator.share({ title, text:t }); return; } } catch(e){ if (e && e.name === "AbortError") return; } try { await navigator.clipboard.writeText(t); toast("Summary copied"); } catch(e){ prompt("Copy this summary", t); } };
   body.querySelector("#insCsv").onclick = () => insExport(keys, d, "home-base-" + (fyMode ? "FY" + fyv + "-" + String(fyv + 1).slice(2) : INSM) + ".csv");
 }
+/* ================= Home page, Settings page, page menu ================= */
+const NAV_ICONS = {
+  home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/>',
+  personal:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.6 2H4.4z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  shopping:'<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>',
+  bills:'<path d="M6 3h12v18l-2.2-1.6L13.6 21 12 19.6 10.4 21l-2.2-1.6L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  expenses:'<rect x="4" y="11" width="3.5" height="9" rx="1"/><rect x="10.2" y="4" width="3.5" height="16" rx="1"/><rect x="16.5" y="8" width="3.5" height="12" rx="1"/>',
+  settings:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/>'
+};
+function goTab(t, after){ S.tab = t; save(); render(); window.scrollTo({ top:0 }); if (after) setTimeout(after, 60); }
+
+function renderHome(){
+  const host = document.getElementById("home"); if (!host) return;
+  const hr = new Date().getHours(), greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+  const today = isoToday(), now = remNow();
+  const due = remOpen().filter(it => RL.at(it).slice(0,10) <= today);
+  const bills = (typeof bbUnpaid === "function" && !LOCAL.noBills) ? bbUnpaid().filter(b => b.dueDate && daysTo(b.dueDate) <= 14 && b.amount > 0).sort((a, b) => a.dueDate < b.dueDate ? -1 : 1) : [];
+  const dates = (S.dates || []).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 14).sort((a, b) => a.days - b.days);
+  const ym = today.slice(0,7), mo = insData([ym]), pk = insData([exShift(ym, -1)]);
+  const dd = n => n === 0 ? "today" : n === 1 ? "tomorrow" : "in " + n + " days";
+  host.innerHTML = `
+    <div class="hgreet"><b>${greet}</b><span>${new Date().toLocaleDateString("en-AU", { weekday:"long", day:"numeric", month:"long" })}</span></div>
+    <div class="hquick"><button data-q="rem"><span>⏰</span>Reminder</button><button data-q="exp"><span>💳</span>Expense</button><button data-q="item"><span>🛒</span>List</button></div>
+    <div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>
+    <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Reminders</span><em>${due.length ? due.length + " due" : "All clear"}</em></div>
+      ${due.slice(0, 3).map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${RL.at(it).slice(0,10) < today ? "Overdue" : RL.at(it).slice(11, 16)}</small></div>`).join("") || `<div class="hl mute">Nothing due today</div>`}
+      ${due.length > 3 ? `<div class="hmore">+${due.length - 3} more</div>` : ""}</div>
+    ${LOCAL.noBills ? "" : `<div class="exc hcard" data-go="bills"><div class="hh"><span>🧾 Bills coming up</span><em>${bills.length ? money0(bills.reduce((s, b) => s + b.amount, 0)) : "None due"}</em></div>
+      ${bills.slice(0, 3).map(b => `<div class="hl ${daysTo(b.dueDate) < 0 ? "late" : ""}"><b>${esc(bbProv(b.provider).name)}</b><small>${daysTo(b.dueDate) < 0 ? Math.abs(daysTo(b.dueDate)) + "d late" : dd(daysTo(b.dueDate))} · ${money(b.amount)}</small></div>`).join("") || `<div class="hl mute">Nothing due in the next 2 weeks</div>`}
+      ${bills.length > 3 ? `<div class="hmore">+${bills.length - 3} more</div>` : ""}</div>`}
+    <div class="exc hcard" data-go="expenses"><div class="hh"><span>📊 ${exMonthLabel(ym).split(" ")[0]} so far</span><em>${money0(mo.total)}</em></div>
+      <div class="hl"><b>🧾 Bills</b><small>${money0(mo.tb)}</small></div><div class="hl"><b>💳 Expenses</b><small>${money0(mo.te)}</small></div>
+      ${pk.total > 0 ? `<div class="hmore">Last month ${money0(pk.total)}</div>` : ""}</div>
+    ${dates.length ? `<div class="exc hcard" data-go="personal"><div class="hh"><span>🎉 Coming up</span></div>${dates.slice(0, 3).map(x => `<div class="hl"><b>${x.dt.icon || "📅"} ${esc(x.dt.name)}</b><small>${dd(x.days)}</small></div>`).join("")}</div>` : ""}
+    <div style="height:20px"></div>`;
+  host.querySelectorAll("[data-go]").forEach(b => b.onclick = () => goTab(b.dataset.go));
+  host.querySelector('[data-q="rem"]').onclick = () => goTab("personal", () => editRem(null, { list:"general" }));
+  host.querySelector('[data-q="exp"]').onclick = () => { HUB = "exp"; goTab("bills", () => openExpense()); };
+  host.querySelector('[data-q="item"]').onclick = () => goTab("shopping");
+  renderToday();
+}
+
+function renderSettingsPage(){
+  const host = document.getElementById("setpg"); if (!host) return;
+  const sel = tab => `<select class="set-sel" data-theme="${tab}">${Object.entries(THEMES).map(([k, t]) => `<option value="${k}" ${S.themes[tab] === k ? "selected" : ""}>${t.name}</option>`).join("")}</select>`;
+  const row = (id, ic, label, sub) => `<button class="setr" id="${id}"><span class="si">${ic}</span><span class="sm"><b>${label}</b>${sub ? `<small>${sub}</small>` : ""}</span><span class="sc">›</span></button>`;
+  host.innerHTML = `
+    <div class="setc"><div class="sth">🎨 Appearance</div>
+      <div class="sg2x"><div><div class="sl">Home</div>${sel("home")}</div><div><div class="sl">Lists</div>${sel("shopping")}</div><div><div class="sl">Reminders</div>${sel("personal")}</div><div><div class="sl">Expense Hub</div>${sel("bills")}</div><div><div class="sl">Insights</div>${sel("expenses")}</div>
+      <div><div class="sl">Text size</div><select class="set-sel" id="tsz"><option value="normal">Normal</option><option value="large" ${S.textSize === "large" ? "selected" : ""}>Large</option><option value="xl" ${S.textSize === "xl" ? "selected" : ""}>Extra large</option></select></div></div></div>
+    <div class="setc"><div class="sth">🛒 Lists</div>
+      <div class="setr plain"><span class="sm"><b>Shopping by aisle</b><small>Group items the way the shop is laid out</small></span><select class="set-sel" id="ais" style="width:90px"><option value="0">Off</option><option value="1" ${S.aisles ? "selected" : ""}>On</option></select></div>
+      ${row("sList", "📝", "Manage lists", "Rename, logo, emoji, delete")}</div>
+    <div class="setc"><div class="sth">⏰ Reminders</div>
+      ${row("sRem", "🔔", "Alerts & notifications", LOCAL.pushOn ? "Notifications are on" : "Notifications are off on this phone")}</div>
+    ${LOCAL.noBills ? "" : `<div class="setc"><div class="sth">🧾 Expense Hub</div>
+      ${row("sLog", "📨", "Bill emails", "See what was read from your inbox")}${row("sCsv", "⬇︎", "Export bills", "Save every bill as a CSV file")}</div>`}
+    <div class="setc"><div class="sth">🔄 Sync & sharing</div>
+      <div class="setr plain"><span class="sm"><small>${esc(typeof statusText === "function" ? statusText() : "")}</small></span></div>
+      ${row("sSync", "🔗", "Sync settings", "Google script, this phone is S or D, share link")}</div>
+    <div class="setc"><div class="sth">🔒 Security</div>${row("sLock", "🔐", "App lock", "Face ID / passcode when opening")}</div>
+    <div class="setc"><div class="sth">💾 Data</div>${row("sBk", "⬇︎", "Backup", "Copy everything as text")}${row("sRs", "⬆︎", "Restore", "Paste a backup")}</div>
+    <div class="setc"><div class="sth">ℹ︎ About</div>
+      ${row("sSplash", "✨", "Replay opening animation", "")}
+      <div class="setr plain"><span class="sm"><small>Home Base · Lists, Reminders, Expense Hub and Insights</small></span></div></div>
+    <div style="height:20px"></div>`;
+  const q = s => host.querySelector(s);
+  host.querySelectorAll("[data-theme]").forEach(s => s.onchange = () => { const t = s.dataset.theme; S.themes[t] = s.value; if (t === "home") S.themes.settings = s.value; save(); applyTheme(); });
+  q("#tsz").onchange = e => { S.textSize = e.target.value; save(); applyTextSize(); };
+  q("#ais").onchange = e => { S.aisles = e.target.value === "1"; save(); };
+  q("#sList").onclick = () => goTab("shopping", () => showSettings(null));
+  q("#sRem").onclick = showRemSettings;
+  if (q("#sLog")) q("#sLog").onclick = bbShowLog;
+  if (q("#sCsv")) q("#sCsv").onclick = () => bbExportCsv();
+  q("#sSync").onclick = () => showSetup(false);
+  q("#sLock").onclick = showLockSettings;
+  q("#sBk").onclick = showBackup; q("#sRs").onclick = showRestore;
+  q("#sSplash").onclick = () => { try { sessionStorage.removeItem("hb_splash"); } catch(e){} location.reload(); };
+}
+
+/* the ⋯ button in the header: settings for the page you're on */
+function pageMenu(){
+  if (S.tab === "personal") return showRemSettings();
+  if (S.tab === "shopping") return showSettings(null);
+  if (S.tab === "bills"){
+    const bills = HUB === "bills" && !LOCAL.noBills;
+    menu.innerHTML = `<div class="mt">${bills ? "Bills" : "Expenses"}</div>` + (bills
+      ? `<button class="mb" id="pmA">📨 Bill emails — what was read</button><button class="mb" id="pmB">⬇︎ Export bills (CSV)</button>`
+      : `<button class="mb" id="pmB">⬇︎ Export this month (CSV)</button>`) + `<button class="mb" id="pmX">Done</button>`;
+    const a = menu.querySelector("#pmA"); if (a) a.onclick = () => bbShowLog();
+    menu.querySelector("#pmB").onclick = () => { if (bills) bbExportCsv(); else { const k = [EXM || exMonthNow()]; insExport(k, insData(k), "home-base-expenses-" + k[0] + ".csv"); } };
+    menu.querySelector("#pmX").onclick = closeMenu; openMenu();
+  }
+}
+document.querySelectorAll("#tabs .tab").forEach(b => { const sv = b.querySelector("svg"); if (sv) sv.innerHTML = NAV_ICONS[b.dataset.tab] || ""; });
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
 const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg(Object.assign({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }, LOCAL.bbApi ? { b:{ u:LOCAL.bbApi, k:LOCAL.bbKey } } : {})));
