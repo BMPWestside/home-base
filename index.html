@@ -460,7 +460,6 @@
   nav.tabs .tab svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
   nav.tabs .tab.on{background:var(--acc);color:var(--onacc)}
   .toast{bottom:calc(92px + env(safe-area-inset-bottom)) !important}
-  .gear{font-size:34px !important;letter-spacing:-2px;line-height:1;padding-bottom:10px}
   .hgreet{padding:2px 18px 10px;display:flex;flex-direction:column;color:var(--ink)}.hgreet b{font-size:24px;font-weight:900}.hgreet span{font-size:14px;color:var(--soft)}
   .hquick{display:flex;gap:8px;padding:0 14px 12px}
   .hquick button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 4px;border-radius:16px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);font-weight:800;font-size:13px;color:var(--ink)}
@@ -777,12 +776,7 @@
   <div class="sp-stage">
     <i class="sp-ring r1"></i><i class="sp-ring r2"></i>
     <div class="sp-logo"><i class="sp-glow"></i>
-      <img class="sp-base" src="icons/splash3/base.png" alt="">
-      <img class="sp-bag" src="icons/splash3/bag.png" alt="">
-      <img class="sp-ic ic0" src="icons/splash3/cart.png" style="left:36.922%;top:44.019%;width:11.802%" alt="">
-      <img class="sp-ic ic1" src="icons/splash3/bell.png" style="left:51.914%;top:43.301%;width:9.809%" alt="">
-      <img class="sp-ic ic2" src="icons/splash3/wallet.png" style="left:37.719%;top:54.864%;width:11.244%" alt="">
-      <img class="sp-ic ic3" src="icons/splash3/receipt.png" style="left:52.153%;top:55.582%;width:9.729%" alt="">
+      <img class="sp-img" src="icons/splash3/logo.png" alt="">
       <i class="sp-shine"></i>
     </div>
   </div>
@@ -804,32 +798,22 @@
   @keyframes spDrift2{to{transform:translate(-10vmax,8vmax) scale(1.15)}}
   .sp-stage{position:relative;width:min(70vw,310px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:28px}
   .sp-ring{position:absolute;inset:3%;border-radius:50%;border:2px solid rgba(255,255,255,.5);opacity:0}
-  .sp-ring.r1{animation:spRing 1.6s 1.0s ease-out forwards}
-  .sp-ring.r2{animation:spRing 1.6s 1.3s ease-out forwards;border-color:rgba(140,200,255,.55)}
+  .sp-ring.r1{animation:spRing 1.6s 1.3s ease-out forwards}
+  .sp-ring.r2{animation:spRing 1.6s 1.6s ease-out forwards;border-color:rgba(140,200,255,.55)}
   @keyframes spRing{0%{opacity:.8;transform:scale(.95)}100%{opacity:0;transform:scale(1.6)}}
   .sp-logo{position:relative;width:100%;aspect-ratio:1;border-radius:50%}
-  .sp-glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;background:conic-gradient(#ff8a1f,#8b3bdb,#1e9bfa,#6cb52d,#ff8a1f);filter:blur(26px);animation:spGlow 1.4s .8s ease-out forwards}
+  .sp-glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;background:conic-gradient(#ff8a1f,#8b3bdb,#1e9bfa,#6cb52d,#ff8a1f);filter:blur(26px);animation:spGlow 1.6s .3s ease-out forwards}
   @keyframes spGlow{0%{opacity:0;transform:scale(.7) rotate(0)}50%{opacity:.5}100%{opacity:.28;transform:scale(1) rotate(120deg)}}
-  .sp-logo img{position:absolute;display:block;height:auto;opacity:0;will-change:transform,opacity}
-  .sp-base,.sp-bag{left:0;top:0;width:100%}
-  .sp-base{animation:spBase 1.05s .15s cubic-bezier(.2,.9,.25,1.08) forwards}
-  @keyframes spBase{0%{opacity:1;clip-path:circle(0% at 50% 50%);transform:rotate(-200deg) scale(.45)}100%{opacity:1;clip-path:circle(75% at 50% 50%);transform:none}}
-  .sp-bag{transform-origin:50% 8%;animation:spBag .75s .95s cubic-bezier(.2,1.3,.35,1) forwards}
-  @keyframes spBag{0%{opacity:0;transform:translateY(-34%) rotate(-14deg) scale(.55)}55%{opacity:1}100%{opacity:1;transform:none}}
-  .sp-ic{transform-origin:50% 50%}
-  .sp-ic.ic0{animation:spPop .5s 1.55s cubic-bezier(.2,1.6,.4,1) forwards}
-  .sp-ic.ic1{animation:spPop .5s 1.68s cubic-bezier(.2,1.6,.4,1) forwards}
-  .sp-ic.ic2{animation:spPop .5s 1.81s cubic-bezier(.2,1.6,.4,1) forwards}
-  .sp-ic.ic3{animation:spPop .5s 1.94s cubic-bezier(.2,1.6,.4,1) forwards}
-  @keyframes spPop{0%{opacity:0;transform:scale(0) rotate(-40deg)}100%{opacity:1;transform:none}}
-  .sp-shine{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(circle,#000 70%,#000 71%);mask-image:radial-gradient(circle,#000 70%,#000 71%)}
-  .sp-shine::after{content:"";position:absolute;top:-50%;left:-80%;width:50%;height:200%;transform:rotate(25deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));animation:spShine .9s 2.15s ease-in-out forwards}
+  .sp-img{position:absolute;left:0;top:0;width:100%;height:auto;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 14px 28px rgba(0,0,0,.45));animation:spSpin 1.5s .15s cubic-bezier(.16,.85,.3,1.04) forwards}
+  @keyframes spSpin{0%{opacity:0;transform:rotate(-600deg) scale(.25)}25%{opacity:1}100%{opacity:1;transform:none}}
+  .sp-shine{position:absolute;inset:5%;border-radius:50%;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(circle,#000 70%,#000 71%);mask-image:radial-gradient(circle,#000 70%,#000 71%)}
+  .sp-shine::after{content:"";position:absolute;top:-50%;left:-80%;width:50%;height:200%;transform:rotate(25deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));animation:spShine .9s 1.65s ease-in-out forwards}
   @keyframes spShine{to{left:140%}}
   .sp-name{position:relative;font:800 36px/1.1 -apple-system,"SF Pro Rounded",system-ui,sans-serif;color:#fff;letter-spacing:.3px;opacity:0;
-    text-shadow:0 4px 18px rgba(0,0,0,.4);animation:spUp .55s 2.0s cubic-bezier(.2,.8,.2,1) forwards}
-  .sp-tag{position:relative;margin-top:10px;display:flex;gap:10px;font:800 11.5px/1 -apple-system,system-ui,sans-serif;letter-spacing:1.6px;text-transform:uppercase;opacity:0;animation:spUp .55s 2.2s cubic-bezier(.2,.8,.2,1) forwards}
+    text-shadow:0 4px 18px rgba(0,0,0,.4);animation:spUp .55s 1.55s cubic-bezier(.2,.8,.2,1) forwards}
+  .sp-tag{position:relative;margin-top:10px;display:flex;gap:10px;font:800 11.5px/1 -apple-system,system-ui,sans-serif;letter-spacing:1.6px;text-transform:uppercase;opacity:0;animation:spUp .55s 1.75s cubic-bezier(.2,.8,.2,1) forwards}
   @keyframes spUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
-  @media (prefers-reduced-motion: reduce){.sp-logo img,.sp-name,.sp-tag,.sp-orb{animation:none!important;opacity:1;transform:none;clip-path:none}.sp-ring,.sp-shine,.sp-glow{display:none}}
+  @media (prefers-reduced-motion: reduce){.sp-img,.sp-name,.sp-tag,.sp-orb{animation:none!important;opacity:1;transform:none;clip-path:none}.sp-ring,.sp-shine,.sp-glow{display:none}}
 </style>
 <script>
 (function(){
@@ -839,11 +823,11 @@
   var quick = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var gone = false, go = function(){ if (gone || window.HB_SPLASH_PREVIEW) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 480); };
   sp.addEventListener("click", go);
-  setTimeout(go, quick ? 700 : 3400);
+  setTimeout(go, quick ? 700 : 3000);
 })();
 </script>
 <div class="statusbg"></div>
-<header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1><button class="gear" id="gear" aria-label="Page settings">⋯</button></header>
+<header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1></header>
 
 <nav class="tabs" id="tabs">
   <button class="tab" data-tab="home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></button>
@@ -2230,7 +2214,6 @@ function openMenu(){ menu._at = Date.now(); scrim.classList.add("on"); menu.clas
 function closeMenu(){ scrim.classList.remove("on"); menu.classList.remove("on"); }
 scrim.onclick = () => { if (Date.now() - (menu._at||0) > 450) closeMenu(); };
 const openSettings = () => showSettings(null);
-document.getElementById("gear").onclick = () => pageMenu();
 
 // Make the logo's plain background transparent: flood-fill from the edges, removing pixels
 // close to the edge colour (white, or any solid colour a screenshot has around the logo).
@@ -3386,7 +3369,7 @@ function renderRems(){
   }).join("");
   const warn = !REM_SYNC.ok && REM_SYNC.err !== "offline" ? `<button class="rwarn bad" id="rWarn">⚠️ ${REM_SYNC.err === "unknown op" ? "Your Google script needs the reminders update" : "Reminders aren't reaching your Google script"} · tap to check</button>`
     : !LOCAL.pushOn ? `<button class="rwarn" id="rWarn">🔔 Turn on notifications for this phone</button>` : "";
-  host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed" id="rSet" title="Settings">⋯</span><span class="ed add" id="rAdd">＋</span></div>
+  host.innerHTML = `<div class="gas rems"><div class="gh"><button id="rHead">⏰ Reminders</button><span class="ed" id="rHist" title="History">🕘</span><span class="ed add" id="rAdd">＋</span></div>
     <form class="rq" id="rq"><input id="rqIn" placeholder="Add… e.g. Pay rego Fri 5pm" autocomplete="off" enterkeyhint="done"></form><div class="rqp" id="rqP"></div>
     ${warn}${remSmartHTML()}${(REM.routines || []).length ? `<div class="rlists">${rtRowsHTML()}</div>` : ""}<div class="rlists">${rows}</div><div class="rnew2"><button class="rnewl" id="rNewL">＋ New list</button><button class="rnewl" id="rNewR">＋ New routine</button></div></div>`;
   const q = s => host.querySelector(s);
@@ -3394,7 +3377,6 @@ function renderRems(){
   host.querySelectorAll("[data-rl]").forEach(b => b.onclick = () => openRemList(b.dataset.rl));
   q("#rAdd").onclick = () => editRem(null, { list:"general" });
   q("#rHead").onclick = () => q("#rqIn").focus();
-  q("#rSet").onclick = showRemSettings;
   q("#rHist").onclick = showRemHistory;
   q("#rNewL").onclick = () => editRemList(null);
   q("#rNewR").onclick = () => editRoutine(null);
@@ -4111,33 +4093,32 @@ const NAV_ICONS = {
   shopping:'<path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>',
   bills:'<path d="M6 3h12v18l-2.2-1.6L13.6 21 12 19.6 10.4 21l-2.2-1.6L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
   expenses:'<rect x="4" y="11" width="3.5" height="9" rx="1"/><rect x="10.2" y="4" width="3.5" height="16" rx="1"/><rect x="16.5" y="8" width="3.5" height="12" rx="1"/>',
-  settings:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/>'
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>'
 };
 function goTab(t, after){ S.tab = t; save(); render(); window.scrollTo({ top:0 }); if (after) setTimeout(after, 60); }
 
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
-  const hr = new Date().getHours(), greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
   const today = isoToday(), now = remNow();
-  const due = remOpen().filter(it => RL.at(it).slice(0,10) <= today);
-  const bills = (typeof bbUnpaid === "function" && !LOCAL.noBills) ? bbUnpaid().filter(b => b.dueDate && daysTo(b.dueDate) <= 14 && b.amount > 0).sort((a, b) => a.dueDate < b.dueDate ? -1 : 1) : [];
-  const dates = (S.dates || []).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 14).sort((a, b) => a.days - b.days);
+  const open = remOpen();
+  const next = open.slice(0, 3);
+  const bills = (typeof bbUnpaid === "function" && !LOCAL.noBills) ? bbUnpaid().filter(b => b.dueDate && daysTo(b.dueDate) <= 7 && b.amount > 0).sort((a, b) => a.dueDate < b.dueDate ? -1 : 1) : [];
+  const dates = (S.dates || []).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 7).sort((a, b) => a.days - b.days);
   const ym = today.slice(0,7), mo = insData([ym]), pk = insData([exShift(ym, -1)]);
   const dd = n => n === 0 ? "today" : n === 1 ? "tomorrow" : "in " + n + " days";
+  const when = it => { const a = RL.at(it), d = a.slice(0,10); return a <= now ? (d < today ? "Overdue" : "Now") : d === today ? a.slice(11,16) : fmtDate(d) + " " + a.slice(11,16); };
   host.innerHTML = `
-    <div class="hgreet"><b>${greet}</b><span>${new Date().toLocaleDateString("en-AU", { weekday:"long", day:"numeric", month:"long" })}</span></div>
-    <div class="hquick"><button data-q="rem"><span>⏰</span>Reminder</button><button data-q="exp"><span>💳</span>Expense</button><button data-q="item"><span>🛒</span>List</button></div>
     <div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>
-    <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Reminders</span><em>${due.length ? due.length + " due" : "All clear"}</em></div>
-      ${due.slice(0, 3).map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${RL.at(it).slice(0,10) < today ? "Overdue" : RL.at(it).slice(11, 16)}</small></div>`).join("") || `<div class="hl mute">Nothing due today</div>`}
-      ${due.length > 3 ? `<div class="hmore">+${due.length - 3} more</div>` : ""}</div>
-    ${LOCAL.noBills ? "" : `<div class="exc hcard" data-go="bills"><div class="hh"><span>🧾 Bills coming up</span><em>${bills.length ? money0(bills.reduce((s, b) => s + b.amount, 0)) : "None due"}</em></div>
-      ${bills.slice(0, 3).map(b => `<div class="hl ${daysTo(b.dueDate) < 0 ? "late" : ""}"><b>${esc(bbProv(b.provider).name)}</b><small>${daysTo(b.dueDate) < 0 ? Math.abs(daysTo(b.dueDate)) + "d late" : dd(daysTo(b.dueDate))} · ${money(b.amount)}</small></div>`).join("") || `<div class="hl mute">Nothing due in the next 2 weeks</div>`}
-      ${bills.length > 3 ? `<div class="hmore">+${bills.length - 3} more</div>` : ""}</div>`}
+    <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Next reminders</span><em>${open.length ? open.length + " open" : "All clear"}</em></div>
+      ${next.map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${when(it)}</small></div>`).join("") || `<div class="hl mute">Nothing coming up</div>`}
+      ${open.length > 3 ? `<div class="hmore">+${open.length - 3} more</div>` : ""}</div>
+    ${dates.length ? `<div class="exc hcard" data-go="personal"><div class="hh"><span>🎉 Important dates</span><em>${dates.length}</em></div>${dates.map(x => `<div class="hl"><b>${x.dt.icon || "📅"} ${esc(x.dt.name)}</b><small>${dd(x.days)}</small></div>`).join("")}</div>` : ""}
+    ${bills.length ? `<div class="exc hcard" data-go="bills"><div class="hh"><span>🧾 Bills coming up</span><em>${money0(bills.reduce((s, b) => s + b.amount, 0))}</em></div>
+      ${bills.map(b => `<div class="hl ${daysTo(b.dueDate) < 0 ? "late" : ""}"><b>${esc(bbProv(b.provider).name)}</b><small>${daysTo(b.dueDate) < 0 ? Math.abs(daysTo(b.dueDate)) + "d late" : dd(daysTo(b.dueDate))} · ${money(b.amount)}</small></div>`).join("")}</div>` : ""}
     <div class="exc hcard" data-go="expenses"><div class="hh"><span>📊 ${exMonthLabel(ym).split(" ")[0]} so far</span><em>${money0(mo.total)}</em></div>
       <div class="hl"><b>🧾 Bills</b><small>${money0(mo.tb)}</small></div><div class="hl"><b>💳 Expenses</b><small>${money0(mo.te)}</small></div>
       ${pk.total > 0 ? `<div class="hmore">Last month ${money0(pk.total)}</div>` : ""}</div>
-    ${dates.length ? `<div class="exc hcard" data-go="personal"><div class="hh"><span>🎉 Coming up</span></div>${dates.slice(0, 3).map(x => `<div class="hl"><b>${x.dt.icon || "📅"} ${esc(x.dt.name)}</b><small>${dd(x.days)}</small></div>`).join("")}</div>` : ""}
+    <div class="hquick"><button data-q="rem"><span>⏰</span>Reminder</button><button data-q="exp"><span>💳</span>Expense</button><button data-q="item"><span>🛒</span>List</button></div>
     <div style="height:20px"></div>`;
   host.querySelectorAll("[data-go]").forEach(b => b.onclick = () => goTab(b.dataset.go));
   host.querySelector('[data-q="rem"]').onclick = () => goTab("personal", () => editRem(null, { list:"general" }));
@@ -4159,8 +4140,9 @@ function renderSettingsPage(){
       ${row("sList", "📝", "Manage lists", "Rename, logo, emoji, delete")}</div>
     <div class="setc"><div class="sth">⏰ Reminders</div>
       ${row("sRem", "🔔", "Alerts & notifications", LOCAL.pushOn ? "Notifications are on" : "Notifications are off on this phone")}</div>
-    ${LOCAL.noBills ? "" : `<div class="setc"><div class="sth">🧾 Expense Hub</div>
-      ${row("sLog", "📨", "Bill emails", "See what was read from your inbox")}${row("sCsv", "⬇︎", "Export bills", "Save every bill as a CSV file")}</div>`}
+    <div class="setc"><div class="sth">🧾 Expense Hub</div>
+      ${LOCAL.noBills ? "" : `${row("sLog", "📨", "Bill emails", "See what was read from your inbox")}${row("sCsv", "⬇︎", "Export bills", "Save every bill as a CSV file")}`}
+      ${row("sCsvE", "⬇︎", "Export expenses", "Save every expense as a CSV file")}</div>
     <div class="setc"><div class="sth">🔄 Sync & sharing</div>
       <div class="setr plain"><span class="sm"><small>${esc(typeof statusText === "function" ? statusText() : "")}</small></span></div>
       ${row("sSync", "🔗", "Sync settings", "Google script, this phone is S or D, share link")}</div>
@@ -4178,26 +4160,13 @@ function renderSettingsPage(){
   q("#sRem").onclick = showRemSettings;
   if (q("#sLog")) q("#sLog").onclick = bbShowLog;
   if (q("#sCsv")) q("#sCsv").onclick = () => bbExportCsv();
+  q("#sCsvE").onclick = () => { const k = [...new Set((S.exp || []).map(e => (e.date || "").slice(0,7)).filter(Boolean))].sort(); if (!k.length){ toast("No expenses yet"); return; } const d = insData(k); d.items = d.items.filter(i => i.src === "exp"); insExport(k, d, "home-base-expenses.csv"); };
   q("#sSync").onclick = () => showSetup(false);
   q("#sLock").onclick = showLockSettings;
   q("#sBk").onclick = showBackup; q("#sRs").onclick = showRestore;
   q("#sSplash").onclick = () => { try { sessionStorage.removeItem("hb_splash"); } catch(e){} location.reload(); };
 }
 
-/* the ⋯ button in the header: settings for the page you're on */
-function pageMenu(){
-  if (S.tab === "personal") return showRemSettings();
-  if (S.tab === "shopping") return showSettings(null);
-  if (S.tab === "bills"){
-    const bills = HUB === "bills" && !LOCAL.noBills;
-    menu.innerHTML = `<div class="mt">${bills ? "Bills" : "Expenses"}</div>` + (bills
-      ? `<button class="mb" id="pmA">📨 Bill emails — what was read</button><button class="mb" id="pmB">⬇︎ Export bills (CSV)</button>`
-      : `<button class="mb" id="pmB">⬇︎ Export this month (CSV)</button>`) + `<button class="mb" id="pmX">Done</button>`;
-    const a = menu.querySelector("#pmA"); if (a) a.onclick = () => bbShowLog();
-    menu.querySelector("#pmB").onclick = () => { if (bills) bbExportCsv(); else { const k = [EXM || exMonthNow()]; insExport(k, insData(k), "home-base-expenses-" + k[0] + ".csv"); } };
-    menu.querySelector("#pmX").onclick = closeMenu; openMenu();
-  }
-}
 document.querySelectorAll("#tabs .tab").forEach(b => { const sv = b.querySelector("svg"); if (sv) sv.innerHTML = NAV_ICONS[b.dataset.tab] || ""; });
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
