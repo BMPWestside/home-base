@@ -393,6 +393,66 @@
   .r2 input[type=date]::-webkit-date-and-time-value,.r2 input[type=time]::-webkit-date-and-time-value{text-align:center;min-width:0;margin:0}
   .r2 input[type=date]::-webkit-calendar-picker-indicator,.r2 input[type=time]::-webkit-calendar-picker-indicator{display:none}
 
+  .tab{font-size:13.5px;white-space:nowrap;padding-left:3px;padding-right:3px;letter-spacing:-.1px}
+  .exc{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:18px;-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+  #exp{padding:0 14px}
+  .exhead{padding:14px 14px 12px;margin-bottom:12px;text-align:center}
+  .exnav{display:flex;align-items:center;justify-content:space-between;color:var(--soft);font-size:15px}
+  .exnav button{width:40px;height:34px;border-radius:10px;font-size:24px;line-height:1;color:var(--ink)}
+  .exnav button:disabled{opacity:.25}
+  .exnav b{font-weight:800;letter-spacing:.3px}
+  .extot{font-size:42px;font-weight:900;color:var(--ink);margin:4px 0 0;letter-spacing:-1px}
+  .exsub{font-size:13px;color:var(--soft);margin-bottom:10px}
+  .exsub .up{color:#ff9a8a;font-weight:700}.exsub .dn{color:#9be38a;font-weight:700}
+  .exbar{display:flex;height:12px;border-radius:8px;overflow:hidden;gap:2px;margin:6px 2px 10px;background:rgba(255,255,255,.08)}
+  .exbar i{display:block;min-width:4px}
+  .exleg{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+  .exleg button{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:12.5px;color:var(--ink)}
+  .exleg button i{width:8px;height:8px;border-radius:50%}
+  .exleg button b{color:var(--soft);font-weight:700}
+  .exleg button.on{background:var(--acc);color:var(--onacc)}.exleg button.on b{color:var(--onacc)}
+  .exwho{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:13px;color:var(--soft)}
+  .exwho b{color:var(--acc)}
+  .exadd{display:block;width:100%;padding:14px;border-radius:16px;background:var(--acc);color:var(--onacc);font-weight:900;font-size:17px;margin-bottom:6px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+  .exday{display:flex;justify-content:space-between;padding:14px 6px 6px;font-size:12.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--soft)}
+  .exrow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;margin-bottom:6px;text-align:left;color:var(--ink)}
+  .exic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;border:1px solid;flex:none}
+  .exmid{flex:1;min-width:0;display:flex;flex-direction:column}
+  .exmid b{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .exmid small{font-size:12.5px;color:var(--soft)}
+  .examt{font-size:17px;font-weight:800}
+  .exempty{text-align:center;color:var(--soft);padding:34px 20px;font-size:15px}
+  .exbig{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:6px}
+  .exbig span{font-size:34px;font-weight:800;color:var(--soft)}
+  .exbig input{width:60%;font-size:40px !important;font-weight:900;text-align:center;padding:8px !important}
+  .excats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:4px 0 8px}
+  .excats button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:12px;background:rgba(255,255,255,.07);border:1.5px solid transparent;font-size:10.5px;color:var(--ink);font-weight:700}
+  .excats button span{font-size:20px}
+  .excats button.on{border-color:var(--cc);background:color-mix(in srgb,var(--cc) 25%,transparent)}
+  .xr2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .exwhos{display:flex;gap:6px;height:52px}
+  .exwhos button{flex:1;border-radius:12px;background:rgba(255,255,255,.1);font-weight:800;font-size:18px;color:var(--ink)}
+  .exwhos button.on{background:var(--acc);color:var(--onacc)}
+  .sg4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hubseg{display:flex;gap:6px;padding:4px;margin:0 14px 12px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+  .hubseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:800;font-size:15px;color:var(--soft)}
+  .hubseg button.on{background:var(--acc);color:var(--onacc)}
+  #ins{padding:0}#insBody{padding:0 14px}
+  .insc{padding:12px 14px;margin-bottom:12px}
+  .inslab{font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+  .insrng{display:flex;gap:6px;margin-bottom:10px}
+  .insrng button{flex:1;padding:9px 4px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-weight:700;font-size:13.5px;color:var(--ink)}
+  .insrng button.on{background:var(--acc);color:var(--onacc);border-color:transparent}
+  .inskey{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}.inskey i{width:9px;height:9px;border-radius:50%}.inskey b{color:var(--soft)}
+  .insnav{margin-bottom:10px}
+  .instop{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:var(--ink)}.instop small{color:var(--soft)}
+  .insbig{margin-top:8px;font-size:13px;color:var(--soft)}.insbig b{color:var(--ink)}
+  .instab{width:100%;border-collapse:collapse;color:var(--ink);font-size:15px}
+  .instab td{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)}.instab td:nth-child(2){text-align:right;font-weight:800}.instab td.pc{width:46px;text-align:right;color:var(--soft);font-weight:600}
+  .instab tr:last-child td{border-bottom:0}.instab tr.warn td{color:#ffcf7a}.instab tr.mute td{opacity:.4}
+  .insdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
+  #ins .chart svg{width:100%;height:auto}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -663,7 +723,7 @@
   body::after{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;filter:blur(40px);opacity:.55;
     background:radial-gradient(circle at 12% 18%,var(--acc) 0,transparent 32%),radial-gradient(circle at 88% 42%,var(--soft) 0,transparent 30%),radial-gradient(circle at 30% 85%,var(--acc) 0,transparent 28%)}
   .statusbg{background:transparent !important}
-  .tabs,.gas,.pbar,.bseg,.btile,.bcard,.today,.bnext,.bstat,.bcal,.bring,.balert,.toast,#toast,#dropzone,.menu,.lock{
+  .tabs,.exc,.gas,.pbar,.bseg,.btile,.bcard,.today,.bnext,.bstat,.bcal,.bring,.balert,.toast,#toast,#dropzone,.menu,.lock{
     -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5)}
   .tabs{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
   .gas{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}
@@ -680,62 +740,63 @@
 </head>
 <body>
 <div id="splash" aria-hidden="true">
-  <i class="sp-orb o1"></i><i class="sp-orb o2"></i><i class="sp-orb o3"></i>
+  <i class="sp-orb o1"></i><i class="sp-orb o2"></i><i class="sp-orb o3"></i><i class="sp-orb o4"></i>
   <div class="sp-stage">
     <i class="sp-ring r1"></i><i class="sp-ring r2"></i>
-    <div class="sp-tile"><i class="sp-shine"></i>
-      <div class="sp-logo">
-        <img class="sp-base" src="icons/splash2/base.png" style="left:0.0%;top:0.0%;width:100.0%" alt="">
-        <img class="sp-chk c0" src="icons/splash2/chk0.png" style="left:51.143%;top:42.547%;width:28.378%" alt="">
-        <img class="sp-chk c1" src="icons/splash2/chk1.png" style="left:51.143%;top:51.553%;width:28.378%" alt="">
-        <img class="sp-chk c2" src="icons/splash2/chk2.png" style="left:51.143%;top:60.352%;width:28.378%" alt="">
-        <img class="sp-rcpt" src="icons/splash2/receipt.png" style="left:48.025%;top:69.979%;width:34.096%" alt="">
-      </div>
+    <div class="sp-logo"><i class="sp-glow"></i>
+      <img class="sp-base" src="icons/splash3/base.png" alt="">
+      <img class="sp-bag" src="icons/splash3/bag.png" alt="">
+      <img class="sp-ic ic0" src="icons/splash3/cart.png" style="left:36.922%;top:44.019%;width:11.802%" alt="">
+      <img class="sp-ic ic1" src="icons/splash3/bell.png" style="left:51.914%;top:43.301%;width:9.809%" alt="">
+      <img class="sp-ic ic2" src="icons/splash3/wallet.png" style="left:37.719%;top:54.864%;width:11.244%" alt="">
+      <img class="sp-ic ic3" src="icons/splash3/receipt.png" style="left:52.153%;top:55.582%;width:9.729%" alt="">
+      <i class="sp-shine"></i>
     </div>
   </div>
   <div class="sp-name">Home Base</div>
-  <div class="sp-tag">Lists · Reminders · Bills</div>
+  <div class="sp-tag"><span style="color:#ff9a2e">Lists</span><span style="color:#c07bff">Reminders</span><span style="color:#4db8ff">Bills</span><span style="color:#8fdc4a">Expenses</span></div>
 </div>
 <style>
   #splash{position:fixed;top:-80px;bottom:-80px;left:0;right:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
-    background:linear-gradient(165deg,#0b2230 0%,#0f3a45 50%,#0d5a5c 100%);transition:opacity .45s ease}
+    background:linear-gradient(165deg,#0b1128 0%,#111a3c 55%,#0b1330 100%);transition:opacity .45s ease}
   #splash.bye{opacity:0;pointer-events:none}
-  #splash.bye .sp-stage{transform:scale(1.12);transition:transform .45s ease}
-  .sp-orb{position:absolute;border-radius:50%;filter:blur(50px);will-change:transform}
-  .sp-orb.o1{width:70vmax;height:70vmax;left:-28vmax;bottom:-12vmax;background:radial-gradient(circle,#11a39a 0%,rgba(17,163,154,0) 65%);opacity:.8;animation:spDrift1 7s ease-in-out infinite alternate}
-  .sp-orb.o2{width:60vmax;height:60vmax;right:-26vmax;top:-6vmax;background:radial-gradient(circle,#7fe0cf 0%,rgba(127,224,207,0) 62%);opacity:.45;animation:spDrift2 8s ease-in-out infinite alternate}
-  .sp-orb.o3{width:40vmax;height:40vmax;left:25vmax;top:40vmax;background:radial-gradient(circle,#57d3c3 0%,rgba(87,211,195,0) 65%);opacity:.3;animation:spDrift1 9s ease-in-out infinite alternate-reverse}
+  #splash.bye .sp-stage{transform:scale(1.14);transition:transform .45s ease}
+  .sp-orb{position:absolute;border-radius:50%;filter:blur(55px);will-change:transform;opacity:0;animation:spOrbIn 1.2s .2s ease forwards}
+  .sp-orb.o1{width:60vmax;height:60vmax;left:-26vmax;top:-14vmax;background:radial-gradient(circle,#ff8a1f 0%,rgba(255,138,31,0) 65%);--o:.55;animation:spOrbIn 1.2s .2s ease forwards,spDrift1 8s ease-in-out infinite alternate}
+  .sp-orb.o2{width:60vmax;height:60vmax;right:-26vmax;top:-10vmax;background:radial-gradient(circle,#8b3bdb 0%,rgba(139,59,219,0) 65%);--o:.6;animation:spOrbIn 1.2s .35s ease forwards,spDrift2 9s ease-in-out infinite alternate}
+  .sp-orb.o3{width:60vmax;height:60vmax;left:-24vmax;bottom:-14vmax;background:radial-gradient(circle,#6cb52d 0%,rgba(108,181,45,0) 65%);--o:.45;animation:spOrbIn 1.2s .5s ease forwards,spDrift2 9s ease-in-out infinite alternate-reverse}
+  .sp-orb.o4{width:64vmax;height:64vmax;right:-26vmax;bottom:-16vmax;background:radial-gradient(circle,#1e9bfa 0%,rgba(30,155,250,0) 65%);--o:.6;animation:spOrbIn 1.2s .65s ease forwards,spDrift1 8s ease-in-out infinite alternate-reverse}
+  @keyframes spOrbIn{to{opacity:var(--o,.5)}}
   @keyframes spDrift1{to{transform:translate(8vmax,-6vmax) scale(1.1)}}
   @keyframes spDrift2{to{transform:translate(-10vmax,8vmax) scale(1.15)}}
-  .sp-stage{position:relative;width:min(66vw,290px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:26px}
-  .sp-ring{position:absolute;inset:0;border-radius:24%;border:2px solid rgba(160,240,225,.6);opacity:0}
-  .sp-ring.r1{animation:spRing 1.6s .6s ease-out forwards}
-  .sp-ring.r2{animation:spRing 1.6s .9s ease-out forwards}
-  @keyframes spRing{0%{opacity:.85;transform:scale(.9)}100%{opacity:0;transform:scale(1.55)}}
-  .sp-tile{position:relative;width:100%;height:100%;border-radius:23%;overflow:hidden;display:grid;place-items:center;
-    background:radial-gradient(120% 110% at 22% 12%,#e9fbf7 0%,#bfeee5 50%,#93d8cb 100%);
-    box-shadow:0 30px 60px -18px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.35) inset,0 0 80px rgba(147,216,203,.3);
-    opacity:0;transform:scale(.55) rotate(-8deg);animation:spTile .8s cubic-bezier(.2,1.25,.35,1) forwards}
-  @keyframes spTile{60%{opacity:1}100%{opacity:1;transform:none}}
-  .sp-shine{position:absolute;top:-50%;left:-80%;width:60%;height:200%;transform:rotate(25deg);z-index:3;pointer-events:none;
-    background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.7),rgba(255,255,255,0));animation:spShine .9s 1.9s ease-in-out forwards}
-  @keyframes spShine{to{left:140%}}
-  .sp-logo{position:relative;width:80%;aspect-ratio:962/966}
+  .sp-stage{position:relative;width:min(70vw,310px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:28px}
+  .sp-ring{position:absolute;inset:3%;border-radius:50%;border:2px solid rgba(255,255,255,.5);opacity:0}
+  .sp-ring.r1{animation:spRing 1.6s 1.0s ease-out forwards}
+  .sp-ring.r2{animation:spRing 1.6s 1.3s ease-out forwards;border-color:rgba(140,200,255,.55)}
+  @keyframes spRing{0%{opacity:.8;transform:scale(.95)}100%{opacity:0;transform:scale(1.6)}}
+  .sp-logo{position:relative;width:100%;aspect-ratio:1;border-radius:50%}
+  .sp-glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;background:conic-gradient(#ff8a1f,#8b3bdb,#1e9bfa,#6cb52d,#ff8a1f);filter:blur(26px);animation:spGlow 1.4s .8s ease-out forwards}
+  @keyframes spGlow{0%{opacity:0;transform:scale(.7) rotate(0)}50%{opacity:.5}100%{opacity:.28;transform:scale(1) rotate(120deg)}}
   .sp-logo img{position:absolute;display:block;height:auto;opacity:0;will-change:transform,opacity}
-  .sp-base{animation:spBase .95s .3s cubic-bezier(.2,.9,.25,1.1) forwards}
-  @keyframes spBase{0%{opacity:1;clip-path:circle(0% at 50% 50%);transform:rotate(-140deg) scale(.7)}100%{opacity:1;clip-path:circle(75% at 50% 50%);transform:none}}
-  .sp-chk{transform-origin:12% 50%}
-  .sp-chk.c0{animation:spChk .42s 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
-  .sp-chk.c1{animation:spChk .42s 1.22s cubic-bezier(.2,1.4,.4,1) forwards}
-  .sp-chk.c2{animation:spChk .42s 1.39s cubic-bezier(.2,1.4,.4,1) forwards}
-  @keyframes spChk{0%{opacity:1;clip-path:inset(0 100% 0 0);transform:scale(.6)}55%{clip-path:inset(0 30% 0 0);transform:scale(1.12)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
-  .sp-rcpt{animation:spRcpt .7s 1.55s cubic-bezier(.2,1.2,.35,1) forwards;transform-origin:50% 0}
-  @keyframes spRcpt{0%{opacity:1;clip-path:inset(0 0 100% 0);transform:translateY(-12%)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+  .sp-base,.sp-bag{left:0;top:0;width:100%}
+  .sp-base{animation:spBase 1.05s .15s cubic-bezier(.2,.9,.25,1.08) forwards}
+  @keyframes spBase{0%{opacity:1;clip-path:circle(0% at 50% 50%);transform:rotate(-200deg) scale(.45)}100%{opacity:1;clip-path:circle(75% at 50% 50%);transform:none}}
+  .sp-bag{transform-origin:50% 8%;animation:spBag .75s .95s cubic-bezier(.2,1.3,.35,1) forwards}
+  @keyframes spBag{0%{opacity:0;transform:translateY(-34%) rotate(-14deg) scale(.55)}55%{opacity:1}100%{opacity:1;transform:none}}
+  .sp-ic{transform-origin:50% 50%}
+  .sp-ic.ic0{animation:spPop .5s 1.55s cubic-bezier(.2,1.6,.4,1) forwards}
+  .sp-ic.ic1{animation:spPop .5s 1.68s cubic-bezier(.2,1.6,.4,1) forwards}
+  .sp-ic.ic2{animation:spPop .5s 1.81s cubic-bezier(.2,1.6,.4,1) forwards}
+  .sp-ic.ic3{animation:spPop .5s 1.94s cubic-bezier(.2,1.6,.4,1) forwards}
+  @keyframes spPop{0%{opacity:0;transform:scale(0) rotate(-40deg)}100%{opacity:1;transform:none}}
+  .sp-shine{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(circle,#000 70%,#000 71%);mask-image:radial-gradient(circle,#000 70%,#000 71%)}
+  .sp-shine::after{content:"";position:absolute;top:-50%;left:-80%;width:50%;height:200%;transform:rotate(25deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));animation:spShine .9s 2.15s ease-in-out forwards}
+  @keyframes spShine{to{left:140%}}
   .sp-name{position:relative;font:800 36px/1.1 -apple-system,"SF Pro Rounded",system-ui,sans-serif;color:#fff;letter-spacing:.3px;opacity:0;
-    text-shadow:0 4px 18px rgba(0,0,0,.35);animation:spUp .55s 1.75s cubic-bezier(.2,.8,.2,1) forwards}
-  .sp-tag{position:relative;margin-top:8px;font:800 12.5px/1 -apple-system,system-ui,sans-serif;color:#9fe6d6;letter-spacing:3px;text-transform:uppercase;opacity:0;animation:spUp .55s 1.95s cubic-bezier(.2,.8,.2,1) forwards}
+    text-shadow:0 4px 18px rgba(0,0,0,.4);animation:spUp .55s 2.0s cubic-bezier(.2,.8,.2,1) forwards}
+  .sp-tag{position:relative;margin-top:10px;display:flex;gap:10px;font:800 11.5px/1 -apple-system,system-ui,sans-serif;letter-spacing:1.6px;text-transform:uppercase;opacity:0;animation:spUp .55s 2.2s cubic-bezier(.2,.8,.2,1) forwards}
   @keyframes spUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
-  @media (prefers-reduced-motion: reduce){.sp-tile,.sp-logo img,.sp-name,.sp-tag{animation:none!important;opacity:1;transform:none;clip-path:none}.sp-orb,.sp-ring,.sp-shine{display:none}}
+  @media (prefers-reduced-motion: reduce){.sp-logo img,.sp-name,.sp-tag,.sp-orb{animation:none!important;opacity:1;transform:none;clip-path:none}.sp-ring,.sp-shine,.sp-glow{display:none}}
 </style>
 <script>
 (function(){
@@ -745,16 +806,17 @@
   var quick = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var gone = false, go = function(){ if (gone || window.HB_SPLASH_PREVIEW) return; gone = true; sp.classList.add("bye"); setTimeout(function(){ sp.remove(); }, 480); };
   sp.addEventListener("click", go);
-  setTimeout(go, quick ? 700 : 3000);
+  setTimeout(go, quick ? 700 : 3400);
 })();
 </script>
 <div class="statusbg"></div>
 <header><button class="sdot" id="syncDot" data-s="off" aria-label="Sync status"></button><h1>Home Base</h1><button class="gear" id="gear" aria-label="Settings">⚙︎</button></header>
 
 <nav class="tabs" id="tabs">
-  <button class="tab" data-tab="shopping">Shopping</button>
+  <button class="tab" data-tab="shopping">Lists</button>
   <button class="tab" data-tab="personal">Reminders</button>
-  <button class="tab" data-tab="bills">Bills</button>
+  <button class="tab" data-tab="bills">Expense Hub</button>
+  <button class="tab" data-tab="expenses">Insights</button>
 </nav>
 
 <main id="view"></main>
@@ -787,6 +849,10 @@ const THEMES = {
   teal:    { name:"Teal",     top:"#08403f", bottom:"#05192a", acc:"#4fe0d0", soft:"#9fd9d3", ink:"#eafffc", onacc:"#04302e", menu:"#0c3038", a:"#0b5552", b:"#0a2a40", fa:"#5eeadb", fb:"#b9f1ff", row:"rgba(150,255,240,.08)" },
   lavender:{ name:"Lavender", top:"#2e2160", bottom:"#120d2b", acc:"#b59cff", soft:"#cfc2f5", ink:"#f4f0ff", onacc:"#1d1240", menu:"#241a4d", a:"#4b3a96", b:"#17123a", fa:"#d4c6ff", fb:"#ece6ff", row:"rgba(200,180,255,.09)" },
   forest:  { name:"Forest",   top:"#1f3a16", bottom:"#0b1708", acc:"#a6e36b", soft:"#c6dfb0", ink:"#f4ffe9", onacc:"#1a2e0a", menu:"#1a2f13", a:"#3b6b28", b:"#10200b", fa:"#c8f29a", fb:"#e6f7d4", row:"rgba(200,255,170,.08)" },
+  logoOrange:{ name:"Logo Orange", top:"#8a3d07", bottom:"#2a1203", acc:"#ff9a2e", soft:"#ffd2a0", ink:"#fff6ec", onacc:"#3a1a02", menu:"#4a2008", a:"#ff8a1f", b:"#4a1c06", fa:"#ffc27a", fb:"#ffe8d0", row:"rgba(255,170,90,.12)" },
+  logoPurple:{ name:"Logo Purple", top:"#4b1a8a", bottom:"#170a33", acc:"#c07bff", soft:"#dcc3ff", ink:"#f8f0ff", onacc:"#250a4a", menu:"#2c1257", a:"#8b3bdb", b:"#26104d", fa:"#d9a8ff", fb:"#f0e0ff", row:"rgba(190,130,255,.12)" },
+  logoBlue:  { name:"Logo Blue",   top:"#0b4f9a", bottom:"#061a36", acc:"#4db8ff", soft:"#a9dcff", ink:"#eef8ff", onacc:"#032748", menu:"#0b2f5c", a:"#1e9bfa", b:"#0a2a55", fa:"#8fd2ff", fb:"#d6eeff", row:"rgba(120,200,255,.12)" },
+  logoGreen: { name:"Logo Green",  top:"#2f6a0f", bottom:"#0d2205", acc:"#8fdc4a", soft:"#c8eaa6", ink:"#f3ffe8", onacc:"#14300a", menu:"#1c4510", a:"#6cb52d", b:"#17330b", fa:"#b4ec7e", fb:"#e2f7cc", row:"rgba(160,230,100,.12)" },
   rose:    { name:"Rose",     top:"#5a2033", bottom:"#220a14", acc:"#ff9aa8", soft:"#f2c1c9", ink:"#fff1f3", onacc:"#4a0f1f", menu:"#3e1424", a:"#9a3550", b:"#2b0d18", fa:"#ffc4cd", fb:"#ffe6ea", row:"rgba(255,190,200,.09)" }
 };
 const QUOTES = [
@@ -880,7 +946,7 @@ const decCfg = t => JSON.parse(decodeURIComponent(escape(atob(t))));
     if (cfg && cfg.u && cfg.k){
       const changed = LOCAL.url !== cfg.u || LOCAL.house !== cfg.k;
       LOCAL.url = cfg.u; LOCAL.house = cfg.k;
-      if (cfg.w === "S" || cfg.w === "D") LOCAL.who = cfg.w;
+      if ((cfg.w === "S" || cfg.w === "D") && !LOCAL.whoSet) LOCAL.who = cfg.w;   // a choice made in Sync wins over the link
       if (cfg.b && cfg.b.u && cfg.b.k){ LOCAL.bbApi = cfg.b.u; LOCAL.bbKey = cfg.b.k; }
       if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
       LOCAL.offline = false;
@@ -897,7 +963,10 @@ try { const raw = localStorage.getItem(LS_KEY); if (raw) S = Object.assign(S, JS
 const SEED_CUSTOMERS = [];   // customers come from your backup / sync, not the public code
 function cleanup(){
   S.customers = [];
-  S.themes = Object.assign({shopping:"sunset", personal:"teal", bills:"navy"}, S.themes||{});
+  S.themes = Object.assign({shopping:"logoOrange", personal:"logoPurple", bills:"logoBlue", expenses:"logoGreen"}, S.themes||{});
+  if (!S.logoThemes){ S.themes.shopping = "logoOrange"; S.themes.personal = "logoPurple"; S.themes.bills = "logoBlue"; S.themes.expenses = "logoGreen"; S.logoThemes = 1; }
+  if (!THEMES[S.themes.expenses]) S.themes.expenses = "logoGreen";
+  if (!Array.isArray(S.exp)) S.exp = [];
   if (!THEMES[S.themes.shopping]) S.themes.shopping = "sunset";
   if (!THEMES[S.themes.personal]) S.themes.personal = "teal";
   ["shopping","personal"].forEach(t => (S.tabs[t]||[]).forEach(c => {
@@ -910,7 +979,7 @@ function cleanup(){
     S.trackers = [{id:uid(), name:"Gas bottle", label:"Changed on", icon:"🔥", changes:(S.gas && S.gas.changes) ? S.gas.changes.slice() : []}];
     delete S.gas;
   }
-  S.ord = S.ord || {}; S.del = S.del || {}; S.cdel = S.cdel || {}; S.tabs.bills = [];
+  S.ord = S.ord || {}; S.del = S.del || {}; S.cdel = S.cdel || {}; S.tabs.bills = []; S.tabs.expenses = [];
   if (!S.seededChep && !isWife()){
     const have = new Set(S.customers.map(c=>c.name.trim().toLowerCase()));
     SEED_CUSTOMERS.forEach(([name,acct])=>{ if(!have.has(name.toLowerCase())) S.customers.push({id:uid(),name,acct}); });
@@ -938,6 +1007,8 @@ function snapOf(){
   }
   m.set("ord:dates", (S.dates||[]).map(t=>t.id).join(","));
   for (const t of (S.dates||[])){ const { u, ...r } = t; m.set("dt:"+t.id, JSON.stringify(r)); refs.set("dt:"+t.id, t); }
+  m.set("ord:exp", (S.exp||[]).map(t=>t.id).join(","));
+  for (const t of (S.exp||[])){ const { u, ...r } = t; m.set("ex:"+t.id, JSON.stringify(r)); refs.set("ex:"+t.id, t); }
   m.set("ord:trackers", (S.trackers||[]).map(t=>t.id).join(","));
   for (const t of (S.trackers||[])){ const { u, ...r } = t; m.set("t:"+t.id, JSON.stringify(r)); refs.set("t:"+t.id, t); }
   m.set("wed", String(S.lastWedReset||0));
@@ -962,7 +1033,7 @@ function stamp(){
     if (cur.has(k)) continue;
     const id = k.slice(k.indexOf(":")+1);
     if (k.startsWith("k:")){ S.cdel[id] = now; dw = true; }
-    else if (k.startsWith("c:") || k.startsWith("i:") || k.startsWith("t:") || k.startsWith("dt:")){ S.del[id] = now; dh = true; }
+    else if (k.startsWith("c:") || k.startsWith("i:") || k.startsWith("t:") || k.startsWith("dt:") || k.startsWith("ex:")){ S.del[id] = now; dh = true; }
   }
   SNAP = cur;
   if (dh) LOCAL.dirtyH = true;
@@ -1010,6 +1081,8 @@ function mergeHouse(R){
   ord.trackers = Math.max((S.ord || {}).trackers || 0, (R.ord || {}).trackers || 0);
   S.dates = mergeArr(S.dates, R.dates, (S.ord || {}).dates, (R.ord || {}).dates, del);
   ord.dates = Math.max((S.ord || {}).dates || 0, (R.ord || {}).dates || 0);
+  S.exp = mergeArr(S.exp, R.exp, (S.ord || {}).exp, (R.ord || {}).exp, del);
+  ord.exp = Math.max((S.ord || {}).exp || 0, (R.ord || {}).exp || 0);
   S.ord = ord; S.del = del;
   S.atShop = (((S.atShop||{}).u)||0) >= (((R.atShop||{}).u)||0) ? S.atShop : R.atShop;
   S.lastWedReset = Math.max(S.lastWedReset || 0, R.lastWedReset || 0) || S.lastWedReset;
@@ -1019,6 +1092,7 @@ function adoptHouse(R){
   S.tabs.personal = R.tabs && R.tabs.personal || [];
   S.trackers = R.trackers || [];
   S.dates = R.dates || [];
+  S.exp = R.exp || S.exp || [];
   S.ord = R.ord || {}; S.del = R.del || {};
   S.atShop = R.atShop || null;
   S.lastWedReset = R.lastWedReset || S.lastWedReset;
@@ -1028,7 +1102,7 @@ function mergeWork(R){
   S.customers = mergeArr(S.customers, R.customers, S.cord, R.cord, cdel);
   S.cord = Math.max(S.cord || 0, R.cord || 0); S.cdel = cdel;
 }
-const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
+const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], exp:S.exp || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
 const workData  = () => clone({ customers:S.customers, cord:S.cord || 0, cdel:S.cdel || {} });
 
 /* ---- talking to the Apps Script web app ---- */
@@ -1058,7 +1132,9 @@ function interacting(){
 function afterRemote(doc){
   try { localStorage.setItem(LS_KEY, JSON.stringify(S, strip)); } catch(e){}
   resnap();
-  if (S.tab !== "work" && S.tab !== "bills"){ renderBands(); renderBanner(); if (S.tab === "personal"){ renderTrackers(); renderDates(); } if (S.tab === "shopping") renderToday(); }
+  if (S.tab === "bills" && HUB === "exp") renderExpenses();
+  if (S.tab === "expenses") renderInsights();
+  if (S.tab !== "work" && S.tab !== "bills" && S.tab !== "expenses"){ renderBands(); renderBanner(); if (S.tab === "personal"){ renderTrackers(); renderDates(); } if (S.tab === "shopping") renderToday(); }
   if (openId){ if (findCard(openId)) renderSheet(); else closeCard(); }
 }
 async function pullDoc(doc){
@@ -1189,10 +1265,11 @@ function applyTheme(){
 /* ================= main view ================= */
 const view = document.getElementById("view");
 function render(){
-  if (S.tab !== "shopping" && S.tab !== "personal" && S.tab !== "bills") S.tab = "shopping";
+  if (S.tab !== "shopping" && S.tab !== "personal" && S.tab !== "bills" && S.tab !== "expenses") S.tab = "shopping";
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on", b.dataset.tab===S.tab));
   applyTheme();
-  if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="bills"></div>`; renderBills(); return; }
+  if (S.tab === "expenses"){ view.innerHTML = `<div class="pull" id="mpull"><span>Pull to refresh</span></div><div id="ins"></div>`; renderInsights(); return; }
+  if (S.tab === "bills"){ view.innerHTML = `<div class="pull" id="mpull"><span>${HUB === "exp" ? "Pull to add" : "Pull to refresh"}</span></div><div class="hubseg">${LOCAL.noBills ? "" : `<button data-hub="bills" class="${HUB === "bills" ? "on" : ""}">🧾 Bills</button>`}<button data-hub="exp" class="${HUB === "exp" ? "on" : ""}">💳 Expenses</button></div>${HUB === "exp" ? `<div id="exp"></div>` : `<div id="bills"></div>`}`; view.querySelectorAll("[data-hub]").forEach(b => b.onclick = () => { HUB = b.dataset.hub; try { localStorage.setItem("hb_hub", HUB); } catch(e){} render(); }); if (HUB === "exp") renderExpenses(); else renderBills(); return; }
   view.innerHTML = `<div id="shopban"></div>${S.tab==="shopping"?`<div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>`:""}${S.tab==="personal"?`<div id="rems"></div><div id="trackers"></div><div id="dates"></div><div class="divider"></div>`:""}<div class="pull" id="mpull"><span>Pull to add</span></div><div id="mslot"></div><div id="bands"></div>`;
   if (S.tab==="personal"){ renderRems(); renderTrackers(); renderDates(); if (typeof renderPersonalBills === "function") renderPersonalBills(); }
   renderBanner();
@@ -1525,7 +1602,7 @@ function showMoveSheet(cardId, itemId){
   const btns = t => lists(t).map(c => `<button data-to="${t}|${c.id}">${c.logo?"":(c.icon||"")} ${esc(c.title)}</button>`).join("");
   const grouped = S.aisles && S.tab === "shopping";
   menu.innerHTML = `<div class="mt">Move “${esc(it.text)}” to</div>
-    ${lists("shopping").length ? `<div class="sl" style="padding:4px 14px">Shopping</div><div class="mvlist">${btns("shopping")}</div>` : ""}
+    ${lists("shopping").length ? `<div class="sl" style="padding:4px 14px">Lists</div><div class="mvlist">${btns("shopping")}</div>` : ""}
     ${lists("personal").length ? `<div class="sl" style="padding:4px 14px">Reminders</div><div class="mvlist">${btns("personal")}</div>` : ""}
     ${grouped && !it.done ? `<div class="sep"></div><div class="mt">Or change aisle</div><div class="mvlist">${AISLES.map(a=>`<button data-aisle="${a[0]}" style="${aisleOf(it)===a[0]?"outline:2px solid var(--acc)":""}">${a[1]}</button>`).join("")}</div>` : ""}
     <button class="sdone" id="cx">Cancel</button>`;
@@ -2078,7 +2155,7 @@ function setupPull(target, atTop, getInd, trigger, exclude){
   });
 }
 // listen on the whole page so pulling works even when a tab has no lists yet
-setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0 && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
+setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0 && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? (HUB === "exp" ? openExpense() : billsRefresh(true)) : S.tab === "expenses" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
 setupPull(itemsEl, () => itemsEl.scrollTop<=0, () => document.getElementById("ipull"), () => openAdder("item"));
 
 /* ================= pinch in / tap title to close ================= */
@@ -2175,7 +2252,7 @@ function resizeLogo(file){
 })();
 
 function showSettings(listId, sub){
-  const onLists = S.tab !== "work" && S.tab !== "bills";
+  const onLists = S.tab !== "work" && S.tab !== "bills" && S.tab !== "expenses";
   const list = onLists ? cards() : [];
   let c = list.find(x=>x.id===listId) || list[0] || null;
   const themeSel = tab => `<select class="set-sel" data-theme="${tab}">${Object.entries(THEMES).map(([k,t])=>`<option value="${k}" ${S.themes[tab]===k?"selected":""}>${t.name}</option>`).join("")}</select>`;
@@ -2194,7 +2271,7 @@ function showSettings(listId, sub){
   }
 
   let html = `<div class="mt">Themes</div>
-    <div class="sg3"><div><div class="sl">Shopping</div>${themeSel("shopping")}</div><div><div class="sl">Reminders</div>${themeSel("personal")}</div><div><div class="sl">Bills</div>${themeSel("bills")}</div></div>
+    <div class="sg4"><div><div class="sl">Lists</div>${themeSel("shopping")}</div><div><div class="sl">Reminders</div>${themeSel("personal")}</div><div><div class="sl">Expense Hub</div>${themeSel("bills")}</div><div><div class="sl">Insights</div>${themeSel("expenses")}</div></div>
     <div class="sg2"><div><div class="sl">Text size</div><select class="set-sel" id="tsz"><option value="normal">Normal</option><option value="large" ${S.textSize==="large"?"selected":""}>Large</option><option value="xl" ${S.textSize==="xl"?"selected":""}>Extra large</option></select></div>
       <div><div class="sl">Shopping by aisle</div><select class="set-sel" id="ais"><option value="0">Off</option><option value="1" ${S.aisles?"selected":""}>On</option></select></div></div>`;
   if (onLists && c){
@@ -2446,15 +2523,15 @@ async function billsRefresh(spin){
 }
 /* No BillBell sheet in this Google account (e.g. someone else's own copy): hide the Bills tab. */
 function applyBillsTab(){
-  const t = document.querySelector('.tab[data-tab="bills"]'); if (t) t.style.display = LOCAL.noBills ? "none" : "";
-  if (LOCAL.noBills && S.tab === "bills"){ S.tab = "shopping"; save(); render(); }
+  if (LOCAL.noBills && typeof HUB !== "undefined" && HUB === "bills"){ HUB = "exp"; if (S.tab === "bills") render(); }
 }
 setTimeout(applyBillsTab, 0);
 function bbTyping(){ const a = document.activeElement; return (a && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName) && a.closest("#bills")) || document.getElementById("menu").classList.contains("on"); }
 function renderBillsSafe(){
   if (S.tab === "personal" && !bbTyping()) renderPersonalBills();
   if (S.tab === "shopping" && !bbTyping()) renderToday();
-  if (S.tab === "bills"){ if (!bbTyping()) renderBills(); else setTimeout(renderBillsSafe, 1500); }
+  if (S.tab === "bills"){ if (!bbTyping()) { if (HUB === "exp") renderExpenses(); else renderBills(); } else setTimeout(renderBillsSafe, 1500); }
+  if (S.tab === "expenses" && !bbTyping()) renderInsights();
   updateBillsBadge();
   if (typeof remBillSweep === "function") try { remBillSweep(); } catch(e){}
 }
@@ -2497,7 +2574,7 @@ function bbMissing(){
 function updateBillsBadge(){
   const t = document.querySelector('.tab[data-tab="bills"]'); if (!t) return;
   const urgent = bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 3).length + bbReview().length;
-  void urgent; t.textContent = "Bills";
+  void urgent; t.textContent = "Expense Hub";
 }
 
 const BB_CAT_ICON = {
@@ -3813,6 +3890,189 @@ function remLinks(text){
   String(text || "").replace(/(\+?61[\s-]?|0)[2-478](?:[\s-]?\d){8}\b|\b1[38]00(?:[\s-]?\d){6}\b|\b13(?:[\s-]?\d){4}\b/g, n => { const tel = n.replace(/[^\d+]/g, ""); if (!seen[tel]){ seen[tel] = 1; out.push(`<a class="rlink" href="tel:${tel}">📞 ${esc(n.trim())}</a>`); } return n; });
   return out.join("");
 }
+let HUB = "bills"; try { HUB = localStorage.getItem("hb_hub") === "exp" ? "exp" : "bills"; } catch(e){}
+/* ================= Expenses ================= */
+const EX_CATS = [["Groceries","🛒","#8fdc4a"],["Eating out","🍽️","#ff9a2e"],["Fuel","⛽","#4db8ff"],["Transport","🚆","#c07bff"],["Kids","🧸","#ff7eb6"],["Health","💊","#ff6b61"],["Home","🏠","#3fd8e6"],["Fun","🎉","#ffd54a"],["Shopping","🛍️","#b6e36b"],["Other","📦","#a9b8c4"]];
+const exCat = n => EX_CATS.find(c => c[0] === n) || EX_CATS[EX_CATS.length - 1];
+let EXM = null, EXF = "";
+const exMonthNow = () => isoToday().slice(0,7);
+const exMoney = n => "$" + (Math.round(n * 100) / 100).toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const exMonthLabel = ym => new Date(+ym.slice(0,4), +ym.slice(5,7) - 1, 1).toLocaleDateString("en-AU", { month:"long", year:"numeric" });
+const exShift = (ym, d) => { const t = new Date(+ym.slice(0,4), +ym.slice(5,7) - 1 + d, 1); return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0"); };
+function exDayLabel(iso){
+  const t = isoToday(), y = new Date(); y.setDate(y.getDate() - 1);
+  const yi = new Date(y.getTime() - y.getTimezoneOffset() * 6e4).toISOString().slice(0,10);
+  if (iso === t) return "Today"; if (iso === yi) return "Yesterday";
+  const [a,b,c] = iso.split("-").map(Number);
+  return new Date(a, b - 1, c).toLocaleDateString("en-AU", { weekday:"short", day:"numeric", month:"short" });
+}
+function renderExpenses(){
+  const host = document.getElementById("exp"); if (!host) return;
+  if (!EXM) EXM = exMonthNow();
+  const all = (S.exp || []).filter(e => (e.date || "").slice(0,7) === EXM);
+  const total = all.reduce((s, e) => s + (+e.amt || 0), 0);
+  const prev = (S.exp || []).filter(e => (e.date || "").slice(0,7) === exShift(EXM, -1)).reduce((s, e) => s + (+e.amt || 0), 0);
+  const byCat = {}, byWho = {};
+  all.forEach(e => { byCat[e.cat] = (byCat[e.cat] || 0) + (+e.amt || 0); byWho[e.who || "S"] = (byWho[e.who || "S"] || 0) + (+e.amt || 0); });
+  const cats = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  const delta = prev > 0 ? Math.round((total - prev) / prev * 100) : null;
+  const shown = EXF ? all.filter(e => e.cat === EXF) : all;
+  const days = {};
+  shown.slice().sort((a, b) => (b.date + (b.id || "")).localeCompare(a.date + (a.id || ""))).forEach(e => (days[e.date] = days[e.date] || []).push(e));
+  const isNow = EXM >= exMonthNow();
+  host.innerHTML = `
+    <div class="exc exhead">
+      <div class="exnav"><button data-m="-1" aria-label="Previous month">‹</button><b>${exMonthLabel(EXM)}</b><button data-m="1" ${isNow ? "disabled" : ""} aria-label="Next month">›</button></div>
+      <div class="extot">${exMoney(total)}</div>
+      <div class="exsub">${all.length ? all.length + " expense" + (all.length === 1 ? "" : "s") : "Nothing spent yet"}${delta !== null ? ` · <span class="${delta > 0 ? "up" : "dn"}">${delta > 0 ? "▲" : "▼"} ${Math.abs(delta)}% vs last month</span>` : ""}</div>
+      ${total > 0 ? `<div class="exbar">${cats.map(([c, v]) => `<i style="width:${v / total * 100}%;background:${exCat(c)[2]}"></i>`).join("")}</div>
+      <div class="exleg">${cats.map(([c, v]) => `<button class="${EXF === c ? "on" : ""}" data-f="${esc(c)}"><i style="background:${exCat(c)[2]}"></i>${exCat(c)[1]} ${esc(c)} <b>${exMoney(v)}</b></button>`).join("")}</div>
+      ${Object.keys(byWho).length > 1 ? `<div class="exwho">${Object.entries(byWho).map(([w, v]) => `<span><b>${esc(w)}</b> ${exMoney(v)}</span>`).join("")}</div>` : ""}` : ""}
+    </div>
+    <button class="exadd" id="exAdd">＋ Add expense</button>
+    ${Object.keys(days).length ? Object.entries(days).map(([d, list]) => `<div class="exday"><span>${exDayLabel(d)}</span><span>${exMoney(list.reduce((s, e) => s + (+e.amt || 0), 0))}</span></div>
+      ${list.map(e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; }).join("")}`).join("")
+      : `<div class="exempty">${EXF ? "No " + esc(EXF) + " expenses this month" : "Tap <b>＋ Add expense</b> to log your first one"}</div>`}
+    <div style="height:90px"></div>`;
+  host.querySelectorAll(".exnav button").forEach(b => b.onclick = () => { EXM = exShift(EXM, +b.dataset.m); EXF = ""; renderExpenses(); });
+  host.querySelectorAll(".exleg button").forEach(b => b.onclick = () => { EXF = EXF === b.dataset.f ? "" : b.dataset.f; renderExpenses(); });
+  host.querySelector("#exAdd").onclick = () => openExpense();
+  host.querySelectorAll(".exrow").forEach(b => b.onclick = () => openExpense(b.dataset.id));
+}
+function openExpense(id){
+  const ex = id ? (S.exp || []).find(x => x.id === id) : null;
+  let cat = ex ? ex.cat : "Groceries", who = ex ? (ex.who || whoAmI()) : whoAmI();
+  const wh = ["S", "D"];
+  menu.innerHTML = `<div class="mt">${ex ? "Edit expense" : "New expense"}</div>
+    <form class="ed exf" id="exF" style="padding-top:0">
+      <div class="exbig"><span>$</span><input id="xA" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ex ? (+ex.amt).toFixed(2) : ""}"></div>
+      <label>Category</label>
+      <div class="excats">${EX_CATS.map(c => `<button type="button" data-c="${esc(c[0])}" class="${c[0] === cat ? "on" : ""}" style="--cc:${c[2]}"><span>${c[1]}</span>${esc(c[0])}</button>`).join("")}</div>
+      <label>Note</label><input id="xN" value="${esc(ex ? ex.note || "" : "")}" placeholder="e.g. Woolworths" autocomplete="off">
+      <div class="r2 xr2"><div><label>Date</label><input id="xD" type="date" value="${ex ? ex.date : isoToday()}"></div>
+        <div><label>Paid by</label><div class="exwhos">${wh.map(w => `<button type="button" data-w="${w}" class="${w === who ? "on" : ""}">${w}</button>`).join("")}</div></div></div>
+      <div class="acts">${ex ? `<button type="button" class="del" id="xDel">Delete</button>` : ""}<button type="submit" class="save">${ex ? "Save" : "Add expense"}</button></div>
+    </form>`;
+  menu.querySelectorAll(".excats button").forEach(b => b.onclick = () => { cat = b.dataset.c; menu.querySelectorAll(".excats button").forEach(x => x.classList.toggle("on", x === b)); });
+  menu.querySelectorAll(".exwhos button").forEach(b => b.onclick = () => { who = b.dataset.w; menu.querySelectorAll(".exwhos button").forEach(x => x.classList.toggle("on", x === b)); });
+  const f = menu.querySelector("#exF");
+  f.onsubmit = e => { e.preventDefault();
+    const amt = parseFloat(String(menu.querySelector("#xA").value).replace(/[^0-9.]/g, ""));
+    if (!(amt > 0)){ toast("Enter the amount"); menu.querySelector("#xA").focus(); return; }
+    const date = menu.querySelector("#xD").value || isoToday(), note = menu.querySelector("#xN").value.trim();
+    S.exp = S.exp || [];
+    if (ex) Object.assign(ex, { amt, cat, note, date, who }); else S.exp.push({ id:uid(), amt, cat, note, date, who });
+    EXM = date.slice(0,7); save(); closeMenu(); renderExpenses(); toast(ex ? "Saved" : "Added " + exMoney(amt));
+  };
+  const del = menu.querySelector("#xDel");
+  if (del) del.onclick = () => { const i = S.exp.indexOf(ex); S.exp.splice(i, 1); save(); closeMenu(); renderExpenses();
+    undoToast("Deleted " + exMoney(+ex.amt), () => { S.exp.splice(Math.min(i, S.exp.length), 0, ex); save(); renderExpenses(); }); };
+  openMenu();
+  if (!ex) setTimeout(() => menu.querySelector("#xA").focus(), 80);
+}
+/* ================= Insights: Stats + Reports ================= */
+let INS = "stats", INSR = "3m", INSFY = null, INSM = null;
+try { INS = localStorage.getItem("hb_ins") === "reports" ? "reports" : "stats"; } catch(e){}
+const INS_BILL = "#4db8ff", INS_EXP = "#8fdc4a";
+const insFY = k => { const [y, m] = k.split("-").map(Number); return m >= 7 ? y : y - 1; };
+function insKeys(mode){
+  const now = isoToday().slice(0,7), out = [];
+  const back = n => { let [y, m] = now.split("-").map(Number); for (let i = 0; i < n; i++){ out.unshift(y + "-" + String(m).padStart(2, "0")); m--; if (!m){ m = 12; y--; } } };
+  if (mode === "m") back(1); else if (mode === "3m") back(3); else if (mode === "12m") back(12);
+  else { const fy = INSFY == null ? insFY(now) : INSFY; for (let i = 0; i < 12; i++){ const m = ((6 + i) % 12) + 1, y = m >= 7 ? fy : fy + 1; out.push(y + "-" + String(m).padStart(2, "0")); } }
+  return out;
+}
+function insData(keys){
+  const items = [];
+  const bills = (typeof bbSpend === "function" && !LOCAL.noBills) ? bbSpend() : [];
+  bills.forEach(b => { const k = bbMonth(b); if (keys.includes(k)) items.push({ src:"bill", date:b.dueDate || b.issueDate || b.paidDate || k + "-01", amt:b.amount, cat:bbProv(b.provider).category || b.category || "Other", name:bbProv(b.provider).name, who:"", status:b.status }); });
+  (S.exp || []).forEach(e => { if (keys.includes((e.date || "").slice(0,7))) items.push({ src:"exp", date:e.date, amt:+e.amt || 0, cat:e.cat, name:e.note || e.cat, who:e.who || "" }); });
+  const per = {}; keys.forEach(k => per[k] = { b:0, e:0 });
+  const byCat = {}, byWho = {}, byName = {}; let tb = 0, te = 0;
+  items.forEach(i => { const k = i.date.slice(0,7); if (i.src === "bill"){ per[k].b += i.amt; tb += i.amt; } else { per[k].e += i.amt; te += i.amt; if (i.who) byWho[i.who] = (byWho[i.who] || 0) + i.amt; }
+    byCat[i.cat] = (byCat[i.cat] || 0) + i.amt; const nk = i.name; byName[nk] = byName[nk] || { sum:0, n:0 }; byName[nk].sum += i.amt; byName[nk].n++; });
+  return { items, per, byCat, byWho, byName, tb, te, total:tb + te };
+}
+const insCatCol = (c, src) => { const ec = EX_CATS.find(x => x[0] === c); if (ec && src !== "bill") return ec[2]; try { return bbCatCol(c); } catch(e){ return "#a9b8c4"; } };
+function insChart(keys, per){
+  const W = 330, H = 160, n = keys.length, mx = Math.max(1, ...keys.map(k => per[k].b + per[k].e)) * 1.15, gw = (W - 16) / n, bw = Math.min(26, gw - 5);
+  const y = v => H - 22 - v / mx * (H - 40);
+  return `<svg viewBox="0 0 ${W} ${H}">${keys.map((k, i) => { const x = 8 + i * gw + (gw - bw) / 2, b = per[k].b, e = per[k].e, yb = y(b), ye = y(b + e);
+    return `<rect x="${x}" y="${yb}" width="${bw}" height="${Math.max(0, H - 22 - yb)}" rx="3" fill="${INS_BILL}"/><rect x="${x}" y="${ye}" width="${bw}" height="${Math.max(0, yb - ye)}" rx="3" fill="${INS_EXP}"/>
+      <text x="${x + bw / 2}" y="${H - 7}" text-anchor="middle" font-size="9" fill="var(--soft)">${MONS[+k.slice(5) - 1][0]}</text>`; }).join("")}</svg>`;
+}
+function renderInsights(){
+  const host = document.getElementById("ins"); if (!host) return;
+  host.innerHTML = `<div class="hubseg"><button data-i="stats" class="${INS === "stats" ? "on" : ""}">📊 Stats</button><button data-i="reports" class="${INS === "reports" ? "on" : ""}">📑 Reports</button></div><div id="insBody"></div>`;
+  host.querySelectorAll("[data-i]").forEach(b => b.onclick = () => { INS = b.dataset.i; try { localStorage.setItem("hb_ins", INS); } catch(e){} renderInsights(); });
+  const body = host.querySelector("#insBody");
+  if (INS === "stats") insStats(body); else insReports(body);
+}
+function insStats(body){
+  const keys = insKeys(INSR), d = insData(keys), nm = Math.max(1, keys.filter(k => per0(d, k)).length);
+  function per0(dd, k){ return dd.per[k].b + dd.per[k].e > 0; }
+  const cats = Object.entries(d.byCat).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const names = Object.entries(d.byName).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
+  const biggest = d.items.slice().sort((a, b) => b.amt - a.amt)[0];
+  const fys = [...new Set([insFY(isoToday().slice(0,7)), ...(S.exp || []).map(e => e.date ? insFY(e.date.slice(0,7)) : null).filter(x => x != null)])].sort().reverse();
+  body.innerHTML = `
+    <div class="insrng">${[["m", "Month"], ["3m", "3 mo"], ["12m", "12 mo"], ["fy", "Tax yr"]].map(([k, l]) => `<button data-r="${k}" class="${INSR === k ? "on" : ""}">${l}</button>`).join("")}</div>
+    ${INSR === "fy" ? `<select class="set-sel" id="insFy" style="width:100%;margin:0 0 10px">${fys.map(f => `<option value="${f}" ${(INSFY == null ? insFY(isoToday().slice(0,7)) : INSFY) === f ? "selected" : ""}>Tax year ${f}–${String(f + 1).slice(2)} (Jul–Jun)</option>`).join("")}</select>` : ""}
+    <div class="exc insc" style="text-align:center"><div class="inslab">Total spent</div><div class="extot">${money(d.total)}</div>
+      <div class="exsub">about ${money0(d.total / nm)} a month · ${d.items.length} item${d.items.length === 1 ? "" : "s"}</div>
+      ${d.total > 0 ? `<div class="exbar"><i style="width:${d.tb / d.total * 100}%;background:${INS_BILL}"></i><i style="width:${d.te / d.total * 100}%;background:${INS_EXP}"></i></div>
+      <div class="exleg"><span class="inskey"><i style="background:${INS_BILL}"></i>🧾 Bills <b>${money0(d.tb)}</b></span><span class="inskey"><i style="background:${INS_EXP}"></i>💳 Expenses <b>${money0(d.te)}</b></span></div>` : ""}</div>
+    ${keys.length > 1 ? `<div class="exc insc"><div class="inslab">By month</div><div class="chart">${insChart(keys, d.per)}</div></div>` : ""}
+    ${cats.length ? `<div class="exc insc"><div class="inslab">By category</div><div class="bcats">${cats.map(([c, v]) => `<div><span><i style="background:${insCatCol(c)}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${v / d.total * 100}%;background:${insCatCol(c)}"></em></div>`).join("")}</div></div>` : ""}
+    ${Object.keys(d.byWho).length > 1 ? `<div class="exc insc"><div class="inslab">Who paid (expenses)</div><div class="bcats">${Object.entries(d.byWho).map(([w, v]) => `<div><span><i style="background:var(--acc)"></i>${esc(w)}</span><b>${money0(v)}</b><em style="width:${d.te ? v / d.te * 100 : 0}%;background:var(--acc)"></em></div>`).join("")}</div></div>` : ""}
+    ${names.length ? `<div class="exc insc"><div class="inslab">Top spending</div>${names.map(([n, v]) => `<div class="instop"><span>${esc(n)}${v.n > 1 ? ` <small>×${v.n}</small>` : ""}</span><b>${money(v.sum)}</b></div>`).join("")}${biggest ? `<div class="insbig">Biggest single: <b>${esc(biggest.name)}</b> · ${money(biggest.amt)} · ${fmtDate(biggest.date)}</div>` : ""}</div>` : ""}
+    ${d.items.length ? "" : `<div class="exempty">No spending in this period yet.<br>Add bills or expenses in the <b>Expense Hub</b>.</div>`}
+    <div style="height:90px"></div>`;
+  body.querySelectorAll("[data-r]").forEach(b => b.onclick = () => { INSR = b.dataset.r; renderInsights(); });
+  const f = body.querySelector("#insFy"); if (f) f.onchange = () => { INSFY = +f.value; renderInsights(); };
+}
+function insReportText(keys, d, title){
+  const L = [title, "─".repeat(Math.min(28, title.length)), `Total: ${money(d.total)}`, `Bills: ${money(d.tb)}   Expenses: ${money(d.te)}`, ""];
+  L.push("By category"); Object.entries(d.byCat).sort((a, b) => b[1] - a[1]).forEach(([c, v]) => L.push(`• ${c}: ${money(v)}`));
+  if (keys.length > 1){ L.push("", "By month"); keys.forEach(k => { const t = d.per[k].b + d.per[k].e; if (t) L.push(`• ${MONS[+k.slice(5) - 1]} ${k.slice(0, 4)}: ${money(t)}`); }); }
+  const w = Object.entries(d.byWho); if (w.length > 1){ L.push("", "Expenses by person"); w.forEach(([n, v]) => L.push(`• ${n}: ${money(v)}`)); }
+  L.push("", "From Home Base"); return L.join("\n");
+}
+async function insExport(keys, d, name){
+  const rows = [["Date", "Type", "Category", "Description", "Amount", "Paid by", "Status"]].concat(d.items.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(i => [i.date, i.src === "bill" ? "Bill" : "Expense", i.cat, i.name, i.amt.toFixed(2), i.who, i.status || ""]));
+  const csv = rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : v).join(",")).join("\n");
+  try { const file = new File([csv], name, { type:"text/csv" }); if (navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:name }); return; } } catch(e){ if (e && e.name === "AbortError") return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv" })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); toast("CSV saved");
+}
+function insReports(body){
+  if (!INSM) INSM = isoToday().slice(0,7);
+  const fyMode = INSR === "fy-r";
+  const keys = fyMode ? (() => { const s = INSR; INSR = "fy"; const k = insKeys("fy"); INSR = s; return k; })() : [INSM];
+  const d = insData(keys), pk = fyMode ? null : exShift(INSM, -1), pd = pk ? insData([pk]) : null;
+  const fyv = INSFY == null ? insFY(isoToday().slice(0,7)) : INSFY;
+  const title = fyMode ? `Tax year ${fyv}–${String(fyv + 1).slice(2)} report` : `${exMonthLabel(INSM)} report`;
+  const delta = pd && pd.total > 0 ? Math.round((d.total - pd.total) / pd.total * 100) : null;
+  const cats = Object.entries(d.byCat).sort((a, b) => b[1] - a[1]);
+  const unpaid = (!fyMode && typeof bbUnpaid === "function" && !LOCAL.noBills) ? bbUnpaid().filter(b => bbMonth(b) === INSM && b.amount > 0) : [];
+  body.innerHTML = `
+    <div class="insrng"><button data-p="m" class="${!fyMode ? "on" : ""}">Monthly</button><button data-p="fy" class="${fyMode ? "on" : ""}">Tax year</button></div>
+    ${fyMode ? `<div class="exnav insnav"><button data-y="-1">‹</button><b>FY ${fyv}–${String(fyv + 1).slice(2)}</b><button data-y="1" ${fyv >= insFY(isoToday().slice(0,7)) ? "disabled" : ""}>›</button></div>`
+      : `<div class="exnav insnav"><button data-m="-1">‹</button><b>${exMonthLabel(INSM)}</b><button data-m="1" ${INSM >= isoToday().slice(0,7) ? "disabled" : ""}>›</button></div>`}
+    <div class="exc insc"><div class="inslab">${esc(title)}</div><div class="extot" style="text-align:center">${money(d.total)}</div>
+      <div class="exsub" style="text-align:center">${delta !== null ? `<span class="${delta > 0 ? "up" : "dn"}">${delta > 0 ? "▲" : "▼"} ${Math.abs(delta)}% vs ${MONS[+pk.slice(5) - 1]}</span> · ` : ""}${d.items.length} item${d.items.length === 1 ? "" : "s"}</div>
+      <table class="instab"><tr><td>🧾 Bills</td><td>${money(d.tb)}</td></tr><tr><td>💳 Expenses</td><td>${money(d.te)}</td></tr>${unpaid.length ? `<tr class="warn"><td>⏳ Bills still due</td><td>${money(unpaid.reduce((s, b) => s + b.amount, 0))}</td></tr>` : ""}</table></div>
+    ${cats.length ? `<div class="exc insc"><div class="inslab">By category</div><table class="instab">${cats.map(([c, v]) => `<tr><td><i class="insdot" style="background:${insCatCol(c)}"></i>${esc(c)}</td><td>${money(v)}</td><td class="pc">${d.total ? Math.round(v / d.total * 100) : 0}%</td></tr>`).join("")}</table></div>` : ""}
+    ${fyMode ? `<div class="exc insc"><div class="inslab">By month</div><table class="instab">${keys.map(k => { const t = d.per[k].b + d.per[k].e; return `<tr class="${t ? "" : "mute"}"><td>${MONS[+k.slice(5) - 1]} ${k.slice(0, 4)}</td><td>${money(t)}</td></tr>`; }).join("")}</table></div>`
+      : (() => { const ex = d.items.filter(i => i.src === "exp"), days = {}; ex.forEach(i => days[i.date] = (days[i.date] || 0) + i.amt); const top = Object.entries(days).sort((a, b) => b[1] - a[1])[0];
+        return ex.length ? `<div class="exc insc"><div class="inslab">Highlights</div><table class="instab"><tr><td>Average per expense</td><td>${money(d.te / ex.length)}</td></tr><tr><td>Busiest day</td><td>${fmtDate(top[0])} · ${money(top[1])}</td></tr></table></div>` : ""; })()}
+    <div class="acts2" style="margin:6px 0"><button id="insShare">📤 Share summary</button><button id="insCsv">⬇︎ Export CSV</button></div>
+    <div style="height:90px"></div>`;
+  body.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { INSR = b.dataset.p === "fy" ? "fy-r" : "3m"; renderInsights(); });
+  body.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { INSM = exShift(INSM, +b.dataset.m); renderInsights(); });
+  body.querySelectorAll("[data-y]").forEach(b => b.onclick = () => { INSFY = fyv + +b.dataset.y; renderInsights(); });
+  body.querySelector("#insShare").onclick = async () => { const t = insReportText(keys, d, title); try { if (navigator.share){ await navigator.share({ title, text:t }); return; } } catch(e){ if (e && e.name === "AbortError") return; } try { await navigator.clipboard.writeText(t); toast("Summary copied"); } catch(e){ prompt("Copy this summary", t); } };
+  body.querySelector("#insCsv").onclick = () => insExport(keys, d, "home-base-" + (fyMode ? "FY" + fyv + "-" + String(fyv + 1).slice(2) : INSM) + ".csv");
+}
 /* ================= sync & sharing setup ================= */
 const appBase = () => location.origin + location.pathname;
 const linkFor = w => appBase() + "?c=" + encodeURIComponent(encCfg(Object.assign({ u:LOCAL.url, k:LOCAL.house, w: w || LOCAL.who || "S" }, LOCAL.bbApi ? { b:{ u:LOCAL.bbApi, k:LOCAL.bbKey } } : {})));
@@ -3855,7 +4115,7 @@ function showSetup(first){
     const changed = url !== LOCAL.url || house !== LOCAL.house;
     const bbEl = menu.querySelector("#sBB"), bbTxt = bbEl ? bbEl.value.trim() : "";
     if (bbTxt){ const bc = parseBillBellLink(bbTxt); if (!bc){ toast("That BillBell link doesn't look right"); return; } LOCAL.bbApi = bc.api; LOCAL.bbKey = bc.key; setTimeout(() => billsRefresh(false), 300); }
-    LOCAL.url = url; LOCAL.house = house; LOCAL.offline = false; LOCAL.who = menu.querySelector("#sWho").value;
+    LOCAL.url = url; LOCAL.house = house; LOCAL.offline = false; LOCAL.who = menu.querySelector("#sWho").value; LOCAL.whoSet = 1;
     if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
     saveLocal(); pinOwnLink(); closeMenu(); render(); toast("Connecting…");
     syncNow().then(() => toast(syncState.status === "ok" ? "Synced ✓" : "Couldn't connect — check the URL and key"));
