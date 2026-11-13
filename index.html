@@ -470,6 +470,10 @@
   .extprev.small .extic{width:56px;height:56px}
   .extprev .exti{font-size:26px}
   .expay{width:100%}.expay button{flex:1;padding:12px 8px}
+
+  .extile .extic{width:100%;height:100%;border-radius:18px}
+  .extile:not(.exnew){padding:6px}
+  .extile .extic img{padding:6px;box-sizing:border-box}
   .hubseg{display:flex;gap:6px;padding:4px;margin:0 14px 12px;border-radius:16px;background:rgba(var(--wl),.07);border:1px solid rgba(var(--wl),.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   .hubseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:800;font-size:15px;color:var(--soft)}
   .hubseg button.on{background:var(--acc);color:var(--onacc)}
@@ -4043,7 +4047,7 @@ function remLinks(text){
 }
 let HUB = "bills"; try { HUB = localStorage.getItem("hb_hub") === "exp" ? "exp" : "bills"; } catch(e){}
 /* ================= Expenses ================= */
-const EX_CATS = [["Groceries","🛒","#8fdc4a"],["Eating out","🍽️","#ff9a2e"],["Fuel","⛽","#4db8ff"],["Transport","🚆","#c07bff"],["Kids","🧸","#ff7eb6"],["Health","💊","#ff6b61"],["Home","🏠","#3fd8e6"],["Fun","🎉","#ffd54a"],["Shopping","🛍️","#b6e36b"],["Other","📦","#a9b8c4"]];
+const EX_CATS = [["Groceries","🛒","#8fdc4a"],["Eating out","🍽️","#ff9a2e"],["Fuel","⛽","#4db8ff"],["Transport","🚆","#c07bff"],["Kids","🧸","#ff7eb6"],["Health","💊","#ff6b61"],["Home","🏠","#3fd8e6"],["Fun","🎉","#ffd54a"],["Shopping","🛍️","#b6e36b"],["Beverage","🥤","#2ec4b6"],["Entertainment","🎬","#e05cff"],["Sports","🏏","#ff8a3d"],["Gifts","🎁","#ff5d8f"],["Other","📦","#a9b8c4"]];
 const exCat = n => EX_CATS.find(c => c[0] === n) || EX_CATS[EX_CATS.length - 1];
 let EXM = null, EXF = "";
 const exMonthNow = () => isoToday().slice(0,7);
@@ -4080,7 +4084,7 @@ function renderExpenses(){
       <div class="exleg">${cats.map(([c, v]) => `<button class="${EXF === c ? "on" : ""}" data-f="${esc(c)}"><i style="background:${exCat(c)[2]}"></i>${exCat(c)[1]} ${esc(c)} <b>${exMoney(v)}</b></button>`).join("")}</div>
       ${Object.keys(byWho).length > 1 ? `<div class="exwho">${Object.entries(byWho).map(([w, v]) => `<span><b>${esc(w)}</b> ${exMoney(v)}</span>`).join("")}</div>` : ""}` : ""}
     </div>
-    <div class="extiles">${(S.exTiles || []).map(t => `<button class="extile" data-t="${t.id}">${exTileIcon(t)}<span>${esc(t.name)}</span></button>`).join("")}<button class="extile exnew" id="exNewTile" aria-label="New tile"><i>＋</i></button></div>
+    <div class="extiles">${(S.exTiles || []).map(t => `<button class="extile" data-t="${t.id}" aria-label="${esc(t.name)}">${exTileIcon(t)}</button>`).join("")}<button class="extile exnew" id="exNewTile" aria-label="New tile"><i>＋</i></button></div>
     ${Object.keys(days).length ? Object.entries(days).map(([d, list]) => `<div class="exday"><span>${exDayLabel(d)}</span><span>${exMoney(list.reduce((s, e) => s + (+e.amt || 0), 0))}</span></div>
       ${list.map(e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.pay ? " · " + esc(e.pay) : ""}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; }).join("")}`).join("")
       : `<div class="exempty">${EXF ? "No " + esc(EXF) + " expenses this month" : "Tap the <b>＋</b> tile to add a shop, then tap it to log spending"}</div>`}
