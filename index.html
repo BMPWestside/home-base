@@ -285,6 +285,10 @@
   .day.has .dn{font-weight:900}
   .bcal .day{padding:2px 0 3px}
 
+  .btile .bpd{position:absolute;left:0;right:0;bottom:3px;text-align:center;font-size:9.5px;font-weight:800;color:var(--soft);white-space:nowrap;padding-left:20px}
+  .btile .bpd.ok{color:var(--good)}
+  .btile{padding-bottom:20px}
+
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
   .rq input{width:100%;padding:7px 11px;border-radius:10px;border:1px solid rgba(var(--wl),.16);background:rgba(var(--wl),.08);color:var(--ink);font-size:14px;outline:none}
@@ -504,6 +508,25 @@
   .exlist .exmid b{font-size:14px}.exlist .exmid small{font-size:11px}
   .exlist .examt{font-size:15px}
   body.bills #exp > .exlist{min-height:256px}
+
+  /* sub-tabs: Shop | By Category | Transactions */
+  .exseg{margin:0 14px 8px}
+  .exseg button{font-size:13.5px;padding:9px 0}
+  .exbody{padding:0 0 4px}
+  .exbody .extiles{max-height:none;overflow:visible;grid-template-columns:repeat(6,1fr);margin:0 14px 10px}
+  .exbody .exlist{max-height:none}
+  .excatrow{margin:0 14px 8px;padding:0;overflow:hidden}
+  .excathead{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;text-align:left;color:var(--ink)}
+  .excathead .exmid small{margin-bottom:4px}
+  .excbar{display:block;height:6px;border-radius:3px;background:rgba(var(--wl),.14);overflow:hidden}
+  .excbar u{display:block;height:100%;border-radius:3px}
+  .excatlist{padding:0 8px 8px}
+  .excatlist .exrow{margin:0 0 4px;box-shadow:none;background:rgba(var(--wl),.08)}
+  .exbody > .exday{margin:6px 20px 3px}
+  .exbody > .exrow{margin:0 14px 4px;width:calc(100% - 28px)}
+  body.bills #exp{display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+  body.bills #exp > *{flex:none}
+  body.bills #exp > .exbody{flex:1 1 0;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   .hubseg{display:flex;gap:6px;padding:4px;margin:0 14px 12px;border-radius:16px;background:rgba(var(--wl),.07);border:1px solid rgba(var(--wl),.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   .hubseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:800;font-size:15px;color:var(--soft)}
   .hubseg button.on{background:var(--acc);color:var(--onacc)}
@@ -620,7 +643,7 @@
   body.bills #exp{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   body.expenses #ins > div:last-child{display:flex;flex-direction:column;padding-bottom:calc(92px + env(safe-area-inset-bottom));overflow-y:auto}
   body.expenses #ins > div:last-child > *{flex:none}
-  body.expenses #ins > div:last-child > .insflex{flex:1 1 0;min-height:218px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  body.expenses #ins > div:last-child > .insflex{flex:1 1 0;min-height:170px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   body.expenses #ins .insc{padding-top:10px;padding-bottom:10px;margin-bottom:8px}
   body.expenses #ins .extot{font-size:30px}
   body.expenses #ins .chart svg{display:block;width:100%;height:auto;max-height:78px}
@@ -634,6 +657,19 @@
   body.expenses #ins .exleg{font-size:11.5px;margin:0}
   body.expenses #ins .insc.insflex .instop{padding:9px 0}
   body.expenses #ins .insc.insflex .bcats > div{padding:6px 0}
+
+  body.expenses #ins .insc.insflex .instop,body.expenses #ins .insc.insflex .bcats > div{padding-top:5px;padding-bottom:5px}
+  body.expenses #ins .insc.insflex .inslab{position:sticky;top:0;z-index:1}
+  body.expenses #ins > div:last-child{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+  body.expenses #ins .chart svg{max-height:58px !important}
+  body.expenses #ins .insc:not(.insflex){padding-top:6px;padding-bottom:6px;margin-bottom:6px}
+  body.expenses #ins .insc.insflex{margin-bottom:6px}
+
+  /* Insights Stats: full sections, each scrolls inside only when long; page scrolls to the end */
+  body.expenses #ins > div:last-child{display:block !important;padding-bottom:0 !important}
+  body.expenses #ins > div:last-child::after{content:"";display:block;height:calc(104px + env(safe-area-inset-bottom))}
+  body.expenses #ins > div:last-child > .insflex{flex:none;max-height:330px;min-height:0;overflow-y:auto}
+  .exbody .extiles{grid-template-columns:repeat(5,1fr)}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -2885,10 +2921,11 @@ function bbDueHTML(){
     if (man.some(b => b.dueDate && daysTo(b.dueDate) <= 3)) return "urgent"; if (man.length) return "due"; if (open.length) return "auto"; return "paid"; };
   const rank = { urgent:0, due:1, auto:2, paid:3 };
   const nextDue = id => (u.filter(b => b.provider === id).map(b => b.dueDate).sort()[0]) || "9999";
-  const tiles = ids.map(id => ({ p: bbProv(id), st: stateOf(id) })).sort((a,b) => rank[a.st]-rank[b.st] || (nextDue(a.p.id) < nextDue(b.p.id) ? -1 : 1) || a.p.name.localeCompare(b.p.name));
+  const lastPd = id => (BB.bills.filter(b => b.provider === id && b.status === "paid" && b.paidDate).map(b => b.paidDate).sort().pop()) || "";
+  const tiles = ids.map(id => ({ p: bbProv(id), st: stateOf(id), pd: lastPd(id) })).sort((a,b) => rank[a.st]-rank[b.st] || (nextDue(a.p.id) < nextDue(b.p.id) ? -1 : 1) || a.p.name.localeCompare(b.p.name));
   const label = { urgent:"due within 3 days or overdue", due:"to pay", auto:"auto-debit coming", paid:"paid" };
   h += `<div class="bgrid">` + tiles.map((t, i) =>
-    `<button class="btile" style="--i:${i}" data-prov="${esc(t.p.id)}" aria-label="${esc(t.p.name)}, ${label[t.st]}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bcat" title="${esc(t.p.category)}">${bbCatIcon(t.p.category)}</span></button>`
+    `<button class="btile" style="--i:${i}" data-prov="${esc(t.p.id)}" aria-label="${esc(t.p.name)}, ${label[t.st]}"><span class="bdot ${t.st}"></span>${bbAv(t.p)}<span class="bcat" title="${esc(t.p.category)}">${bbCatIcon(t.p.category)}</span>${t.pd ? `<span class="bpd ${t.st === "paid" ? "ok" : ""}">Paid ${dOf(t.pd).getDate()} ${MONS[dOf(t.pd).getMonth()]}</span>` : ""}</button>`
   ).join("") + `</div>
   <div class="blegend"><span><i class="bdot urgent"></i>Due soon</span><span><i class="bdot due"></i>To pay</span><span><i class="bdot auto"></i>Auto-debit</span><span><i class="bdot paid"></i>Paid</span></div>`;
   return h;
@@ -4091,20 +4128,29 @@ function exDayLabel(iso){
   const [a,b,c] = iso.split("-").map(Number);
   return new Date(a, b - 1, c).toLocaleDateString("en-AU", { weekday:"short", day:"numeric", month:"short" });
 }
+let EXV = (() => { try { return localStorage.getItem("hb_exv") || "shop"; } catch(e){ return "shop"; } })(), EXOPEN = "";
 function renderExpenses(){
   const host = document.getElementById("exp"); if (!host) return;
   if (!EXM) EXM = exMonthNow();
   const all = (S.exp || []).filter(e => (e.date || "").slice(0,7) === EXM);
   const total = all.reduce((s, e) => s + (+e.amt || 0), 0);
-  const prev = (S.exp || []).filter(e => (e.date || "").slice(0,7) === exShift(EXM, -1)).reduce((s, e) => s + (+e.amt || 0), 0);
-  const byCat = {}, byWho = {};
-  all.forEach(e => { byCat[e.cat] = (byCat[e.cat] || 0) + (+e.amt || 0); byWho[e.who || "S"] = (byWho[e.who || "S"] || 0) + (+e.amt || 0); });
+  const byCat = {}; all.forEach(e => { byCat[e.cat] = (byCat[e.cat] || 0) + (+e.amt || 0); });
   const cats = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
-  const delta = prev > 0 ? Math.round((total - prev) / prev * 100) : null;
-  const shown = EXF ? all.filter(e => e.cat === EXF) : all;
-  const days = {};
-  shown.slice().sort((a, b) => (b.date + (b.id || "")).localeCompare(a.date + (a.id || ""))).forEach(e => (days[e.date] = days[e.date] || []).push(e));
   const isNow = EXM >= exMonthNow();
+  const row = e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.pay ? " · " + esc(e.pay) : ""}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; };
+  let body = "";
+  if (EXV === "shop"){
+    body = `<div class="extiles">${(S.exTiles || []).map(t => `<button class="extile" data-t="${t.id}" aria-label="${esc(t.name)}">${exTileIcon(t)}</button>`).join("")}<button class="extile exnew" id="exNewTile" aria-label="New tile"><i>＋</i></button></div>
+      ${(S.exTiles || []).length ? "" : `<div class="exempty">Tap the <b>＋</b> tile to add a shop, then tap it to log spending</div>`}`;
+  } else if (EXV === "cat"){
+    body = cats.length ? cats.map(([c, v]) => { const ec = exCat(c), list = all.filter(e => e.cat === c).sort((a, b) => b.date.localeCompare(a.date)), open = EXOPEN === c;
+      return `<div class="exc excatrow ${open ? "open" : ""}"><button class="excathead" data-c="${esc(c)}"><span class="exic" style="background:${ec[2]}33;border-color:${ec[2]}88">${ec[1]}</span><span class="exmid"><b>${esc(c)}</b><small>${list.length} entr${list.length === 1 ? "y" : "ies"} · ${Math.round(v / total * 100)}%</small><i class="excbar"><u style="width:${v / total * 100}%;background:${ec[2]}"></u></i></span><span class="examt">${exMoney(v)}</span></button>${open ? `<div class="excatlist">${list.map(row).join("")}</div>` : ""}</div>`; }).join("")
+      : `<div class="exempty">Nothing spent this month yet</div>`;
+  } else {
+    const days = {}; all.slice().sort((a, b) => (b.date + (b.id || "")).localeCompare(a.date + (a.id || ""))).forEach(e => (days[e.date] = days[e.date] || []).push(e));
+    body = Object.keys(days).length ? Object.entries(days).map(([d, list]) => `<div class="exday"><span>${exDayLabel(d)}</span><span>${exMoney(list.reduce((s, e) => s + (+e.amt || 0), 0))}</span></div>${list.map(row).join("")}`).join("")
+      : `<div class="exempty">No entries this month</div>`;
+  }
   host.innerHTML = `
     <div class="exc exhead">
       <div class="exnav"><button data-m="-1" aria-label="Previous month">‹</button><b>${exMonthLabel(EXM)}</b><button data-m="1" ${isNow ? "disabled" : ""} aria-label="Next month">›</button></div>
@@ -4112,14 +4158,12 @@ function renderExpenses(){
       <div class="exsub">${all.length ? all.length + " entr" + (all.length === 1 ? "y" : "ies") : "No entries yet"}</div>
       ${total > 0 ? `<div class="exbar">${cats.map(([c, v]) => `<i style="width:${v / total * 100}%;background:${exCat(c)[2]}"></i>`).join("")}</div>` : `<div class="exbar"></div>`}
     </div>
-    <div class="extiles">${(S.exTiles || []).map(t => `<button class="extile" data-t="${t.id}" aria-label="${esc(t.name)}">${exTileIcon(t)}</button>`).join("")}<button class="extile exnew" id="exNewTile" aria-label="New tile"><i>＋</i></button></div>
-    <div class="exlist">${Object.keys(days).length ? Object.entries(days).map(([d, list]) => `<div class="exday"><span>${exDayLabel(d)}</span><span>${exMoney(list.reduce((s, e) => s + (+e.amt || 0), 0))}</span></div>
-      ${list.map(e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.pay ? " · " + esc(e.pay) : ""}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; }).join("")}`).join("")
-      : `<div class="exempty">${EXF ? "No " + esc(EXF) + " expenses this month" : "Tap the <b>＋</b> tile to add a shop, then tap it to log spending"}</div>`}
-    </div>`;
-  host.querySelectorAll(".exnav button").forEach(b => b.onclick = () => { EXM = exShift(EXM, +b.dataset.m); EXF = ""; renderExpenses(); });
-  host.querySelectorAll(".exleg button").forEach(b => b.onclick = () => { EXF = EXF === b.dataset.f ? "" : b.dataset.f; renderExpenses(); });
-  host.querySelector("#exNewTile").onclick = () => openExTile();
+    <div class="bseg exseg">${[["shop", "Shop"], ["cat", "By Category"], ["tx", "Transactions"]].map(([k, l]) => `<button data-v="${k}" class="${EXV === k ? "on" : ""}">${l}</button>`).join("")}</div>
+    <div class="exbody">${body}</div>`;
+  host.querySelectorAll(".exnav button").forEach(b => b.onclick = () => { EXM = exShift(EXM, +b.dataset.m); EXOPEN = ""; renderExpenses(); });
+  host.querySelectorAll(".exseg button").forEach(b => b.onclick = () => { EXV = b.dataset.v; try { localStorage.setItem("hb_exv", EXV); } catch(e){} renderExpenses(); });
+  host.querySelectorAll(".excathead").forEach(b => b.onclick = () => { EXOPEN = EXOPEN === b.dataset.c ? "" : b.dataset.c; renderExpenses(); });
+  const nt = host.querySelector("#exNewTile"); if (nt) nt.onclick = () => openExTile();
   host.querySelectorAll(".extile[data-t]").forEach(b => b.onclick = () => openExTileEntry(b.dataset.t));
   host.querySelectorAll(".exrow").forEach(b => b.onclick = () => openExpense(b.dataset.id));
 }
