@@ -4051,7 +4051,7 @@ function remLinks(text){
 }
 let HUB = "bills"; try { HUB = localStorage.getItem("hb_hub") === "exp" ? "exp" : "bills"; } catch(e){}
 /* ================= Expenses ================= */
-const EX_CATS = [["Groceries","🛒","#8fdc4a"],["Eating out","🍽️","#ff9a2e"],["Fuel","⛽","#4db8ff"],["Transport","🚆","#c07bff"],["Kids","🧸","#ff7eb6"],["Health","💊","#ff6b61"],["Home","🏠","#3fd8e6"],["Fun","🎉","#ffd54a"],["Shopping","🛍️","#b6e36b"],["Beverage","🥤","#2ec4b6"],["Entertainment","🎬","#e05cff"],["Sports","🏏","#ff8a3d"],["Gifts","🎁","#ff5d8f"],["Other","📦","#a9b8c4"]];
+const EX_CATS = [["Groceries","🛒","#8fdc4a"],["Eating out","🍽️","#ff9a2e"],["Fuel","⛽","#4db8ff"],["Transport","🚆","#c07bff"],["Kids","🧸","#ff7eb6"],["Health","💊","#ff6b61"],["Home","🏠","#3fd8e6"],["Fun","🎉","#ffd54a"],["Shopping","🛍️","#b6e36b"],["Beverage","🥤","#2ec4b6"],["Entertainment","🎬","#e05cff"],["Sports","🏏","#ff8a3d"],["Gifts","🎁","#ff5d8f"],["Home Improvement","🔨","#d98c3f"],["Clothing","👕","#7a8cff"],["Pets","🐾","#c9a36b"],["Education","🎓","#4f9dde"],["Travel","✈️","#38c1a0"],["Personal Care","💇","#f08ad8"],["Subscriptions","📱","#8d7bef"],["Donations","💝","#ef6f6f"],["Car Care","🔧","#7f9aa8"],["Other","📦","#a9b8c4"]];
 const exCat = n => EX_CATS.find(c => c[0] === n) || EX_CATS[EX_CATS.length - 1];
 let EXM = null, EXF = "";
 const exMonthNow = () => isoToday().slice(0,7);
