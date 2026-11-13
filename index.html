@@ -520,6 +520,20 @@
   body.light{--bk:255,255,255}
   body.light .bsum > *,body.light .bnext,body.light .bcal,body.light .pchip,body.light .bseg,body.light .today:not(.day),body.light .trk-add{background:rgba(255,255,255,.34) !important;border:1px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(70,50,120,.08)}
 
+  /* fit Expense Hub + Insights to the screen: fixed top controls, inner content scrolls */
+  body.bills main#view,body.expenses main#view{overflow:hidden;display:flex;flex-direction:column}
+  body.bills #mpull,body.expenses #mpull{flex:none}
+  body.bills .hubseg,body.expenses .hubseg{flex:none}
+  body.bills #bills,body.bills #exp{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  body.expenses #ins{flex:1;min-height:0;display:flex;flex-direction:column}
+  body.expenses #ins > div:last-child{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .pdfd label{display:block;margin:12px 4px 6px;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--soft)}
+  .pdfsel{width:100% !important;margin:8px 0 0 !important}
+  .pdfck{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .pdfck button{display:flex;align-items:center;gap:8px;padding:10px 10px;border-radius:12px;background:rgba(var(--wl),.08);color:var(--ink);font-size:13.5px;font-weight:700;text-align:left}
+  .pdfck button i{width:18px;height:18px;border-radius:6px;border:2px solid var(--soft);display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:900;flex:none;color:var(--onacc)}
+  .pdfck button.on i{background:var(--acc);border-color:var(--acc)}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -2229,7 +2243,7 @@ function setupPull(target, atTop, getInd, trigger, exclude){
   });
 }
 // listen on the whole page so pulling works even when a tab has no lists yet
-setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && (document.getElementById("view").scrollTop<=0) && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? (HUB === "exp" ? openExpense() : billsRefresh(true)) : S.tab === "expenses" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
+setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && (document.getElementById("view").scrollTop<=0) && !((document.querySelector("#bills,#exp,#ins > div:last-child")||{}).scrollTop > 0) && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? (HUB === "exp" ? openExpense() : billsRefresh(true)) : S.tab === "expenses" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
 setupPull(itemsEl, () => itemsEl.scrollTop<=0, () => document.getElementById("ipull"), () => openAdder("item"));
 
 /* ================= pinch in / tap title to close ================= */
@@ -4128,12 +4142,202 @@ function insReports(body){
       : (() => { const ex = d.items.filter(i => i.src === "exp"), days = {}; ex.forEach(i => days[i.date] = (days[i.date] || 0) + i.amt); const top = Object.entries(days).sort((a, b) => b[1] - a[1])[0];
         return ex.length ? `<div class="exc insc"><div class="inslab">Highlights</div><table class="instab"><tr><td>Average per expense</td><td>${money(d.te / ex.length)}</td></tr><tr><td>Busiest day</td><td>${fmtDate(top[0])} · ${money(top[1])}</td></tr></table></div>` : ""; })()}
     <div class="acts2" style="margin:6px 0"><button id="insShare">📤 Share summary</button><button id="insCsv">⬇︎ Export CSV</button></div>
+    <div class="acts2" style="margin:0 0 6px"><button id="insPdf" style="grid-column:1/-1">📄 Create PDF report…</button></div>
     <div style="height:90px"></div>`;
   body.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { INSR = b.dataset.p === "fy" ? "fy-r" : "3m"; renderInsights(); });
   body.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { INSM = exShift(INSM, +b.dataset.m); renderInsights(); });
   body.querySelectorAll("[data-y]").forEach(b => b.onclick = () => { INSFY = fyv + +b.dataset.y; renderInsights(); });
   body.querySelector("#insShare").onclick = async () => { const t = insReportText(keys, d, title); try { if (navigator.share){ await navigator.share({ title, text:t }); return; } } catch(e){ if (e && e.name === "AbortError") return; } try { await navigator.clipboard.writeText(t); toast("Summary copied"); } catch(e){ prompt("Copy this summary", t); } };
+  body.querySelector("#insPdf").onclick = () => { PDFO = null; insPdfDialog(); };
   body.querySelector("#insCsv").onclick = () => insExport(keys, d, "home-base-" + (fyMode ? "FY" + fyv + "-" + String(fyv + 1).slice(2) : INSM) + ".csv");
+}
+/* ================= Reports: PDF generation (no libraries) ================= */
+const PDF_W = {
+  r: "278 278 355 556 556 889 667 191 333 333 389 584 278 333 278 278 556 556 556 556 556 556 556 556 556 556 278 278 584 584 584 556 1015 667 667 722 722 667 611 778 722 278 500 667 556 833 722 778 667 778 722 667 611 722 667 944 667 667 611 278 278 278 469 556 333 556 556 500 556 556 278 556 556 222 222 500 222 833 556 556 556 556 333 500 278 556 500 722 500 500 500 334 260 334 584".split(" ").map(Number),
+  b: "278 333 474 556 556 889 722 238 333 333 389 584 278 333 278 278 556 556 556 556 556 556 556 556 556 556 333 333 584 584 584 611 975 722 722 722 722 667 611 778 722 278 556 722 611 833 722 778 667 778 722 667 611 722 667 944 667 667 611 333 278 333 584 556 333 556 611 556 611 556 333 611 611 278 278 556 278 889 611 611 611 611 389 556 333 611 556 778 556 556 500 389 280 389 584".split(" ").map(Number)
+};
+function pdfClean(s){
+  return String(s == null ? "" : s).replace(/[–—]/g, "-").replace(/[·•]/g, "-").replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, "...")
+    .replace(/[^\x20-\x7e]/g, "").trim();
+}
+function pdfWidth(s, size, bold){ const t = PDF_W[bold ? "b" : "r"]; let w = 0; for (const ch of s){ const c = ch.charCodeAt(0) - 32; w += (t[c] || 556); } return w * size / 1000; }
+function pdfFit(s, size, bold, max){ s = pdfClean(s); if (pdfWidth(s, size, bold) <= max) return s; while (s.length > 1 && pdfWidth(s + "...", size, bold) > max) s = s.slice(0, -1); return s + "..."; }
+const pdfRgb = h => { h = h.replace("#", ""); return [0, 2, 4].map(i => (parseInt(h.slice(i, i + 2), 16) / 255).toFixed(3)).join(" "); };
+
+function PdfDoc(){
+  const W = 595, H = 842, pages = []; let cur = null;
+  const esc = s => pdfClean(s).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+  const api = {
+    W, H,
+    page(){ cur = []; pages.push(cur); return pages.length; },
+    count(){ return pages.length; },
+    text(x, y, s, o = {}){
+      const size = o.size || 10, bold = !!o.bold; s = pdfClean(s); if (!s) return;
+      if (o.align === "right") x -= pdfWidth(s, size, bold); else if (o.align === "center") x -= pdfWidth(s, size, bold) / 2;
+      cur.push(`BT /${bold ? "F2" : "F1"} ${size} Tf ${pdfRgb(o.color || "#1f2a44")} rg ${x.toFixed(2)} ${(H - y).toFixed(2)} Td (${esc(s)}) Tj ET`);
+    },
+    rect(x, y, w, h, color){ if (w <= 0 || h <= 0) return; cur.push(`${pdfRgb(color)} rg ${x.toFixed(2)} ${(H - y - h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f`); },
+    line(x1, y1, x2, y2, color, wd){ cur.push(`${pdfRgb(color || "#cfd6e6")} RG ${wd || .6} w ${x1.toFixed(2)} ${(H - y1).toFixed(2)} m ${x2.toFixed(2)} ${(H - y2).toFixed(2)} l S`); },
+    pageAt(i){ cur = pages[i]; },
+    bytes(){
+      const objs = [];
+      objs[1] = "<< /Type /Catalog /Pages 2 0 R >>";
+      const kids = [];
+      objs[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+      objs[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+      pages.forEach((ops, i) => {
+        const cn = 5 + i * 2, pn = 6 + i * 2, stream = ops.join("\n");
+        objs[cn] = `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+        objs[pn] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${cn} 0 R >>`;
+        kids.push(pn + " 0 R");
+      });
+      objs[2] = `<< /Type /Pages /Kids [${kids.join(" ")}] /Count ${pages.length} >>`;
+      let out = "%PDF-1.4\n"; const off = [];
+      for (let i = 1; i < objs.length; i++){ off[i] = out.length; out += `${i} 0 obj\n${objs[i]}\nendobj\n`; }
+      const xr = out.length;
+      out += `xref\n0 ${objs.length}\n0000000000 65535 f \n` + off.slice(1).map(o => String(o).padStart(10, "0") + " 00000 n \n").join("");
+      out += `trailer\n<< /Size ${objs.length} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`;
+      const u = new Uint8Array(out.length); for (let i = 0; i < out.length; i++) u[i] = out.charCodeAt(i) & 255; return u;
+    }
+  };
+  return api;
+}
+
+/* ---- data helpers ---- */
+function pdfAgg(items, keys){
+  const per = {}; keys.forEach(k => per[k] = { b:0, e:0 });
+  const byCat = {}, byWho = {}, byName = {}; let tb = 0, te = 0;
+  items.forEach(i => { const k = i.date.slice(0, 7); if (!per[k]) return;
+    if (i.src === "bill"){ per[k].b += i.amt; tb += i.amt; } else { per[k].e += i.amt; te += i.amt; if (i.who) byWho[i.who] = (byWho[i.who] || 0) + i.amt; }
+    byCat[i.cat] = (byCat[i.cat] || 0) + i.amt; byName[i.name] = byName[i.name] || { sum:0, n:0 }; byName[i.name].sum += i.amt; byName[i.name].n++; });
+  return { items, per, byCat, byWho, byName, tb, te, total:tb + te };
+}
+function pdfKeys(o){
+  const now = isoToday().slice(0, 7);
+  if (o.per === "m") return [o.month];
+  if (o.per === "3m") return insKeys("3m");
+  if (o.per === "12m") return insKeys("12m");
+  if (o.per === "cy") return Array.from({ length:12 }, (_, i) => o.year + "-" + String(i + 1).padStart(2, "0"));
+  return Array.from({ length:12 }, (_, i) => { const m = ((6 + i) % 12) + 1, y = m >= 7 ? o.fy : o.fy + 1; return y + "-" + String(m).padStart(2, "0"); });
+}
+function pdfPeriodLabel(o, keys){
+  const a = keys[0], z = keys[keys.length - 1], lab = k => MONS[+k.slice(5) - 1] + " " + k.slice(0, 4);
+  if (o.per === "m") return exMonthLabel(o.month);
+  if (o.per === "fy") return `Tax year ${o.fy}-${String(o.fy + 1).slice(2)} (1 Jul ${o.fy} - 30 Jun ${o.fy + 1})`;
+  if (o.per === "cy") return `Calendar year ${o.year}`;
+  return `${o.per === "3m" ? "Last 3 months" : "Last 12 months"} (${lab(a)} - ${lab(z)})`;
+}
+
+/* ---- report builder ---- */
+function pdfBuildReport(o){
+  const keys = pdfKeys(o), raw = insData(keys);
+  const items = raw.items.filter(i => o.scope === "both" || (o.scope === "bills" ? i.src === "bill" : i.src === "exp"));
+  const d = pdfAgg(items, keys);
+  const scopeLab = o.scope === "both" ? "Bills and expenses" : o.scope === "bills" ? "Bills only" : "Expenses only";
+  const title = "Spending report", sub = pdfPeriodLabel(o, keys) + "  |  " + scopeLab;
+  const doc = PdfDoc(), M = 40, CW = 595 - M * 2, ACC = "#3730a3", INK = "#1f2a44", SOFT = "#5b6786", LINE = "#d9deec";
+  let y = 0;
+  const newPage = first => { doc.page(); if (first){ doc.rect(0, 0, 595, 92, ACC); doc.text(M, 44, title, { size:24, bold:true, color:"#ffffff" }); doc.text(M, 66, sub, { size:10.5, color:"#dfe4ff" });
+      doc.text(595 - M, 44, "Home Base", { size:12, bold:true, color:"#ffffff", align:"right" }); doc.text(595 - M, 62, "Created " + fmtDate(isoToday()), { size:9.5, color:"#dfe4ff", align:"right" }); y = 120; }
+    else { doc.text(M, 34, title + "  -  " + pdfPeriodLabel(o, keys), { size:9, color:SOFT }); doc.line(M, 42, 595 - M, 42); y = 64; } };
+  const ensure = h => { if (y + h > 842 - 56) newPage(false); };
+  const head = t => { ensure(90); doc.text(M, y, t, { size:13, bold:true, color:ACC }); y += 6; doc.line(M, y, 595 - M, y, ACC, 1); y += 18; };
+  newPage(true);
+  const nm = Math.max(1, keys.filter(k => d.per[k].b + d.per[k].e > 0).length);
+  if (o.sec.summary){
+    const bx = (i, n, label, val, col) => { const w = (CW - 12 * (n - 1)) / n, x = M + i * (w + 12); doc.rect(x, y, w, 58, "#f2f4fb"); doc.rect(x, y, 4, 58, col);
+      doc.text(x + 14, y + 20, label, { size:9, bold:true, color:SOFT }); doc.text(x + 14, y + 44, val, { size:o.scope === "both" ? 17 : 20, bold:true, color:INK }); };
+    if (o.scope === "both"){ bx(0, 3, "TOTAL SPENT", money(d.total), ACC); bx(1, 3, "BILLS", money(d.tb), "#4db8ff"); bx(2, 3, "EXPENSES", money(d.te), "#8fdc4a"); }
+    else bx(0, 2, o.scope === "bills" ? "BILLS TOTAL" : "EXPENSES TOTAL", money(d.total), o.scope === "bills" ? "#4db8ff" : "#8fdc4a"), bx(1, 2, "ITEMS", String(items.length), ACC);
+    y += 78;
+    doc.text(M, y, `${items.length} item${items.length === 1 ? "" : "s"}  |  about ${money0(d.total / nm)} a month over ${nm} active month${nm === 1 ? "" : "s"}`, { size:10, color:SOFT }); y += 30;
+  }
+  const cats = Object.entries(d.byCat).sort((a, b) => b[1] - a[1]);
+  if (o.sec.cats && cats.length){
+    head("Spending by category"); const mx = cats[0][1] || 1;
+    cats.forEach(([c, v]) => { ensure(24); doc.rect(M, y - 8, 9, 9, insCatCol(c)); doc.text(M + 16, y, pdfFit(c, 10, false, 150), { size:10 });
+      doc.rect(M + 180, y - 8, (CW - 180 - 150) * v / mx, 9, insCatCol(c)); doc.text(595 - M - 62, y, money(v), { size:10, bold:true, align:"right" });
+      doc.text(595 - M, y, Math.round(v / d.total * 100) + "%", { size:9, color:SOFT, align:"right" }); y += 21; });
+    y += 12;
+  }
+  if (o.sec.months && keys.length > 1){
+    head("By month"); const mx = Math.max(1, ...keys.map(k => d.per[k].b + d.per[k].e));
+    keys.forEach(k => { const b = d.per[k].b, e = d.per[k].e, t = b + e; ensure(24); doc.text(M, y, MONS[+k.slice(5) - 1] + " " + k.slice(0, 4), { size:10, color: t ? INK : "#9aa3bd" });
+      const full = CW - 100 - 110; doc.rect(M + 100, y - 8, full * b / mx, 9, "#4db8ff"); doc.rect(M + 100 + full * b / mx, y - 8, full * e / mx, 9, "#8fdc4a");
+      doc.text(595 - M, y, t ? money(t) : "-", { size:10, bold:!!t, align:"right", color: t ? INK : "#9aa3bd" }); y += 21; });
+    if (o.scope === "both"){ ensure(20); doc.rect(M + 100, y - 4, 9, 9, "#4db8ff"); doc.text(M + 114, y + 4, "Bills", { size:9, color:SOFT }); doc.rect(M + 160, y - 4, 9, 9, "#8fdc4a"); doc.text(M + 174, y + 4, "Expenses", { size:9, color:SOFT }); y += 18; }
+    y += 12;
+  }
+  const who = Object.entries(d.byWho).sort((a, b) => b[1] - a[1]);
+  if (o.sec.who && who.length && o.scope !== "bills"){
+    head("Expenses by person"); who.forEach(([n, v]) => { ensure(22); doc.text(M, y, n, { size:10 }); doc.text(595 - M, y, money(v), { size:10, bold:true, align:"right" }); y += 20; }); y += 12;
+  }
+  const names = Object.entries(d.byName).sort((a, b) => b[1].sum - a[1].sum).slice(0, 10);
+  if (o.sec.top && names.length){
+    head("Top spending"); names.forEach(([n, v], i) => { ensure(22); doc.text(M, y, (i + 1) + ".", { size:10, color:SOFT }); doc.text(M + 20, y, pdfFit(n, 10, false, 300), { size:10 });
+      if (v.n > 1) doc.text(M + 340, y, "x" + v.n, { size:9, color:SOFT }); doc.text(595 - M, y, money(v.sum), { size:10, bold:true, align:"right" }); y += 20; }); y += 12;
+  }
+  if (o.sec.list){
+    head(`All transactions (${items.length})`);
+    const cols = { d:M + 4, t:M + 76, c:M + 128, n:M + 232, w:M + 392, a:595 - M - 4 };
+    const hdr = () => { doc.rect(M, y - 11, CW, 17, "#e7eaf6"); [["Date", cols.d], ["Type", cols.t], ["Category", cols.c], ["Description", cols.n], ["By", cols.w]].forEach(([l, x]) => doc.text(x, y, l, { size:8.5, bold:true, color:SOFT })); doc.text(cols.a, y, "Amount", { size:8.5, bold:true, color:SOFT, align:"right" }); y += 16; };
+    hdr();
+    items.slice().sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0).forEach((i, idx) => {
+      if (y + 18 > 842 - 56){ newPage(false); hdr(); }
+      if (idx % 2) doc.rect(M, y - 10, CW, 16, "#f7f8fc");
+      doc.text(cols.d, y, fmtDate(i.date), { size:8.5 }); doc.text(cols.t, y, i.src === "bill" ? "Bill" : "Expense", { size:8.5, color:SOFT });
+      doc.text(cols.c, y, pdfFit(i.cat, 8.5, false, 98), { size:8.5 }); doc.text(cols.n, y, pdfFit(i.name, 8.5, false, 154), { size:8.5 });
+      doc.text(cols.w, y, i.who || "", { size:8.5, color:SOFT }); doc.text(cols.a, y, money(i.amt), { size:8.5, bold:true, align:"right" }); y += 16; });
+    ensure(30); doc.line(M, y - 6, 595 - M, y - 6, INK, .8); doc.text(595 - M - 4, y + 8, "Total  " + money(d.total), { size:10.5, bold:true, align:"right" }); y += 24;
+  }
+  if (!items.length){ ensure(40); doc.text(M, y, "No spending recorded for this selection.", { size:11, color:SOFT }); }
+  const n = doc.count();
+  for (let p = 0; p < n; p++){ doc.pageAt(p); doc.text(M, 820, "Home Base", { size:8.5, color:"#9aa3bd" }); doc.text(595 - M, 820, `Page ${p + 1} of ${n}`, { size:8.5, color:"#9aa3bd", align:"right" }); }
+  return { bytes: doc.bytes(), items, d, keys };
+}
+
+/* ---- dialog ---- */
+let PDFO = null;
+function insPdfDialog(){
+  const now = isoToday().slice(0, 7), fyNow = insFY(now);
+  if (!PDFO){
+    const fyMode = INSR === "fy-r";
+    PDFO = { per: fyMode ? "fy" : "m", month: INSM || now, fy: INSFY == null ? fyNow : INSFY, year: +now.slice(0, 4), scope:"both", sec:{ summary:1, cats:1, months:1, who:1, top:1, list:1 } };
+  }
+  const o = PDFO;
+  const months = Array.from({ length:36 }, (_, i) => exShift(now, -i));
+  const fys = Array.from({ length:5 }, (_, i) => fyNow - i), yrs = Array.from({ length:5 }, (_, i) => +now.slice(0, 4) - i);
+  const keys = pdfKeys(o), cnt = insData(keys).items.filter(i => o.scope === "both" || (o.scope === "bills" ? i.src === "bill" : i.src === "exp")).length;
+  const seg = (name, arr) => `<div class="seg3 pdfseg">${arr.map(([k, l]) => `<button type="button" data-${name}="${k}" class="${o[name] === k ? "on" : ""}">${l}</button>`).join("")}</div>`;
+  const sec = [["summary", "Summary totals"], ["cats", "By category"], ["months", "Month by month"], ["who", "Who paid"], ["top", "Top spending"], ["list", "All transactions"]];
+  menu.innerHTML = `<div class="mt">📄 Create PDF report</div>
+    <div class="ed pdfd">
+      <label>Period</label>${seg("per", [["m", "Month"], ["3m", "3 mo"], ["12m", "12 mo"], ["fy", "Tax yr"], ["cy", "Year"]])}
+      ${o.per === "m" ? `<select class="set-sel pdfsel" id="pdM">${months.map(k => `<option value="${k}" ${o.month === k ? "selected" : ""}>${exMonthLabel(k)}</option>`).join("")}</select>` : ""}
+      ${o.per === "fy" ? `<select class="set-sel pdfsel" id="pdF">${fys.map(f => `<option value="${f}" ${o.fy === f ? "selected" : ""}>Tax year ${f}-${String(f + 1).slice(2)}</option>`).join("")}</select>` : ""}
+      ${o.per === "cy" ? `<select class="set-sel pdfsel" id="pdY">${yrs.map(f => `<option value="${f}" ${o.year === f ? "selected" : ""}>${f}</option>`).join("")}</select>` : ""}
+      <label>Include</label>${seg("scope", [["both", "Bills + Expenses"], ["bills", "Bills"], ["exp", "Expenses"]])}
+      <label>Sections</label>
+      <div class="pdfck">${sec.map(([k, l]) => `<button type="button" data-sec="${k}" class="${o.sec[k] ? "on" : ""}"><i>${o.sec[k] ? "✓" : ""}</i>${l}</button>`).join("")}</div>
+      <div class="note" style="text-align:center;margin:8px 0">${cnt} item${cnt === 1 ? "" : "s"} in this report</div>
+      <div class="acts"><button type="button" class="del" id="pdX">Cancel</button><button type="button" class="save" id="pdGo">Create PDF</button></div>
+    </div>`;
+  openMenu();
+  menu.querySelectorAll("[data-per]").forEach(b => b.onclick = () => { o.per = b.dataset.per; insPdfDialog(); });
+  menu.querySelectorAll("[data-scope]").forEach(b => b.onclick = () => { o.scope = b.dataset.scope; insPdfDialog(); });
+  menu.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => { o.sec[b.dataset.sec] = o.sec[b.dataset.sec] ? 0 : 1; insPdfDialog(); });
+  const s1 = menu.querySelector("#pdM"); if (s1) s1.onchange = () => { o.month = s1.value; insPdfDialog(); };
+  const s2 = menu.querySelector("#pdF"); if (s2) s2.onchange = () => { o.fy = +s2.value; insPdfDialog(); };
+  const s3 = menu.querySelector("#pdY"); if (s3) s3.onchange = () => { o.year = +s3.value; insPdfDialog(); };
+  menu.querySelector("#pdX").onclick = closeMenu;
+  menu.querySelector("#pdGo").onclick = async () => {
+    if (!Object.values(o.sec).some(Boolean)){ toast("Pick at least one section"); return; }
+    let r; try { r = pdfBuildReport(o); } catch(e){ toast("Couldn't build the PDF"); console.error(e); return; }
+    const k = r.keys, name = "home-base-" + (o.per === "m" ? o.month : o.per === "fy" ? "FY" + o.fy + "-" + String(o.fy + 1).slice(2) : o.per === "cy" ? o.year : k[0] + "-to-" + k[k.length - 1]) + "-" + (o.scope === "both" ? "all" : o.scope) + ".pdf";
+    closeMenu();
+    try { const file = new File([r.bytes], name, { type:"application/pdf" }); if (navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:name }); return; } } catch(e){ if (e && e.name === "AbortError") return; }
+    const url = URL.createObjectURL(new Blob([r.bytes], { type:"application/pdf" })); const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); toast("PDF saved");
+  };
 }
 /* ================= Home page, Settings page, page menu ================= */
 const NAV_ICONS = {
