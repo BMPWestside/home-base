@@ -264,6 +264,19 @@
   .blogo{display:flex;gap:6px;flex-wrap:wrap;margin:0 4px 10px}
   .blogo .pill{cursor:pointer}
 
+  .bsum > *{padding:8px 8px}
+  .bseg{margin-bottom:8px}
+  .bcal{padding:4px 6px 3px;margin-bottom:8px}
+  .bcal .calh{margin-bottom:0}
+  .bcal .calh .t{font-size:10px;letter-spacing:1px}
+  .bcal .calh button{padding:2px 8px;font-size:11px}
+  .bcal .strip{gap:1px}
+  .bcal .day{padding:1px 0 2px;gap:0}
+  .bcal .day .wd{font-size:8px}
+  .bcal .day .dn{font-size:11.5px;line-height:1.05}
+  .bcal .day .ds{height:3px;margin-top:1px}
+  .bcal .day .ds i{width:4px;height:3px}
+
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
   .rq input{width:100%;padding:7px 11px;border-radius:10px;border:1px solid rgba(var(--wl),.16);background:rgba(var(--wl),.08);color:var(--ink);font-size:14px;outline:none}
@@ -514,7 +527,6 @@
   body.light .rwarn{background:rgba(255,255,255,.55) !important;border:1px solid rgba(179,38,30,.25)}
   body.light .rwarn:not(.bad){border-color:rgba(138,82,0,.3)}
   body.light .pbar .pt{background:rgba(60,40,120,.14)}
-  body.light .pbar .pt i{background:linear-gradient(90deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#fff))}
   body.light .pbar{border-color:rgba(255,255,255,.85) !important;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.22)) !important}
   :root{--bk:0,0,0}
   body.light{--bk:255,255,255}
@@ -524,7 +536,10 @@
   body.bills main#view,body.expenses main#view{overflow:hidden;display:flex;flex-direction:column}
   body.bills #mpull,body.expenses #mpull{flex:none}
   body.bills .hubseg,body.expenses .hubseg{flex:none}
-  body.bills #bills,body.bills #exp{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  body.bills #exp{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  body.bills #bills{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  body.bills #bills > *{flex:none}
+  body.bills #bills > .bscroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   body.expenses #ins{flex:1;min-height:0;display:flex;flex-direction:column}
   body.expenses #ins > div:last-child{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   .pdfd label{display:block;margin:12px 4px 6px;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--soft)}
@@ -533,6 +548,12 @@
   .pdfck button{display:flex;align-items:center;gap:8px;padding:10px 10px;border-radius:12px;background:rgba(var(--wl),.08);color:var(--ink);font-size:13.5px;font-weight:700;text-align:left}
   .pdfck button i{width:18px;height:18px;border-radius:6px;border:2px solid var(--soft);display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:900;flex:none;color:var(--onacc)}
   .pdfck button.on i{background:var(--acc);border-color:var(--acc)}
+
+  .pbar .pk{background:linear-gradient(90deg,var(--pc),var(--pc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:none !important}
+  body.light .pbar.green{--pc:#15803d;--pc2:#34b36d}
+  body.light .pbar.orange{--pc:#c2610a;--pc2:#e08a1f}
+  body.light .pbar.red{--pc:#c62828;--pc2:#e5534b}
+  body.light .pbar.blue{--pc:#1d5fd0;--pc2:#3f8fe0}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -2735,10 +2756,12 @@ function renderBills(){
       <button data-bv="review" class="${BB.view==="review"?"on":""}">Review${rv?`<i>${rv}</i>`:""}</button>
       <button id="bbAdd" aria-label="Add a bill" title="Add a bill">＋</button>
     </div>`;
+  h += `<div class="bscroll">`;
   if (BB.err) h += `<div class="bfix"><b>Couldn't load your bills</b><span>${esc(BB.err)}.</span>
       <span>${hbBills() ? `Bills now load through your <b>Home Base</b> sync script. Paste the latest <b>Code.gs</b> into that project at script.google.com, run <b>setupDailyCheck</b> once (allow access), then <b>Deploy → Manage deployments</b> → ✎ Edit → Version <b>New version</b> → Deploy.` : `Paste the BillBell setup link again, or update your Home Base sync script.`}</span>
       <div class="ra" style="justify-content:flex-start"><button class="pill" id="bbRetry">Try again</button>${bbLinked() ? `<button class="pill" id="bbRelink">Forget BillBell link</button>` : ""}</div></div>`;
   h += BB.view === "paid" ? bbPaidHTML() : BB.view === "review" ? bbReviewHTML() : bbDueHTML();
+  h += `</div>`;
   host.innerHTML = h;
   host.querySelectorAll("[data-bv]").forEach(b => b.onclick = () => { BB.view = b.dataset.bv; renderBills(); });
   host.querySelectorAll("[data-prov]").forEach(b => { if (b.classList.contains("btile")) bbAttachHold(b); else b.onclick = () => bbOpenProvider(b.dataset.prov); });
@@ -4087,7 +4110,7 @@ function renderInsights(){
 function insStats(body){
   const keys = insKeys(INSR), d = insData(keys), nm = Math.max(1, keys.filter(k => per0(d, k)).length);
   function per0(dd, k){ return dd.per[k].b + dd.per[k].e > 0; }
-  const cats = Object.entries(d.byCat).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const cats = Object.entries(d.byCat).sort((a, b) => b[1] - a[1]);
   const names = Object.entries(d.byName).sort((a, b) => b[1].sum - a[1].sum).slice(0, 5);
   const biggest = d.items.slice().sort((a, b) => b.amt - a.amt)[0];
   const fys = [...new Set([insFY(isoToday().slice(0,7)), ...(S.exp || []).map(e => e.date ? insFY(e.date.slice(0,7)) : null).filter(x => x != null)])].sort().reverse();
@@ -4099,7 +4122,7 @@ function insStats(body){
       ${d.total > 0 ? `<div class="exbar"><i style="width:${d.tb / d.total * 100}%;background:${INS_BILL}"></i><i style="width:${d.te / d.total * 100}%;background:${INS_EXP}"></i></div>
       <div class="exleg"><span class="inskey"><i style="background:${INS_BILL}"></i>🧾 Bills <b>${money0(d.tb)}</b></span><span class="inskey"><i style="background:${INS_EXP}"></i>💳 Expenses <b>${money0(d.te)}</b></span></div>` : ""}</div>
     ${keys.length > 1 ? `<div class="exc insc"><div class="inslab">By month</div><div class="chart">${insChart(keys, d.per)}</div></div>` : ""}
-    ${cats.length ? `<div class="exc insc"><div class="inslab">By category</div><div class="bcats">${cats.map(([c, v]) => `<div><span><i style="background:${insCatCol(c)}"></i>${esc(c)}</span><b>${money0(v)}</b><em style="width:${v / d.total * 100}%;background:${insCatCol(c)}"></em></div>`).join("")}</div></div>` : ""}
+    ${cats.length ? `<div class="exc insc"><div class="inslab">By category</div><div class="bcats">${cats.map(([c, v]) => `<div><span><i style="background:${insCatCol(c)}"></i>${esc(c)}</span><b>${money0(v)} <small style="font-weight:700;opacity:.7">${Math.round(v / d.total * 100)}%</small></b><em style="width:${v / d.total * 100}%;background:${insCatCol(c)}"></em></div>`).join("")}</div></div>` : ""}
     ${Object.keys(d.byWho).length > 1 ? `<div class="exc insc"><div class="inslab">Who paid (expenses)</div><div class="bcats">${Object.entries(d.byWho).map(([w, v]) => `<div><span><i style="background:var(--acc)"></i>${esc(w)}</span><b>${money0(v)}</b><em style="width:${d.te ? v / d.te * 100 : 0}%;background:var(--acc)"></em></div>`).join("")}</div></div>` : ""}
     ${names.length ? `<div class="exc insc"><div class="inslab">Top spending</div>${names.map(([n, v]) => `<div class="instop"><span>${esc(n)}${v.n > 1 ? ` <small>×${v.n}</small>` : ""}</span><b>${money(v.sum)}</b></div>`).join("")}${biggest ? `<div class="insbig">Biggest single: <b>${esc(biggest.name)}</b> · ${money(biggest.amt)} · ${fmtDate(biggest.date)}</div>` : ""}</div>` : ""}
     ${d.items.length ? "" : `<div class="exempty">No spending in this period yet.<br>Add bills or expenses in the <b>Expense Hub</b>.</div>`}
@@ -4137,7 +4160,6 @@ function insReports(body){
     <div class="exc insc"><div class="inslab">${esc(title)}</div><div class="extot" style="text-align:center">${money(d.total)}</div>
       <div class="exsub" style="text-align:center">${delta !== null ? `<span class="${delta > 0 ? "up" : "dn"}">${delta > 0 ? "▲" : "▼"} ${Math.abs(delta)}% vs ${MONS[+pk.slice(5) - 1]}</span> · ` : ""}${d.items.length} item${d.items.length === 1 ? "" : "s"}</div>
       <table class="instab"><tr><td>🧾 Bills</td><td>${money(d.tb)}</td></tr><tr><td>💳 Expenses</td><td>${money(d.te)}</td></tr>${unpaid.length ? `<tr class="warn"><td>⏳ Bills still due</td><td>${money(unpaid.reduce((s, b) => s + b.amount, 0))}</td></tr>` : ""}</table></div>
-    ${cats.length ? `<div class="exc insc"><div class="inslab">By category</div><table class="instab">${cats.map(([c, v]) => `<tr><td><i class="insdot" style="background:${insCatCol(c)}"></i>${esc(c)}</td><td>${money(v)}</td><td class="pc">${d.total ? Math.round(v / d.total * 100) : 0}%</td></tr>`).join("")}</table></div>` : ""}
     ${fyMode ? `<div class="exc insc"><div class="inslab">By month</div><table class="instab">${keys.map(k => { const t = d.per[k].b + d.per[k].e; return `<tr class="${t ? "" : "mute"}"><td>${MONS[+k.slice(5) - 1]} ${k.slice(0, 4)}</td><td>${money(t)}</td></tr>`; }).join("")}</table></div>`
       : (() => { const ex = d.items.filter(i => i.src === "exp"), days = {}; ex.forEach(i => days[i.date] = (days[i.date] || 0) + i.amt); const top = Object.entries(days).sort((a, b) => b[1] - a[1])[0];
         return ex.length ? `<div class="exc insc"><div class="inslab">Highlights</div><table class="instab"><tr><td>Average per expense</td><td>${money(d.te / ex.length)}</td></tr><tr><td>Busiest day</td><td>${fmtDate(top[0])} · ${money(top[1])}</td></tr></table></div>` : ""; })()}
