@@ -469,6 +469,7 @@
   .extprev.small{width:56px;height:56px;border-radius:16px;background:none;box-shadow:none}
   .extprev.small .extic{width:56px;height:56px}
   .extprev .exti{font-size:26px}
+  .expay{width:100%}.expay button{flex:1;padding:12px 8px}
   .hubseg{display:flex;gap:6px;padding:4px;margin:0 14px 12px;border-radius:16px;background:rgba(var(--wl),.07);border:1px solid rgba(var(--wl),.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   .hubseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:800;font-size:15px;color:var(--soft)}
   .hubseg button.on{background:var(--acc);color:var(--onacc)}
@@ -4081,7 +4082,7 @@ function renderExpenses(){
     </div>
     <div class="extiles">${(S.exTiles || []).map(t => `<button class="extile" data-t="${t.id}">${exTileIcon(t)}<span>${esc(t.name)}</span></button>`).join("")}<button class="extile exnew" id="exNewTile" aria-label="New tile"><i>＋</i></button></div>
     ${Object.keys(days).length ? Object.entries(days).map(([d, list]) => `<div class="exday"><span>${exDayLabel(d)}</span><span>${exMoney(list.reduce((s, e) => s + (+e.amt || 0), 0))}</span></div>
-      ${list.map(e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; }).join("")}`).join("")
+      ${list.map(e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.pay ? " · " + esc(e.pay) : ""}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; }).join("")}`).join("")
       : `<div class="exempty">${EXF ? "No " + esc(EXF) + " expenses this month" : "Tap the <b>＋</b> tile to add a shop, then tap it to log spending"}</div>`}
     <div style="height:90px"></div>`;
   host.querySelectorAll(".exnav button").forEach(b => b.onclick = () => { EXM = exShift(EXM, +b.dataset.m); EXF = ""; renderExpenses(); });
@@ -4092,7 +4093,7 @@ function renderExpenses(){
 }
 function openExpense(id){
   const ex = id ? (S.exp || []).find(x => x.id === id) : null;
-  let cat = ex ? ex.cat : "Groceries", who = ex ? (ex.who || whoAmI()) : whoAmI();
+  let cat = ex ? ex.cat : "Groceries", who = ex ? (ex.who || whoAmI()) : whoAmI(), pay = ex ? (ex.pay || "Card") : "Card";
   const wh = ["S", "D"];
   menu.innerHTML = `<div class="mt">${ex ? "Edit expense" : "New expense"}</div>
     <form class="ed exf" id="exF" style="padding-top:0">
@@ -4102,17 +4103,20 @@ function openExpense(id){
       <label>Note</label><input id="xN" value="${esc(ex ? ex.note || "" : "")}" placeholder="e.g. Woolworths" autocomplete="off">
       <div class="r2 xr2"><div><label>Date</label><input id="xD" type="date" value="${ex ? ex.date : isoToday()}"></div>
         <div><label>Paid by</label><div class="exwhos">${wh.map(w => `<button type="button" data-w="${w}" class="${w === who ? "on" : ""}">${w}</button>`).join("")}</div></div></div>
+      <label>Payment type</label>
+      <div class="exwhos expay">${["Cash", "Card"].map(w => `<button type="button" data-p="${w}" class="${w === pay ? "on" : ""}">${w === "Cash" ? "💵" : "💳"} ${w}</button>`).join("")}</div>
       <div class="acts">${ex ? `<button type="button" class="del" id="xDel">Delete</button>` : ""}<button type="submit" class="save">${ex ? "Save" : "Add expense"}</button></div>
     </form>`;
   menu.querySelectorAll(".excats button").forEach(b => b.onclick = () => { cat = b.dataset.c; menu.querySelectorAll(".excats button").forEach(x => x.classList.toggle("on", x === b)); });
   menu.querySelectorAll(".exwhos button").forEach(b => b.onclick = () => { who = b.dataset.w; menu.querySelectorAll(".exwhos button").forEach(x => x.classList.toggle("on", x === b)); });
+  menu.querySelectorAll(".expay button").forEach(b => b.onclick = () => { pay = b.dataset.p; menu.querySelectorAll(".expay button").forEach(x => x.classList.toggle("on", x === b)); });
   const f = menu.querySelector("#exF");
   f.onsubmit = e => { e.preventDefault();
     const amt = parseFloat(String(menu.querySelector("#xA").value).replace(/[^0-9.]/g, ""));
     if (!(amt > 0)){ toast("Enter the amount"); menu.querySelector("#xA").focus(); return; }
     const date = menu.querySelector("#xD").value || isoToday(), note = menu.querySelector("#xN").value.trim();
     S.exp = S.exp || [];
-    if (ex) Object.assign(ex, { amt, cat, note, date, who }); else S.exp.push({ id:uid(), amt, cat, note, date, who });
+    if (ex) Object.assign(ex, { amt, cat, note, date, who, pay }); else S.exp.push({ id:uid(), amt, cat, note, date, who, pay });
     EXM = date.slice(0,7); save(); closeMenu(); renderExpenses(); toast(ex ? "Saved" : "Added " + exMoney(amt));
   };
   const del = menu.querySelector("#xDel");
@@ -4164,6 +4168,7 @@ function openExTile(id){
 }
 function openExTileEntry(id){
   const t = (S.exTiles || []).find(x => x.id === id); if (!t) return;
+  let pay = t.pay || "Card";
   menu.innerHTML = `<div class="mt">${esc(t.name)}</div>
     <form class="ed exf" id="eF" style="padding-top:0">
       <div class="extprev small">${exTileIcon(t)}</div>
@@ -4172,14 +4177,17 @@ function openExTileEntry(id){
         <div><label>Category</label><select id="eC" class="set-sel" style="width:100%;margin:0">${EX_CATS.map(c => `<option value="${esc(c[0])}" ${c[0] === (t.cat || "Groceries") ? "selected" : ""}>${c[1]} ${esc(c[0])}</option>`).join("")}</select></div></div>
       <label>Money spent</label>
       <div class="exbig"><span>$</span><input id="eA" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+      <label>Payment type</label>
+      <div class="exwhos expay">${["Cash", "Card"].map(w => `<button type="button" data-p="${w}" class="${w === pay ? "on" : ""}">${w === "Cash" ? "💵" : "💳"} ${w}</button>`).join("")}</div>
       <div class="acts"><button type="button" class="del" id="eEdit">Edit tile</button><button type="submit" class="save">Save entry</button></div>
     </form>`;
+  menu.querySelectorAll(".expay button").forEach(b => b.onclick = () => { pay = b.dataset.p; menu.querySelectorAll(".expay button").forEach(x => x.classList.toggle("on", x === b)); });
   menu.querySelector("#eEdit").onclick = () => openExTile(id);
   menu.querySelector("#eF").onsubmit = e => { e.preventDefault();
     const amt = parseFloat(String(menu.querySelector("#eA").value).replace(/[^0-9.]/g, ""));
     if (!(amt > 0)){ toast("Enter the amount"); menu.querySelector("#eA").focus(); return; }
     const date = menu.querySelector("#eD").value || isoToday(), cat = menu.querySelector("#eC").value, note = menu.querySelector("#eN").value.trim() || t.name;
-    S.exp = S.exp || []; S.exp.push({ id:uid(), amt, cat, note, date, who:whoAmI(), tid:t.id }); t.cat = cat;
+    S.exp = S.exp || []; S.exp.push({ id:uid(), amt, cat, note, date, who:whoAmI(), tid:t.id, pay }); t.cat = cat; t.pay = pay;
     EXM = date.slice(0, 7); save(); closeMenu(); renderExpenses(); toast("Saved " + exMoney(amt) + " at " + note);
   };
   openMenu();
@@ -4201,7 +4209,7 @@ function insData(keys){
   const items = [];
   const bills = (typeof bbSpend === "function" && !LOCAL.noBills) ? bbSpend() : [];
   bills.forEach(b => { const k = bbMonth(b); if (keys.includes(k)) items.push({ src:"bill", date:b.dueDate || b.issueDate || b.paidDate || k + "-01", amt:b.amount, cat:bbProv(b.provider).category || b.category || "Other", name:bbProv(b.provider).name, who:"", status:b.status }); });
-  (S.exp || []).forEach(e => { if (keys.includes((e.date || "").slice(0,7))) items.push({ src:"exp", date:e.date, amt:+e.amt || 0, cat:e.cat, name:e.note || e.cat, who:e.who || "" }); });
+  (S.exp || []).forEach(e => { if (keys.includes((e.date || "").slice(0,7))) items.push({ src:"exp", date:e.date, amt:+e.amt || 0, cat:e.cat, name:e.note || e.cat, who:e.who || "", pay:e.pay || "" }); });
   const per = {}; keys.forEach(k => per[k] = { b:0, e:0 });
   const byCat = {}, byWho = {}, byName = {}; let tb = 0, te = 0;
   items.forEach(i => { const k = i.date.slice(0,7); if (i.src === "bill"){ per[k].b += i.amt; tb += i.amt; } else { per[k].e += i.amt; te += i.amt; if (i.who) byWho[i.who] = (byWho[i.who] || 0) + i.amt; }
@@ -4253,7 +4261,7 @@ function insReportText(keys, d, title){
   L.push("", "From Home Base"); return L.join("\n");
 }
 async function insExport(keys, d, name){
-  const rows = [["Date", "Type", "Category", "Description", "Amount", "Paid by", "Status"]].concat(d.items.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(i => [i.date, i.src === "bill" ? "Bill" : "Expense", i.cat, i.name, i.amt.toFixed(2), i.who, i.status || ""]));
+  const rows = [["Date", "Type", "Category", "Description", "Amount", "Paid by", "Payment", "Status"]].concat(d.items.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(i => [i.date, i.src === "bill" ? "Bill" : "Expense", i.cat, i.name, i.amt.toFixed(2), i.who, i.pay || "", i.status || ""]));
   const csv = rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : v).join(",")).join("\n");
   try { const file = new File([csv], name, { type:"text/csv" }); if (navigator.canShare && navigator.canShare({ files:[file] })){ await navigator.share({ files:[file], title:name }); return; } } catch(e){ if (e && e.name === "AbortError") return; }
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv" })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); toast("CSV saved");
