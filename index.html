@@ -277,6 +277,14 @@
   .bcal .day .ds{height:3px;margin-top:1px}
   .bcal .day .ds i{width:4px;height:3px}
 
+  .day.today{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  .day.has.st-urgent:not(.today) .wd,.day.has.st-urgent:not(.today) .dn{color:var(--bad)}
+  .day.has.st-due:not(.today) .wd,.day.has.st-due:not(.today) .dn{color:var(--org)}
+  .day.has.st-auto:not(.today) .wd,.day.has.st-auto:not(.today) .dn{color:var(--blu)}
+  .day.has.st-paid:not(.today) .wd,.day.has.st-paid:not(.today) .dn{color:var(--good)}
+  .day.has .dn{font-weight:900}
+  .bcal .day{padding:2px 0 3px}
+
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
   .rq input{width:100%;padding:7px 11px;border-radius:10px;border:1px solid rgba(var(--wl),.16);background:rgba(var(--wl),.08);color:var(--ink);font-size:14px;outline:none}
@@ -506,7 +514,7 @@
   .hwl #hDay{font-weight:800;color:var(--ink);margin-top:3px;font-size:15px}
   .hclock{font-size:34px;font-weight:900;letter-spacing:-1px;color:var(--acc);white-space:nowrap;font-variant-numeric:tabular-nums}
   :root{--wl:255,255,255}
-  body.light .exc,body.light .setc,body.light .tabs,body.light .gas,body.light .bcard,body.light .hubseg,body.light .hquick button,body.light .insrng button{background:rgba(255,255,255,.58) !important;border:1px solid rgba(255,255,255,.9) !important;box-shadow:0 8px 24px rgba(70,50,120,.12),inset 0 1px 0 #fff !important}
+  body.light .exc,body.light .setc,body.light .tabs,body.light .gas,body.light .bcard,body.light .hubseg,body.light .hquick button,body.light .insrng button:not(.on){background:rgba(255,255,255,.58) !important;border:1px solid rgba(255,255,255,.9) !important;box-shadow:0 8px 24px rgba(70,50,120,.12),inset 0 1px 0 #fff !important}
   body.light .btile{background:rgba(255,255,255,.6) !important;border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(70,50,120,.10)}
   body.light .menu{background:color-mix(in srgb,#fff 88%,var(--top)) !important;border:1px solid #fff}
   body.light .band{border:1px solid rgba(255,255,255,.85);box-shadow:0 6px 18px rgba(70,50,120,.12),inset 0 1px 0 #fff}
@@ -514,7 +522,7 @@
   body.light nav.tabs .tab{color:var(--soft)}
   body.light nav.tabs .tab.on{color:#fff}
   body.light .toast{background:#2a2350;color:#fff}
-  body.light .exc,body.light .setc,body.light .tabs,body.light .gas,body.light .bcard,body.light .hubseg,body.light .hquick button,body.light .insrng button{background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.12)) !important;border:1px solid rgba(255,255,255,.75) !important;-webkit-backdrop-filter:blur(22px) saturate(1.8) !important;backdrop-filter:blur(22px) saturate(1.8) !important;box-shadow:0 8px 28px rgba(70,50,120,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3) !important}
+  body.light .exc,body.light .setc,body.light .tabs,body.light .gas,body.light .bcard,body.light .hubseg,body.light .hquick button,body.light .insrng button:not(.on){background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.12)) !important;border:1px solid rgba(255,255,255,.75) !important;-webkit-backdrop-filter:blur(22px) saturate(1.8) !important;backdrop-filter:blur(22px) saturate(1.8) !important;box-shadow:0 8px 28px rgba(70,50,120,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3) !important}
   body.light .btile{background:rgba(255,255,255,.28) !important;border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   body.light .band{border:1px solid rgba(255,255,255,.8);box-shadow:0 6px 18px rgba(70,50,120,.10),inset 0 1px 0 rgba(255,255,255,.95);opacity:.96}
   body.light .menu{background:color-mix(in srgb,#fff 60%,transparent) !important;-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8)}
@@ -554,6 +562,19 @@
   body.light .pbar.orange{--pc:#c2610a;--pc2:#e08a1f}
   body.light .pbar.red{--pc:#c62828;--pc2:#e5534b}
   body.light .pbar.blue{--pc:#1d5fd0;--pc2:#3f8fe0}
+
+  :root{--org:#ffa53a;--blu:#6fb7f5}
+  body.light{--org:#c2610a;--blu:#1d5fd0}
+  /* fit-to-screen internals */
+  body.bills main#view,body.expenses main#view{padding-bottom:0}
+  body.bills #bills > .bscroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  body.bills #exp{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  body.expenses #ins > div:last-child{display:flex;flex-direction:column;padding-bottom:calc(92px + env(safe-area-inset-bottom));overflow-y:auto}
+  body.expenses #ins > div:last-child > *{flex:none}
+  body.expenses #ins > div:last-child > .insflex{flex:1 1 0;min-height:96px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  body.expenses #ins .insc{padding-top:10px;padding-bottom:10px;margin-bottom:8px}
+  body.expenses #ins .extot{font-size:30px}
+  body.expenses #ins .chart svg{max-height:104px;width:100%}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -2706,8 +2727,9 @@ const addDays = (iso, n) => { const d = dOf(iso); d.setDate(d.getDate() + n); re
 function bbDayBills(iso){ return BB.bills.filter(b => (b.status === "due" || b.status === "paid") && b.dueDate === iso); }
 function bbDayCell(iso, wd){
   const d = dOf(iso), bills = bbDayBills(iso), t = isoToday();
-  const cls = ["day", iso === t ? "today" : "", iso < t ? "past" : "", bills.length ? "has" : ""].join(" ");
-  return `<div class="${cls}"${bills.length ? ` data-day="${iso}"` : ""}>${wd ? `<span class="wd">${DOWS[d.getDay()][0]}</span>` : ""}<span class="dn">${d.getDate()}</span><span class="ds">${bills.slice(0,3).map(b => `<i class="bdot ${bbState(b)}"></i>`).join("")}</span></div>`;
+  const rk = { urgent:0, due:1, auto:2, paid:3 }, st = bills.map(bbState).sort((x, y) => (rk[x] ?? 4) - (rk[y] ?? 4))[0];
+  const cls = ["day", iso === t ? "today" : "", iso < t ? "past" : "", bills.length ? "has st-" + st : ""].join(" ");
+  return `<div class="${cls}"${bills.length ? ` data-day="${iso}"` : ""}>${wd ? `<span class="wd">${DOWS[d.getDay()][0]}</span>` : ""}<span class="dn">${d.getDate()}</span></div>`;
 }
 function bbCalHTML(){
   if (!BBCAL.month){
@@ -4094,7 +4116,7 @@ function insData(keys){
 }
 const insCatCol = (c, src) => { const ec = EX_CATS.find(x => x[0] === c); if (ec && src !== "bill") return ec[2]; try { return bbCatCol(c); } catch(e){ return "#a9b8c4"; } };
 function insChart(keys, per){
-  const W = 330, H = 160, n = keys.length, mx = Math.max(1, ...keys.map(k => per[k].b + per[k].e)) * 1.15, gw = (W - 16) / n, bw = Math.min(26, gw - 5);
+  const W = 330, H = 104, n = keys.length, mx = Math.max(1, ...keys.map(k => per[k].b + per[k].e)) * 1.15, gw = (W - 16) / n, bw = Math.min(26, gw - 5);
   const y = v => H - 22 - v / mx * (H - 40);
   return `<svg viewBox="0 0 ${W} ${H}">${keys.map((k, i) => { const x = 8 + i * gw + (gw - bw) / 2, b = per[k].b, e = per[k].e, yb = y(b), ye = y(b + e);
     return `<rect x="${x}" y="${yb}" width="${bw}" height="${Math.max(0, H - 22 - yb)}" rx="3" fill="${INS_BILL}"/><rect x="${x}" y="${ye}" width="${bw}" height="${Math.max(0, yb - ye)}" rx="3" fill="${INS_EXP}"/>
@@ -4122,11 +4144,10 @@ function insStats(body){
       ${d.total > 0 ? `<div class="exbar"><i style="width:${d.tb / d.total * 100}%;background:${INS_BILL}"></i><i style="width:${d.te / d.total * 100}%;background:${INS_EXP}"></i></div>
       <div class="exleg"><span class="inskey"><i style="background:${INS_BILL}"></i>🧾 Bills <b>${money0(d.tb)}</b></span><span class="inskey"><i style="background:${INS_EXP}"></i>💳 Expenses <b>${money0(d.te)}</b></span></div>` : ""}</div>
     ${keys.length > 1 ? `<div class="exc insc"><div class="inslab">By month</div><div class="chart">${insChart(keys, d.per)}</div></div>` : ""}
-    ${cats.length ? `<div class="exc insc"><div class="inslab">By category</div><div class="bcats">${cats.map(([c, v]) => `<div><span><i style="background:${insCatCol(c)}"></i>${esc(c)}</span><b>${money0(v)} <small style="font-weight:700;opacity:.7">${Math.round(v / d.total * 100)}%</small></b><em style="width:${v / d.total * 100}%;background:${insCatCol(c)}"></em></div>`).join("")}</div></div>` : ""}
-    ${Object.keys(d.byWho).length > 1 ? `<div class="exc insc"><div class="inslab">Who paid (expenses)</div><div class="bcats">${Object.entries(d.byWho).map(([w, v]) => `<div><span><i style="background:var(--acc)"></i>${esc(w)}</span><b>${money0(v)}</b><em style="width:${d.te ? v / d.te * 100 : 0}%;background:var(--acc)"></em></div>`).join("")}</div></div>` : ""}
-    ${names.length ? `<div class="exc insc"><div class="inslab">Top spending</div>${names.map(([n, v]) => `<div class="instop"><span>${esc(n)}${v.n > 1 ? ` <small>×${v.n}</small>` : ""}</span><b>${money(v.sum)}</b></div>`).join("")}${biggest ? `<div class="insbig">Biggest single: <b>${esc(biggest.name)}</b> · ${money(biggest.amt)} · ${fmtDate(biggest.date)}</div>` : ""}</div>` : ""}
-    ${d.items.length ? "" : `<div class="exempty">No spending in this period yet.<br>Add bills or expenses in the <b>Expense Hub</b>.</div>`}
-    <div style="height:90px"></div>`;
+    ${names.length ? `<div class="exc insc insflex"><div class="inslab">Top spending</div>${names.map(([n, v]) => `<div class="instop"><span>${esc(n)}${v.n > 1 ? ` <small>×${v.n}</small>` : ""}</span><b>${money(v.sum)}</b></div>`).join("")}${biggest ? `<div class="insbig">Biggest single: <b>${esc(biggest.name)}</b> · ${money(biggest.amt)} · ${fmtDate(biggest.date)}</div>` : ""}</div>` : ""}
+    ${cats.length ? `<div class="exc insc insflex"><div class="inslab">By category</div><div class="bcats">${cats.map(([c, v]) => `<div><span><i style="background:${insCatCol(c)}"></i>${esc(c)}</span><b>${money0(v)} <small style="font-weight:700;opacity:.7">${Math.round(v / d.total * 100)}%</small></b><em style="width:${v / d.total * 100}%;background:${insCatCol(c)}"></em></div>`).join("")}</div></div>` : ""}
+    ${Object.keys(d.byWho).length > 1 ? `<div class="exc insc insflex"><div class="inslab">Who paid (expenses)</div><div class="bcats">${Object.entries(d.byWho).map(([w, v]) => `<div><span><i style="background:var(--acc)"></i>${esc(w)}</span><b>${money0(v)}</b><em style="width:${d.te ? v / d.te * 100 : 0}%;background:var(--acc)"></em></div>`).join("")}</div></div>` : ""}
+    ${d.items.length ? "" : `<div class="exempty">No spending in this period yet.<br>Add bills or expenses in the <b>Expense Hub</b>.</div>`}`;
   body.querySelectorAll("[data-r]").forEach(b => b.onclick = () => { INSR = b.dataset.r; renderInsights(); });
   const f = body.querySelector("#insFy"); if (f) f.onchange = () => { INSFY = +f.value; renderInsights(); };
 }
@@ -4160,12 +4181,11 @@ function insReports(body){
     <div class="exc insc"><div class="inslab">${esc(title)}</div><div class="extot" style="text-align:center">${money(d.total)}</div>
       <div class="exsub" style="text-align:center">${delta !== null ? `<span class="${delta > 0 ? "up" : "dn"}">${delta > 0 ? "▲" : "▼"} ${Math.abs(delta)}% vs ${MONS[+pk.slice(5) - 1]}</span> · ` : ""}${d.items.length} item${d.items.length === 1 ? "" : "s"}</div>
       <table class="instab"><tr><td>🧾 Bills</td><td>${money(d.tb)}</td></tr><tr><td>💳 Expenses</td><td>${money(d.te)}</td></tr>${unpaid.length ? `<tr class="warn"><td>⏳ Bills still due</td><td>${money(unpaid.reduce((s, b) => s + b.amount, 0))}</td></tr>` : ""}</table></div>
-    ${fyMode ? `<div class="exc insc"><div class="inslab">By month</div><table class="instab">${keys.map(k => { const t = d.per[k].b + d.per[k].e; return `<tr class="${t ? "" : "mute"}"><td>${MONS[+k.slice(5) - 1]} ${k.slice(0, 4)}</td><td>${money(t)}</td></tr>`; }).join("")}</table></div>`
+    ${fyMode ? `<div class="exc insc insflex"><div class="inslab">By month</div><table class="instab">${keys.map(k => { const t = d.per[k].b + d.per[k].e; return `<tr class="${t ? "" : "mute"}"><td>${MONS[+k.slice(5) - 1]} ${k.slice(0, 4)}</td><td>${money(t)}</td></tr>`; }).join("")}</table></div>`
       : (() => { const ex = d.items.filter(i => i.src === "exp"), days = {}; ex.forEach(i => days[i.date] = (days[i.date] || 0) + i.amt); const top = Object.entries(days).sort((a, b) => b[1] - a[1])[0];
         return ex.length ? `<div class="exc insc"><div class="inslab">Highlights</div><table class="instab"><tr><td>Average per expense</td><td>${money(d.te / ex.length)}</td></tr><tr><td>Busiest day</td><td>${fmtDate(top[0])} · ${money(top[1])}</td></tr></table></div>` : ""; })()}
     <div class="acts2" style="margin:6px 0"><button id="insShare">📤 Share summary</button><button id="insCsv">⬇︎ Export CSV</button></div>
-    <div class="acts2" style="margin:0 0 6px"><button id="insPdf" style="grid-column:1/-1">📄 Create PDF report…</button></div>
-    <div style="height:90px"></div>`;
+    <div class="acts2" style="margin:0 0 6px"><button id="insPdf" style="grid-column:1/-1">📄 Create PDF report…</button></div>`;
   body.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { INSR = b.dataset.p === "fy" ? "fy-r" : "3m"; renderInsights(); });
   body.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { INSM = exShift(INSM, +b.dataset.m); renderInsights(); });
   body.querySelectorAll("[data-y]").forEach(b => b.onclick = () => { INSFY = fyv + +b.dataset.y; renderInsights(); });
