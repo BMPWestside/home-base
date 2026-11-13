@@ -455,6 +455,20 @@
   .exwhos button{flex:1;border-radius:12px;background:rgba(var(--wl),.1);font-weight:800;font-size:18px;color:var(--ink)}
   .exwhos button.on{background:var(--acc);color:var(--onacc)}
   .sg4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+  .extiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 14px 12px}
+  .extile{aspect-ratio:1;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px 4px;color:var(--ink);background:rgba(var(--wl),.1);border:1px solid rgba(var(--wl),.2);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);min-width:0}
+  .extile span:last-child{font-size:11.5px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .extile.exnew{border:2px dashed var(--soft);background:transparent}
+  .extile.exnew i{font-style:normal;font-size:38px;font-weight:300;line-height:1;color:var(--acc)}
+  .extic{width:46px;height:46px;border-radius:13px;background:#fff;display:grid;place-items:center;overflow:hidden;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .extic img{width:100%;height:100%;object-fit:contain}
+  .exti{width:100%;height:100%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:18px}
+  .extprev{width:72px;height:72px;border-radius:20px;background:#fff;margin:4px auto 6px;display:grid;place-items:center;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+  .extprev img{width:100%;height:100%;object-fit:contain}
+  .extprev.small{width:56px;height:56px;border-radius:16px;background:none;box-shadow:none}
+  .extprev.small .extic{width:56px;height:56px}
+  .extprev .exti{font-size:26px}
   .hubseg{display:flex;gap:6px;padding:4px;margin:0 14px 12px;border-radius:16px;background:rgba(var(--wl),.07);border:1px solid rgba(var(--wl),.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
   .hubseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:800;font-size:15px;color:var(--soft)}
   .hubseg button.on{background:var(--acc);color:var(--onacc)}
@@ -1137,6 +1151,8 @@ function snapOf(){
   for (const t of (S.dates||[])){ const { u, ...r } = t; m.set("dt:"+t.id, JSON.stringify(r)); refs.set("dt:"+t.id, t); }
   m.set("ord:exp", (S.exp||[]).map(t=>t.id).join(","));
   for (const t of (S.exp||[])){ const { u, ...r } = t; m.set("ex:"+t.id, JSON.stringify(r)); refs.set("ex:"+t.id, t); }
+  m.set("ord:exTiles", (S.exTiles||[]).map(t=>t.id).join(","));
+  for (const t of (S.exTiles||[])){ const { u, ...r } = t; m.set("et:"+t.id, JSON.stringify(r)); refs.set("et:"+t.id, t); }
   m.set("ord:trackers", (S.trackers||[]).map(t=>t.id).join(","));
   for (const t of (S.trackers||[])){ const { u, ...r } = t; m.set("t:"+t.id, JSON.stringify(r)); refs.set("t:"+t.id, t); }
   m.set("wed", String(S.lastWedReset||0));
@@ -1161,7 +1177,7 @@ function stamp(){
     if (cur.has(k)) continue;
     const id = k.slice(k.indexOf(":")+1);
     if (k.startsWith("k:")){ S.cdel[id] = now; dw = true; }
-    else if (k.startsWith("c:") || k.startsWith("i:") || k.startsWith("t:") || k.startsWith("dt:") || k.startsWith("ex:")){ S.del[id] = now; dh = true; }
+    else if (k.startsWith("c:") || k.startsWith("i:") || k.startsWith("t:") || k.startsWith("dt:") || k.startsWith("ex:") || k.startsWith("et:")){ S.del[id] = now; dh = true; }
   }
   SNAP = cur;
   if (dh) LOCAL.dirtyH = true;
@@ -1211,6 +1227,8 @@ function mergeHouse(R){
   ord.dates = Math.max((S.ord || {}).dates || 0, (R.ord || {}).dates || 0);
   S.exp = mergeArr(S.exp, R.exp, (S.ord || {}).exp, (R.ord || {}).exp, del);
   ord.exp = Math.max((S.ord || {}).exp || 0, (R.ord || {}).exp || 0);
+  S.exTiles = mergeArr(S.exTiles, R.exTiles, (S.ord || {}).exTiles, (R.ord || {}).exTiles, del);
+  ord.exTiles = Math.max((S.ord || {}).exTiles || 0, (R.ord || {}).exTiles || 0);
   S.ord = ord; S.del = del;
   S.atShop = (((S.atShop||{}).u)||0) >= (((R.atShop||{}).u)||0) ? S.atShop : R.atShop;
   S.lastWedReset = Math.max(S.lastWedReset || 0, R.lastWedReset || 0) || S.lastWedReset;
@@ -1221,6 +1239,7 @@ function adoptHouse(R){
   S.trackers = R.trackers || [];
   S.dates = R.dates || [];
   S.exp = R.exp || S.exp || [];
+  S.exTiles = R.exTiles || S.exTiles || [];
   S.ord = R.ord || {}; S.del = R.del || {};
   S.atShop = R.atShop || null;
   S.lastWedReset = R.lastWedReset || S.lastWedReset;
@@ -1230,7 +1249,7 @@ function mergeWork(R){
   S.customers = mergeArr(S.customers, R.customers, S.cord, R.cord, cdel);
   S.cord = Math.max(S.cord || 0, R.cord || 0); S.cdel = cdel;
 }
-const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], exp:S.exp || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
+const houseData = () => clone({ tabs:{ shopping:S.tabs.shopping, personal:S.tabs.personal }, trackers:S.trackers, dates:S.dates || [], exp:S.exp || [], exTiles:S.exTiles || [], ord:S.ord || {}, del:S.del || {}, lastWedReset:S.lastWedReset || 0, atShop:S.atShop || null });
 const workData  = () => clone({ customers:S.customers, cord:S.cord || 0, cdel:S.cdel || {} });
 
 /* ---- talking to the Apps Script web app ---- */
@@ -4060,14 +4079,15 @@ function renderExpenses(){
       <div class="exleg">${cats.map(([c, v]) => `<button class="${EXF === c ? "on" : ""}" data-f="${esc(c)}"><i style="background:${exCat(c)[2]}"></i>${exCat(c)[1]} ${esc(c)} <b>${exMoney(v)}</b></button>`).join("")}</div>
       ${Object.keys(byWho).length > 1 ? `<div class="exwho">${Object.entries(byWho).map(([w, v]) => `<span><b>${esc(w)}</b> ${exMoney(v)}</span>`).join("")}</div>` : ""}` : ""}
     </div>
-    <button class="exadd" id="exAdd">＋ Add expense</button>
+    <div class="extiles">${(S.exTiles || []).map(t => `<button class="extile" data-t="${t.id}">${exTileIcon(t)}<span>${esc(t.name)}</span></button>`).join("")}<button class="extile exnew" id="exNewTile" aria-label="New tile"><i>＋</i></button></div>
     ${Object.keys(days).length ? Object.entries(days).map(([d, list]) => `<div class="exday"><span>${exDayLabel(d)}</span><span>${exMoney(list.reduce((s, e) => s + (+e.amt || 0), 0))}</span></div>
       ${list.map(e => { const c = exCat(e.cat); return `<button class="exc exrow" data-id="${e.id}"><span class="exic" style="background:${c[2]}33;border-color:${c[2]}88">${c[1]}</span><span class="exmid"><b>${esc(e.note || e.cat)}</b><small>${esc(e.cat)}${e.who ? " · " + esc(e.who) : ""}</small></span><span class="examt">${exMoney(+e.amt || 0)}</span></button>`; }).join("")}`).join("")
-      : `<div class="exempty">${EXF ? "No " + esc(EXF) + " expenses this month" : "Tap <b>＋ Add expense</b> to log your first one"}</div>`}
+      : `<div class="exempty">${EXF ? "No " + esc(EXF) + " expenses this month" : "Tap the <b>＋</b> tile to add a shop, then tap it to log spending"}</div>`}
     <div style="height:90px"></div>`;
   host.querySelectorAll(".exnav button").forEach(b => b.onclick = () => { EXM = exShift(EXM, +b.dataset.m); EXF = ""; renderExpenses(); });
   host.querySelectorAll(".exleg button").forEach(b => b.onclick = () => { EXF = EXF === b.dataset.f ? "" : b.dataset.f; renderExpenses(); });
-  host.querySelector("#exAdd").onclick = () => openExpense();
+  host.querySelector("#exNewTile").onclick = () => openExTile();
+  host.querySelectorAll(".extile[data-t]").forEach(b => b.onclick = () => openExTileEntry(b.dataset.t));
   host.querySelectorAll(".exrow").forEach(b => b.onclick = () => openExpense(b.dataset.id));
 }
 function openExpense(id){
@@ -4100,6 +4120,70 @@ function openExpense(id){
     undoToast("Deleted " + exMoney(+ex.amt), () => { S.exp.splice(Math.min(i, S.exp.length), 0, ex); save(); renderExpenses(); }); };
   openMenu();
   if (!ex) setTimeout(() => menu.querySelector("#xA").focus(), 80);
+}
+
+/* ---- shop tiles ---- */
+const exTileSrc = t => t.logo || (t.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(t.domain)}&sz=128` : "");
+const exTileInit = n => (String(n).trim().split(/\s+/).map(w => w[0]).join("").slice(0, 2) || "?").toUpperCase();
+const exTileHue = n => { let h = 0; for (const c of String(n)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+function exTileIcon(t){
+  const src = exTileSrc(t), ini = `<b class="exti" style="background:hsl(${exTileHue(t.name)} 62% 46%)">${esc(exTileInit(t.name))}</b>`;
+  return src ? `<span class="extic"><img src="${src}" alt="" onerror="this.parentNode.innerHTML=decodeURIComponent('${encodeURIComponent(ini)}')"></span>` : `<span class="extic">${ini}</span>`;
+}
+function openExTile(id){
+  const t = id ? (S.exTiles || []).find(x => x.id === id) : null;
+  let logo = t ? t.logo || "" : "", domain = t ? t.domain || "" : "";
+  const prev = () => { const src = exTileSrc({ logo, domain }), nm = menu.querySelector("#tN").value.trim() || "?";
+    menu.querySelector("#tPrev").innerHTML = src ? `<img src="${src}" alt="" onerror="this.remove()">` : `<b class="exti" style="background:hsl(${exTileHue(nm)} 62% 46%)">${esc(exTileInit(nm))}</b>`; };
+  menu.innerHTML = `<div class="mt">${t ? "Edit tile" : "New tile"}</div>
+    <form class="ed exf" id="tF" style="padding-top:0">
+      <div class="extprev" id="tPrev"></div>
+      <label>Name</label><input id="tN" value="${esc(t ? t.name : "")}" placeholder="e.g. Coles" autocomplete="off">
+      <label>Logo</label>
+      <div class="blogo"><label class="pill">🖼 Upload logo<input id="tLogo" type="file" accept="image/*" hidden></label><button type="button" class="pill" id="tWeb">🌐 Website icon</button>${logo || domain ? `<button type="button" class="pill" id="tClr">✕ Initials</button>` : ""}</div>
+      <div id="tWebBox" style="display:none"><label>Website</label><input id="tDom" value="${esc(domain)}" placeholder="coles.com.au" autocapitalize="off" autocorrect="off" inputmode="url"></div>
+      <div class="acts">${t ? `<button type="button" class="del" id="tDel">Delete</button>` : `<button type="button" class="del" id="tX">Cancel</button>`}<button type="submit" class="save">${t ? "Save" : "Create tile"}</button></div>
+    </form>`;
+  prev();
+  menu.querySelector("#tN").oninput = prev;
+  menu.querySelector("#tLogo").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { logo = await resizeLogo(f); domain = ""; prev(); } catch(_){ toast("Couldn't read that image"); } };
+  menu.querySelector("#tWeb").onclick = () => { const b = menu.querySelector("#tWebBox"); b.style.display = ""; const i = menu.querySelector("#tDom"); i.focus(); i.oninput = () => { domain = i.value.trim().replace(/^https?:\/\//, "").replace(/\/.*$/, ""); logo = ""; prev(); }; if (i.value) i.oninput(); };
+  const clr = menu.querySelector("#tClr"); if (clr) clr.onclick = () => { logo = ""; domain = ""; prev(); };
+  const x = menu.querySelector("#tX"); if (x) x.onclick = closeMenu;
+  menu.querySelector("#tF").onsubmit = e => { e.preventDefault();
+    const name = menu.querySelector("#tN").value.trim(); if (!name){ toast("Enter a name"); menu.querySelector("#tN").focus(); return; }
+    const dv = menu.querySelector("#tDom"); if (dv && menu.querySelector("#tWebBox").style.display !== "none" && dv.value.trim() && !logo) domain = dv.value.trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    S.exTiles = S.exTiles || [];
+    if (t) Object.assign(t, { name, logo, domain }); else S.exTiles.push({ id:uid(), name, logo, domain, cat:"Groceries" });
+    save(); closeMenu(); renderExpenses(); toast(t ? "Saved" : "Tile added");
+  };
+  const del = menu.querySelector("#tDel");
+  if (del) del.onclick = () => { const i = S.exTiles.indexOf(t); S.exTiles.splice(i, 1); save(); closeMenu(); renderExpenses(); undoToast("Deleted " + t.name, () => { S.exTiles.splice(Math.min(i, S.exTiles.length), 0, t); save(); renderExpenses(); }); };
+  openMenu();
+  if (!t) setTimeout(() => menu.querySelector("#tN").focus(), 80);
+}
+function openExTileEntry(id){
+  const t = (S.exTiles || []).find(x => x.id === id); if (!t) return;
+  menu.innerHTML = `<div class="mt">${esc(t.name)}</div>
+    <form class="ed exf" id="eF" style="padding-top:0">
+      <div class="extprev small">${exTileIcon(t)}</div>
+      <label>Name</label><input id="eN" value="${esc(t.name)}" autocomplete="off">
+      <div class="r2 xr2"><div><label>Date</label><input id="eD" type="date" value="${isoToday()}"></div>
+        <div><label>Category</label><select id="eC" class="set-sel" style="width:100%;margin:0">${EX_CATS.map(c => `<option value="${esc(c[0])}" ${c[0] === (t.cat || "Groceries") ? "selected" : ""}>${c[1]} ${esc(c[0])}</option>`).join("")}</select></div></div>
+      <label>Money spent</label>
+      <div class="exbig"><span>$</span><input id="eA" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+      <div class="acts"><button type="button" class="del" id="eEdit">Edit tile</button><button type="submit" class="save">Save entry</button></div>
+    </form>`;
+  menu.querySelector("#eEdit").onclick = () => openExTile(id);
+  menu.querySelector("#eF").onsubmit = e => { e.preventDefault();
+    const amt = parseFloat(String(menu.querySelector("#eA").value).replace(/[^0-9.]/g, ""));
+    if (!(amt > 0)){ toast("Enter the amount"); menu.querySelector("#eA").focus(); return; }
+    const date = menu.querySelector("#eD").value || isoToday(), cat = menu.querySelector("#eC").value, note = menu.querySelector("#eN").value.trim() || t.name;
+    S.exp = S.exp || []; S.exp.push({ id:uid(), amt, cat, note, date, who:whoAmI(), tid:t.id }); t.cat = cat;
+    EXM = date.slice(0, 7); save(); closeMenu(); renderExpenses(); toast("Saved " + exMoney(amt) + " at " + note);
+  };
+  openMenu();
+  setTimeout(() => menu.querySelector("#eA").focus(), 80);
 }
 /* ================= Insights: Stats + Reports ================= */
 let INS = "stats", INSR = "3m", INSFY = null, INSM = null;
