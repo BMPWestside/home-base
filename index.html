@@ -453,7 +453,10 @@
   .insdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
   #ins .chart svg{width:100%;height:auto}
 
-  main#view{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  html,body{height:100%;overflow:hidden}
+  body{display:flex;flex-direction:column;height:100dvh;min-height:0 !important;padding-bottom:0 !important}
+  header{flex:none}
+  main#view{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:none;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   nav.tabs{position:fixed !important;top:auto !important;bottom:0;left:0;right:0;margin:0 !important;border-radius:0 !important;padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;z-index:25;gap:2px !important;
     background:color-mix(in srgb,var(--bottom) 58%,transparent) !important;-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);border-top:1px solid rgba(var(--wl),.16);box-shadow:0 -6px 24px rgba(0,0,0,.18)}
   nav.tabs .tab{flex:1;height:46px;padding:0 !important;border-radius:15px;display:grid;place-items:center;color:var(--soft);font-size:0;letter-spacing:0}
@@ -498,6 +501,14 @@
   body.light nav.tabs .tab{color:var(--soft)}
   body.light nav.tabs .tab.on{color:#fff}
   body.light .toast{background:#2a2350;color:#fff}
+  body.light .exc,body.light .setc,body.light .tabs,body.light .gas,body.light .bcard,body.light .hubseg,body.light .hquick button,body.light .insrng button{background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.12)) !important;border:1px solid rgba(255,255,255,.75) !important;-webkit-backdrop-filter:blur(22px) saturate(1.8) !important;backdrop-filter:blur(22px) saturate(1.8) !important;box-shadow:0 8px 28px rgba(70,50,120,.10),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3) !important}
+  body.light .btile{background:rgba(255,255,255,.28) !important;border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+  body.light .band{border:1px solid rgba(255,255,255,.8);box-shadow:0 6px 18px rgba(70,50,120,.10),inset 0 1px 0 rgba(255,255,255,.95);opacity:.96}
+  body.light .menu{background:color-mix(in srgb,#fff 60%,transparent) !important;-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8)}
+  body.light .tabs{background:rgba(255,255,255,.4) !important}
+  body.light .hwel{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 82%,#fff),color-mix(in srgb,var(--acc) 55%,#ff9ec4)) !important;border:1px solid rgba(255,255,255,.6) !important;box-shadow:0 10px 30px color-mix(in srgb,var(--acc) 35%,transparent),inset 0 1px 0 rgba(255,255,255,.6) !important;color:#fff}
+  body.light .hwel b,body.light .hwel #hDay,body.light .hwel .hclock{color:#fff}
+  body.light .hwel span{color:rgba(255,255,255,.9)}
 
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
@@ -1980,7 +1991,7 @@ function renderToday(){
 /* ================= lists area: fit to screen, scroll only the lists ================= */
 function fitBands(){
   const b = document.getElementById("bands"); if (!b) return;
-  if (!(S.tab === "shopping" || S.tab === "personal")){ b.classList.remove("fit"); b.style.maxHeight = ""; return; }
+  b.classList.remove("fit"); b.style.maxHeight = ""; return;
   const pb = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
   const top = b.getBoundingClientRect().top + window.scrollY;
   const avail = Math.floor(window.innerHeight - top - pb - 4);
@@ -2091,7 +2102,7 @@ function attachHold(el, container, sel, onDone, onDrop){
     const sc = scroller();
     if (sc && sc !== itemsEl){ const r = sc.getBoundingClientRect(); if (y < r.top + 50) sc.scrollTop -= 10; else if (y > r.bottom - 50) sc.scrollTop += 10; }
     else if (sc){ if (y < 120) sc.scrollTop -= 10; else if (y > innerHeight - (zone ? 150 : 80) && !overZone) sc.scrollTop += 10; }
-    else { if (y < 80) scrollBy(0,-10); else if (y > innerHeight - 80) scrollBy(0,10); }
+    else { const vw = document.getElementById("view"); if (y < 80) vw.scrollTop -= 10; else if (y > innerHeight - 80) vw.scrollTop += 10; }
     const want = baseTop + (y - startY) + (sc ? sc.scrollTop - startScroll : 0);
     const list = peers(), i = list.indexOf(el), prev = list[i-1], next = list[i+1];
     if (prev && want < prev.offsetTop + prev.offsetHeight/2){
@@ -2199,7 +2210,7 @@ function setupPull(target, atTop, getInd, trigger, exclude){
   });
 }
 // listen on the whole page so pulling works even when a tab has no lists yet
-setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && window.scrollY<=0 && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? (HUB === "exp" ? openExpense() : billsRefresh(true)) : S.tab === "expenses" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
+setupPull(document, () => S.tab!=="work" && !openId && !menu.classList.contains("on") && (document.getElementById("view").scrollTop<=0) && !((document.getElementById("bands")||{}).scrollTop > 0), () => document.getElementById("mpull"), () => S.tab === "bills" ? (HUB === "exp" ? openExpense() : billsRefresh(true)) : S.tab === "expenses" ? billsRefresh(true) : openAdder("card"), "#sheet,#menu,#scrim");
 setupPull(itemsEl, () => itemsEl.scrollTop<=0, () => document.getElementById("ipull"), () => openAdder("item"));
 
 /* ================= pinch in / tap title to close ================= */
@@ -4114,7 +4125,7 @@ const NAV_ICONS = {
   expenses:'<rect x="4" y="11" width="3.5" height="9" rx="1"/><rect x="10.2" y="4" width="3.5" height="16" rx="1"/><rect x="16.5" y="8" width="3.5" height="12" rx="1"/>',
   settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>'
 };
-function goTab(t, after){ S.tab = t; save(); render(); window.scrollTo({ top:0 }); if (after) setTimeout(after, 60); }
+function goTab(t, after){ S.tab = t; save(); render(); document.getElementById("view").scrollTop = 0; if (after) setTimeout(after, 60); }
 
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
@@ -4263,7 +4274,7 @@ if ("serviceWorker" in navigator) addEventListener("load", () => navigator.servi
 /* ================= tabs ================= */
 document.getElementById("tabs").onclick = e => {
   const b = e.target.closest(".tab"); if (!b) return;
-  S.tab = b.dataset.tab; save(); render(); window.scrollTo({top:0});
+  S.tab = b.dataset.tab; save(); render(); document.getElementById("view").scrollTop = 0;
 };
 render();
 </script>
