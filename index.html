@@ -288,6 +288,7 @@
   .btile .bpd{position:absolute;left:0;right:0;bottom:3px;text-align:center;font-size:9.5px;font-weight:800;color:var(--soft);white-space:nowrap;padding-left:20px}
   .btile .bpd.ok{color:var(--good)}
   .btile{padding-bottom:20px}
+  .pdl[hidden]{display:none !important}
 
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
@@ -2971,6 +2972,7 @@ function bbReviewHTML(){
         <label>Amount ($)<input name="amount" inputmode="decimal" value="${b.amount ? b.amount.toFixed(2) : ""}"></label>
         <label>Due date<input name="dueDate" type="date" value="${esc(b.dueDate||"")}"></label>
         <label class="full">Status<select name="status"><option value="due">Still to pay</option><option value="paid">Already paid</option></select></label>
+        <label class="full pdl" hidden>Date paid<input name="paidDate" type="date" value="${isoToday()}" max="${isoToday()}"></label>
       </div>
       <div class="ra">${b.fileUrl || b.emailUrl ? `<a class="pill" href="${esc(b.fileUrl || b.emailUrl)}" target="_blank" rel="noopener">View</a>` : ""}
         <button class="pill red" data-ra="ignore">Not a bill</button><button class="pill c" data-ra="confirm">✓ Confirm</button></div></div>`; }).join("");
@@ -2988,12 +2990,18 @@ function bbBindNewProv(root){
     const nf = sel.closest(".rcard, .ed").querySelector(".newprov"); if (nf){ nf.hidden = sel.value !== "__new"; if (!nf.hidden) nf.querySelector("[name=pname]").focus(); }
   });
 }
+function bbPaidToggle(root){
+  root.querySelectorAll("[name=status]").forEach(sel => { const box = sel.closest(".rcard,form") || root, pl = box.querySelector(".pdl"); if (!pl) return;
+    const upd = () => { pl.hidden = sel.value !== "paid"; };
+    sel.addEventListener("change", upd); upd(); });
+}
 function bbBindReview(host){
   bbBindNewProv(host);
   host.querySelectorAll(".rcard").forEach(card => {
     const d = bbDrafts[card.dataset.id];
     if (d) Object.entries(d).forEach(([k,v]) => { const el = card.querySelector(`[name="${k}"]`); if (el) el.value = v; });
     const nf = card.querySelector(".newprov"), sel = card.querySelector("[data-newprov]"); if (nf && sel) nf.hidden = sel.value !== "__new";
+    bbPaidToggle(card);
     card.addEventListener("input", e => { if (e.target.name) (bbDrafts[card.dataset.id] = bbDrafts[card.dataset.id] || {})[e.target.name] = e.target.value; });
     card.addEventListener("change", e => { if (e.target.name) (bbDrafts[card.dataset.id] = bbDrafts[card.dataset.id] || {})[e.target.name] = e.target.value; });
   });
@@ -3006,12 +3014,13 @@ function bbBindReview(host){
     if (g("provider") === "unknown") return toast("Choose the provider");
     if (g("provider") === "__new" && !card.querySelector("[name=pname]").value.trim()) return toast("Type the new provider's name");
     if (!g("dueDate")) return toast("Enter the due date");
-    const st = g("status");
+    const st = g("status"), pdate = st === "paid" ? (g("paidDate") || isoToday()) : "";
+    if (st === "paid" && pdate > isoToday()) return toast("Date paid can't be in the future");
     bbRun(async () => {
       let pid = g("provider"), category;
       if (pid === "__new"){ const np = bbProviderFromForm(card, pid); pid = np.id; category = np.category; await bbCall("provider", { provider: np }); }
       delete bbDrafts[id];
-      await bbUpdate(id, Object.assign({ provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: st === "paid" ? isoToday() : "", reason:"" }, category ? { category } : {}));
+      await bbUpdate(id, Object.assign({ provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: pdate, reason:"" }, category ? { category } : {}));
     }, "Confirmed");
   });
 }
@@ -3107,9 +3116,11 @@ function bbOpenAdd(){
       <label>Provider</label><select class="set-sel" style="width:100%;margin:0" name="provider" data-newprov>${bbProvOptions("")}</select>${bbNewProv()}
       <div class="sg2" style="gap:8px"><div><label>Amount ($)</label><input name="amount" inputmode="decimal" placeholder="0.00"></div><div><label>Due date</label><input name="dueDate" type="date" value="${new Date(Date.now()+14*864e5).toISOString().slice(0,10)}"></div></div>
       <label>Status</label><select class="set-sel" style="width:100%;margin:0" name="status"><option value="due">Still to pay</option><option value="paid">Already paid</option></select>
+      <div class="pdl" hidden><label>Date paid</label><input name="paidDate" type="date" value="${isoToday()}" max="${isoToday()}" style="width:100%"></div>
       <div class="acts"><button type="button" class="del" style="background:rgba(var(--wl),.1);color:var(--ink)" id="cx">Cancel</button><button type="submit" class="save">Add bill</button></div>
     </form>`;
   bbBindNewProv(menu);
+  bbPaidToggle(menu);
   menu.querySelector("#cx").onclick = closeMenu;
   const bf = menu.querySelector("#bbFile"); if (bf) bf.onchange = e => { const f = e.target.files && e.target.files[0]; if (f) bbUpload(f); };
   menu.querySelector("#bbMan").onsubmit = e => {
@@ -3120,12 +3131,13 @@ function bbOpenAdd(){
     if (g("provider") === "__new" && !f.querySelector("[name=pname]").value.trim()) return toast("Type the new provider's name");
     if (!(amount > 0)) return toast("Enter the amount");
     if (!g("dueDate")) return toast("Enter the due date");
-    const st = g("status");
+    const st = g("status"), pdate = st === "paid" ? (g("paidDate") || isoToday()) : "";
+    if (st === "paid" && pdate > isoToday()) return toast("Date paid can't be in the future");
     closeMenu();
     bbRun(async () => {
       let pid = g("provider");
       if (pid === "__new"){ const np = bbProviderFromForm(f, pid); pid = np.id; await bbCall("provider", { provider: np }); }
-      await bbCall("add", { bill: { provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: st === "paid" ? isoToday() : "" } });
+      await bbCall("add", { bill: { provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: pdate } });
     }, "Bill added");
   };
   openMenu();
