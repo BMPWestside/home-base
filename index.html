@@ -965,7 +965,7 @@
 <div id="splash" aria-hidden="true">
   <i class="sp-orb o1"></i><i class="sp-orb o2"></i><i class="sp-orb o3"></i><i class="sp-orb o4"></i>
   <div class="sp-stage">
-    <i class="sp-ring r1"></i><i class="sp-ring r2"></i>
+    <i class="sp-ring r1"></i><i class="sp-ring r2"></i><i class="sp-ring r3"></i>
     <div class="sp-logo"><i class="sp-glow"></i>
       <img class="sp-img" src="icons/splash3/logo.png" alt="">
       <i class="sp-shine"></i>
@@ -988,12 +988,13 @@
   @keyframes spDrift1{to{transform:translate(8vmax,-6vmax) scale(1.1)}}
   @keyframes spDrift2{to{transform:translate(-10vmax,8vmax) scale(1.15)}}
   .sp-stage{position:relative;width:min(70vw,310px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:28px}
-  .sp-ring{position:absolute;inset:3%;border-radius:50%;border:2px solid rgba(255,255,255,.5);opacity:0}
-  .sp-ring.r1{animation:spRing 1.6s 1.3s ease-out forwards}
-  .sp-ring.r2{animation:spRing 1.6s 1.6s ease-out forwards;border-color:rgba(255,176,46,.6)}
-  @keyframes spRing{0%{opacity:.8;transform:scale(.95)}100%{opacity:0;transform:scale(1.6)}}
+  .sp-ring{position:absolute;inset:0;border-radius:22.5%;border:3px solid rgba(255,214,150,.75);opacity:0}
+  .sp-ring.r1{animation:spRing 1.7s 1.2s ease-out forwards}
+  .sp-ring.r3{animation:spRing 1.7s 1.8s ease-out forwards;border-color:rgba(255,120,60,.7)}
+  .sp-ring.r2{animation:spRing 1.7s 1.5s ease-out forwards;border-color:rgba(255,176,46,.7)}
+  @keyframes spRing{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
   .sp-logo{position:relative;width:100%;aspect-ratio:1;border-radius:50%}
-  .sp-glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;background:conic-gradient(#ffb02e,#ff4a1f,#d4142b,#ffb02e);filter:blur(26px);animation:spGlow 1.6s .3s ease-out forwards}
+  .sp-glow{position:absolute;inset:-4%;border-radius:26%;opacity:0;background:conic-gradient(#ffb02e,#ff4a1f,#d4142b,#ffb02e);filter:blur(26px);animation:spGlow 1.6s .3s ease-out forwards}
   @keyframes spGlow{0%{opacity:0;transform:scale(.7) rotate(0)}50%{opacity:.5}100%{opacity:.28;transform:scale(1) rotate(120deg)}}
   .sp-img{position:absolute;left:0;top:0;width:100%;height:auto;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 14px 28px rgba(0,0,0,.45));animation:spSpin 1.5s .15s cubic-bezier(.16,.85,.3,1.04) forwards}
   @keyframes spSpin{0%{opacity:0;transform:rotate(-600deg) scale(.25)}25%{opacity:1}100%{opacity:1;transform:none}}
