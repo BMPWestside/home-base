@@ -972,28 +972,28 @@
     </div>
   </div>
   <div class="sp-name">Home Base</div>
-  <div class="sp-tag"><span style="color:#ffc933">Lists</span><span style="color:#9ccbff">Reminders</span><span style="color:#ffc933">Bills</span><span style="color:#9ccbff">Expenses</span></div>
+  <div class="sp-tag"><span style="color:#ffd58a">Lists</span><span style="color:#ffa05a">Reminders</span><span style="color:#ffd58a">Bills</span><span style="color:#ffa05a">Expenses</span></div>
 </div>
 <style>
   #splash{position:fixed;top:-80px;bottom:-80px;left:0;right:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
-    background:linear-gradient(165deg,#0b1128 0%,#111a3c 55%,#0b1330 100%);transition:opacity .45s ease}
+    background:linear-gradient(165deg,#1c0a0c 0%,#2e0f0c 55%,#1a0a0a 100%);transition:opacity .45s ease}
   #splash.bye{opacity:0;pointer-events:none}
   #splash.bye .sp-stage{transform:scale(1.14);transition:transform .45s ease}
   .sp-orb{position:absolute;border-radius:50%;filter:blur(55px);will-change:transform;opacity:0;animation:spOrbIn 1.2s .2s ease forwards}
-  .sp-orb.o1{width:60vmax;height:60vmax;left:-26vmax;top:-14vmax;background:radial-gradient(circle,#ffb81f 0%,rgba(255,184,31,0) 65%);--o:.55;animation:spOrbIn 1.2s .2s ease forwards,spDrift1 8s ease-in-out infinite alternate}
-  .sp-orb.o2{width:60vmax;height:60vmax;right:-26vmax;top:-10vmax;background:radial-gradient(circle,#2a63e0 0%,rgba(42,99,224,0) 65%);--o:.6;animation:spOrbIn 1.2s .35s ease forwards,spDrift2 9s ease-in-out infinite alternate}
-  .sp-orb.o3{width:60vmax;height:60vmax;left:-24vmax;bottom:-14vmax;background:radial-gradient(circle,#1747b8 0%,rgba(23,71,184,0) 65%);--o:.45;animation:spOrbIn 1.2s .5s ease forwards,spDrift2 9s ease-in-out infinite alternate-reverse}
-  .sp-orb.o4{width:64vmax;height:64vmax;right:-26vmax;bottom:-16vmax;background:radial-gradient(circle,#1e9bfa 0%,rgba(30,155,250,0) 65%);--o:.6;animation:spOrbIn 1.2s .65s ease forwards,spDrift1 8s ease-in-out infinite alternate-reverse}
+  .sp-orb.o1{width:60vmax;height:60vmax;left:-26vmax;top:-14vmax;background:radial-gradient(circle,#ffa51f 0%,rgba(255,165,31,0) 65%);--o:.55;animation:spOrbIn 1.2s .2s ease forwards,spDrift1 8s ease-in-out infinite alternate}
+  .sp-orb.o2{width:60vmax;height:60vmax;right:-26vmax;top:-10vmax;background:radial-gradient(circle,#ff4a1f 0%,rgba(255,74,31,0) 65%);--o:.6;animation:spOrbIn 1.2s .35s ease forwards,spDrift2 9s ease-in-out infinite alternate}
+  .sp-orb.o3{width:60vmax;height:60vmax;left:-24vmax;bottom:-14vmax;background:radial-gradient(circle,#d4142b 0%,rgba(212,20,43,0) 65%);--o:.45;animation:spOrbIn 1.2s .5s ease forwards,spDrift2 9s ease-in-out infinite alternate-reverse}
+  .sp-orb.o4{width:64vmax;height:64vmax;right:-26vmax;bottom:-16vmax;background:radial-gradient(circle,#ff7a1f 0%,rgba(255,122,31,0) 65%);--o:.6;animation:spOrbIn 1.2s .65s ease forwards,spDrift1 8s ease-in-out infinite alternate-reverse}
   @keyframes spOrbIn{to{opacity:var(--o,.5)}}
   @keyframes spDrift1{to{transform:translate(8vmax,-6vmax) scale(1.1)}}
   @keyframes spDrift2{to{transform:translate(-10vmax,8vmax) scale(1.15)}}
   .sp-stage{position:relative;width:min(70vw,310px);aspect-ratio:1;display:grid;place-items:center;margin-bottom:28px}
   .sp-ring{position:absolute;inset:3%;border-radius:50%;border:2px solid rgba(255,255,255,.5);opacity:0}
   .sp-ring.r1{animation:spRing 1.6s 1.3s ease-out forwards}
-  .sp-ring.r2{animation:spRing 1.6s 1.6s ease-out forwards;border-color:rgba(255,201,51,.6)}
+  .sp-ring.r2{animation:spRing 1.6s 1.6s ease-out forwards;border-color:rgba(255,176,46,.6)}
   @keyframes spRing{0%{opacity:.8;transform:scale(.95)}100%{opacity:0;transform:scale(1.6)}}
   .sp-logo{position:relative;width:100%;aspect-ratio:1;border-radius:50%}
-  .sp-glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;background:conic-gradient(#ffc933,#2a63e0,#1e9bfa,#ffc933);filter:blur(26px);animation:spGlow 1.6s .3s ease-out forwards}
+  .sp-glow{position:absolute;inset:-6%;border-radius:50%;opacity:0;background:conic-gradient(#ffb02e,#ff4a1f,#d4142b,#ffb02e);filter:blur(26px);animation:spGlow 1.6s .3s ease-out forwards}
   @keyframes spGlow{0%{opacity:0;transform:scale(.7) rotate(0)}50%{opacity:.5}100%{opacity:.28;transform:scale(1) rotate(120deg)}}
   .sp-img{position:absolute;left:0;top:0;width:100%;height:auto;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 14px 28px rgba(0,0,0,.45));animation:spSpin 1.5s .15s cubic-bezier(.16,.85,.3,1.04) forwards}
   @keyframes spSpin{0%{opacity:0;transform:rotate(-600deg) scale(.25)}25%{opacity:1}100%{opacity:1;transform:none}}
