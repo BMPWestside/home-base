@@ -2138,7 +2138,7 @@ function todayRows(){
   const rows = [];
   if (typeof remTodayRows === "function") remTodayRows().forEach(r => rows.push(r));
   if (typeof BB !== "undefined" && typeof bbUnpaid === "function"){
-    bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 7).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
+    bbUnpaid().filter(b => !b.autopay && b.dueDate && daysTo(b.dueDate) <= 0).sort((a,b) => a.dueDate < b.dueDate ? -1 : 1).forEach(b => {
       const d = daysTo(b.dueDate), pct = d < 0 ? 100 : (7 - d) / 7 * 100;
       rows.push({ k:"bill", pid:b.provider, name:esc(bbProv(b.provider).name), key:dKey(d), val:money0(b.amount), pct, tone: d <= 3 ? "red" : "orange" });
     });
@@ -2150,7 +2150,7 @@ function todayRows(){
     const pct = avg ? since / avg * 100 : 50;
     rows.push({ k:"gas", name:"Gas", key: avg ? `${Math.round(pct)}%` : `${since}d`, val: avg ? `${since}/${avg}d` : "", pct, tone:pTone(pct, avg && since >= avg) });
   }
-  (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days >= 0 && x.days <= 7).sort((a,b) => a.days - b.days).slice(0,2).forEach(up => {
+  (S.dates||[]).map(dt => Object.assign({ dt }, nextOccurrence(dt))).filter(x => x.days === 0).slice(0,2).forEach(up => {
     const pct = (7 - up.days) / 7 * 100;
     rows.push({ k:"date", name:(up.dt.icon || "📅") + " " + esc(up.dt.name), key:dKey(up.days), val:fmtShort(up.iso), pct, tone: up.days <= 1 ? "orange" : "green" });
   });
