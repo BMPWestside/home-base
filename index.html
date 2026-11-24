@@ -290,6 +290,10 @@
   .btile{padding-bottom:20px}
   .pdl[hidden]{display:none !important}
 
+  .bnote{margin:10px 0 4px}.bnote label{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+  .bnr{display:flex;gap:6px}.bnr input{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid rgba(var(--wl),.3);background:rgba(var(--wl),.12);color:var(--ink);font:inherit;font-size:14px}
+  .bnr button{padding:0 14px;border:0;border-radius:12px;background:var(--acc);color:var(--onacc);font-weight:700}
+
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
   .rq input{width:100%;padding:7px 11px;border-radius:10px;border:1px solid rgba(var(--wl),.16);background:rgba(var(--wl),.08);color:var(--ink);font-size:14px;outline:none}
@@ -2976,6 +2980,7 @@ function bbReviewHTML(){
         <label class="full">Provider<select name="provider" data-newprov>${bbProvOptions(b.provider)}</select></label>${bbNewProv()}
         <label>Amount ($)<input name="amount" inputmode="decimal" value="${b.amount ? b.amount.toFixed(2) : ""}"></label>
         <label>Due date<input name="dueDate" type="date" value="${esc(b.dueDate||"")}"></label>
+        <label class="full">Description (optional)<input name="notes" maxlength="200" placeholder="e.g. Quarterly bill, includes late fee" value="${esc(b.notes||"")}"></label>
         <label class="full">Status<select name="status"><option value="due">Still to pay</option><option value="paid">Already paid</option></select></label>
         <label class="full pdl" hidden>Date paid<input name="paidDate" type="date" value="${isoToday()}" max="${isoToday()}"></label>
       </div>
@@ -3025,7 +3030,7 @@ function bbBindReview(host){
       let pid = g("provider"), category;
       if (pid === "__new"){ const np = bbProviderFromForm(card, pid); pid = np.id; category = np.category; await bbCall("provider", { provider: np }); }
       delete bbDrafts[id];
-      await bbUpdate(id, Object.assign({ provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: pdate, reason:"" }, category ? { category } : {}));
+      await bbUpdate(id, Object.assign({ provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: pdate, notes: g("notes").trim(), reason:"" }, category ? { category } : {}));
     }, "Confirmed");
   });
 }
@@ -3043,6 +3048,7 @@ function bbBillCard(b){
   if (b.accountNo) h += `<dt>Account</dt><dd>${esc(b.accountNo)}</dd>`;
   if (b.autopay) h += `<dt>Payment</dt><dd>Automatic debit</dd>`;
   h += `</dl>`;
+  h += `<div class="bnote"><label>Description</label><div class="bnr"><input id="bNote" maxlength="200" placeholder="Add a description…" value="${esc(b.notes||"")}" data-id="${esc(b.id)}"><button type="button" id="bNoteSave">Save</button></div></div>`;
   if (b.billerCode && b.status !== "paid") h += `<div class="bpay"><div><span>BPAY biller code</span><b>${esc(b.billerCode)}</b></div><button data-copy="${esc(b.billerCode)}" data-what="Biller code">Copy</button>${b.bpayRef ? `<div><span>Reference</span><b>${esc(b.bpayRef)}</b></div><button data-copy="${esc(b.bpayRef)}" data-what="Reference">Copy</button>` : ""}</div>`;
   h += `<div class="ra">`;
   if (b.fileUrl || b.emailUrl) h += `<a class="pill" href="${esc(b.fileUrl || b.emailUrl)}" target="_blank" rel="noopener">📄 Bill</a>`;
@@ -3063,6 +3069,7 @@ function bbBindSheet(){
   menu.querySelectorAll("[data-copy]").forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(b.dataset.copy); toast(b.dataset.what + " copied"); } catch(e){ toast(b.dataset.copy); } });
   menu.querySelectorAll("[data-paid]").forEach(b => b.onclick = () => bbMarkPaid(b.dataset.paid));
   menu.querySelectorAll("[data-unpaid]").forEach(b => b.onclick = () => { closeMenu(); bbRun(() => bbUpdate(b.dataset.unpaid, { status:"due", paidDate:"" }), "Moved back to Due"); });
+  const ns = menu.querySelector("#bNoteSave"); if (ns) ns.onclick = () => { const i = menu.querySelector("#bNote"); const v = i.value.trim(), id = i.dataset.id; const bl = BB.bills.find(x => x.id === id); if (bl) bl.notes = v; bbRun(() => bbUpdate(id, { notes: v }), "Description saved"); };
   const x = menu.querySelector("#cx"); if (x) x.onclick = closeMenu;
 }
 function bbMarkPaid(id){
@@ -3120,6 +3127,7 @@ function bbOpenAdd(){
     <form class="ed" id="bbMan" style="padding-top:0">
       <label>Provider</label><select class="set-sel" style="width:100%;margin:0" name="provider" data-newprov>${bbProvOptions("")}</select>${bbNewProv()}
       <div class="sg2" style="gap:8px"><div><label>Amount ($)</label><input name="amount" inputmode="decimal" placeholder="0.00"></div><div><label>Due date</label><input name="dueDate" type="date" value="${new Date(Date.now()+14*864e5).toISOString().slice(0,10)}"></div></div>
+      <label>Description (optional)</label><input name="notes" maxlength="200" placeholder="e.g. Quarterly bill, includes late fee" style="width:100%">
       <label>Status</label><select class="set-sel" style="width:100%;margin:0" name="status"><option value="due">Still to pay</option><option value="paid">Already paid</option></select>
       <div class="pdl" hidden><label>Date paid</label><input name="paidDate" type="date" value="${isoToday()}" max="${isoToday()}" style="width:100%"></div>
       <div class="acts"><button type="button" class="del" style="background:rgba(var(--wl),.1);color:var(--ink)" id="cx">Cancel</button><button type="submit" class="save">Add bill</button></div>
@@ -3142,7 +3150,7 @@ function bbOpenAdd(){
     bbRun(async () => {
       let pid = g("provider");
       if (pid === "__new"){ const np = bbProviderFromForm(f, pid); pid = np.id; await bbCall("provider", { provider: np }); }
-      await bbCall("add", { bill: { provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: pdate } });
+      await bbCall("add", { bill: { provider: pid, amount: amount.toFixed(2), dueDate: g("dueDate"), status: st, paidDate: pdate, notes: g("notes").trim() } });
     }, "Bill added");
   };
   openMenu();
