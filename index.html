@@ -1173,6 +1173,7 @@ const decCfg = t => JSON.parse(decodeURIComponent(escape(atob(t))));
       const changed = LOCAL.url !== cfg.u || LOCAL.house !== cfg.k;
       LOCAL.url = cfg.u; LOCAL.house = cfg.k;
       if ((cfg.w === "S" || cfg.w === "D") && !LOCAL.whoSet) LOCAL.who = cfg.w;   // a choice made in Sync wins over the link
+      if (cfg.nb){ LOCAL.noBills = 1; LOCAL.nbLock = 1; }   // link says: no Bills for this person
       if (cfg.b && cfg.b.u && cfg.b.k){ LOCAL.bbApi = cfg.b.u; LOCAL.bbKey = cfg.b.k; }
       if (changed){ LOCAL.synced = false; LOCAL.hVer = 0; }
       LOCAL.offline = false;
@@ -2737,7 +2738,7 @@ async function bbRun(fn, ok){
   try { await fn(); if (ok) toast(ok); } catch(e){ toast("BillBell: " + e.message); billsRefresh(false); }
 }
 async function billsRefresh(spin){
-  if (!bbOn() || BB.loading) return;
+  if (LOCAL.nbLock || !bbOn() || BB.loading) return;
   BB.loading = true;
   try {
     const data = await bbFetch("data");
