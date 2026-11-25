@@ -136,7 +136,7 @@
   .bnext .amt{font-weight:800}
   .bnext .w{font-size:12px;font-weight:800;color:var(--soft)}
   .bnext .w.late,.bnext .w.soon{color:var(--bad)}
-  .balert{display:flex;gap:12px;align-items:center;padding:12px 14px;margin-bottom:10px;border-radius:16px;background:rgba(255,165,58,.16);border:1px solid rgba(255,165,58,.35)}
+  .balert{position:relative;display:flex;gap:12px;align-items:center;padding:12px 14px;margin-bottom:10px;border-radius:16px;background:rgba(255,165,58,.16);border:1px solid rgba(255,165,58,.35)}
   .balert b{display:block;font-size:15px}
   .balert span{font-size:12.5px;color:var(--soft);font-weight:600}
   .bmonth{display:flex;justify-content:space-between;margin:16px 6px 8px;font-size:12px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--soft)}
@@ -293,6 +293,9 @@
   .bnote{margin:10px 0 4px}.bnote label{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
   .bnr{display:flex;gap:6px}.bnr input{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid rgba(var(--wl),.3);background:rgba(var(--wl),.12);color:var(--ink);font:inherit;font-size:14px}
   .bnr button{padding:0 14px;border:0;border-radius:12px;background:var(--acc);color:var(--onacc);font-weight:700}
+
+  .balert{padding-right:38px}
+  .balx{position:absolute;top:6px;right:6px;width:26px;height:26px;padding:0;border:0;border-radius:50%;background:rgba(var(--wl),.22);color:var(--ink);font-size:13px;line-height:26px;font-weight:700;opacity:.75}
 
   .gas.rems{padding:8px 12px}
   .rq{margin:6px 0 0}
@@ -2788,6 +2791,9 @@ function bbWhen(b){
   return { t:`due in ${d} days`, c: d <= 2 ? "soon" : "" };
 }
 function bbState(b){ if (b.status === "paid") return "paid"; if (b.autopay) return "auto"; if (b.dueDate && daysTo(b.dueDate) <= 3) return "urgent"; return "due"; }
+const bbMissKey = m => m.p.id + "|" + m.last;
+function bbMissList(){ try { return JSON.parse(localStorage.getItem("hb_bmiss") || "[]"); } catch(e){ return []; } }
+function bbMissHidden(m){ return bbMissList().includes(bbMissKey(m)); }   // comes back by itself once a newer bill arrives and then goes late again
 function bbMissing(){
   const out = [];
   BB.providers.forEach(p => {
@@ -2896,6 +2902,7 @@ function renderBills(){
   h += BB.view === "paid" ? bbPaidHTML() : BB.view === "review" ? bbReviewHTML() : bbDueHTML();
   h += `</div>`;
   host.innerHTML = h;
+  host.querySelectorAll("[data-bmx]").forEach(b => b.onclick = e => { e.stopPropagation(); const l = bbMissList(); l.push(b.dataset.bmx); try { localStorage.setItem("hb_bmiss", JSON.stringify(l.slice(-60))); } catch(_){} renderBills(); });
   host.querySelectorAll("[data-bv]").forEach(b => b.onclick = () => { BB.view = b.dataset.bv; renderBills(); });
   host.querySelectorAll("[data-prov]").forEach(b => { if (b.classList.contains("btile")) bbAttachHold(b); else b.onclick = () => bbOpenProvider(b.dataset.prov); });
   host.querySelectorAll("[data-bill]").forEach(b => b.onclick = () => bbOpenBill(b.dataset.bill));
@@ -2916,7 +2923,7 @@ function renderBills(){
 }
 function bbDueHTML(){
   let h = "";
-  bbMissing().forEach(m => { h += `<div class="balert">${bbAv(m.p,"sm")}<div><b>${esc(m.p.name)} hasn't arrived</b><span>${m.late} days later than usual · last ${niceD(m.last)}</span></div></div>`; });
+  bbMissing().filter(m => !bbMissHidden(m)).forEach(m => { h += `<div class="balert">${bbAv(m.p,"sm")}<div><b>${esc(m.p.name)} hasn't arrived</b><span>${m.late} days later than usual · last ${niceD(m.last)}</span></div><button type="button" class="balx" data-bmx="${esc(m.p.id + "|" + m.last)}" aria-label="Dismiss">✕</button></div>`; });
   const u = bbUnpaid();
   const dated = u.filter(x => x.dueDate).sort((a,c) => a.dueDate < c.dueDate ? -1 : 1);
   let nx = dated.filter(x => daysTo(x.dueDate) <= 14).slice(0, 5); if (!nx.length) nx = dated.slice(0, 1);
