@@ -4646,6 +4646,7 @@ render = function(){
 };
 function goTab(t, after){ if (isSpouse() && (t==="home" || t==="personal")) t = "shopping"; S.tab = t; save(); render(); document.getElementById("view").scrollTop = 0; if (after) setTimeout(after, 60); }
 
+function hbGreeting(d){ const h = (d || new Date()).getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; }
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
   const today = isoToday(), now = remNow();
@@ -4659,7 +4660,7 @@ function renderHome(){
   const dd = n => n === 0 ? "today" : n === 1 ? "tomorrow" : "in " + n + " days";
   const when = it => { const a = RL.at(it), d = a.slice(0,10); return a <= now ? (d < today ? "Overdue" : "Now") : d === today ? a.slice(11,16) : fmtDate(d) + " " + a.slice(11,16); };
   host.innerHTML = `
-    <div class="exc hwel"><div class="hwl"><b>Welcome back</b><span id="hDay">${new Date().toLocaleDateString("en-AU", { weekday:"long" })}</span><span id="hDate">${new Date().toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" })}</span></div><div class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</div></div>
+    <div class="exc hwel"><div class="hwl"><b id="hGreet">${hbGreeting()}</b><span id="hDay">${new Date().toLocaleDateString("en-AU", { weekday:"long" })}</span><span id="hDate">${new Date().toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" })}</span></div><div class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</div></div>
     <div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>
     <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Next reminders</span><em>${open.length ? open.length + " due" : "All clear"}</em></div>
       ${next.map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${when(it)}</small></div>`).join("") || `<div class="hl mute">Nothing due in the next 5 days</div>`}
@@ -4680,6 +4681,7 @@ function renderHome(){
   clearInterval(window._hClk);
   window._hClk = setInterval(() => { const t = document.getElementById("hTime"); if (!t){ clearInterval(window._hClk); return; }
     const n = new Date(); t.textContent = n.toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" });
+    const gr = document.getElementById("hGreet"); if (gr) gr.textContent = hbGreeting();
     document.getElementById("hDay").textContent = n.toLocaleDateString("en-AU", { weekday:"long" }); document.getElementById("hDate").textContent = n.toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" }); }, 15000);
 }
 
