@@ -4646,7 +4646,7 @@ render = function(){
 };
 function goTab(t, after){ if (isSpouse() && (t==="home" || t==="personal")) t = "shopping"; S.tab = t; save(); render(); document.getElementById("view").scrollTop = 0; if (after) setTimeout(after, 60); }
 
-function hbGreeting(d){ const h = (d || new Date()).getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; }
+function hbGreeting(d){ const h = (d || new Date()).getHours(); const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; const nm = LOCAL.nbLock ? "Srinath" : LOCAL.who === "D" ? "Deepthi" : "Surendra"; return g + ", " + nm; }
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
   const today = isoToday(), now = remNow();
