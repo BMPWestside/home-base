@@ -692,6 +692,10 @@
   .hw2 .hclock{color:var(--acc)}
   body.light .hwel .hw2 #hDateFull,body.light .hwel .hw2 .hclock,body.light .hwel .hwx{color:#fff}
 
+  .hw1 b .hg{color:#ffd84d}.hw1 b .hn{color:#7df3ff}
+  body.light .hwel .hw1 b .hg{color:#ffe27a}body.light .hwel .hw1 b .hn{color:#b9fbff}
+  .hw1 b .hg,.hw1 b .hn{text-shadow:0 1px 6px rgba(0,0,0,.25)}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -4670,6 +4674,7 @@ function hbWxLoad(){
   navigator.geolocation.getCurrentPosition(p => { const a = +p.coords.latitude.toFixed(2), o = +p.coords.longitude.toFixed(2); try { localStorage.setItem("hb_wxloc", JSON.stringify({ a, o })); } catch(e){} go(a, o); }, fb, { timeout: 8000, maximumAge: 3600000 });
 }
 function hbGreeting(d){ const h = (d || new Date()).getHours(); const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; const nm = LOCAL.nbLock ? "Srinath" : LOCAL.who === "D" ? "Deepthi" : "Surendra"; return g + ", " + nm; }
+function hbGreetHtml(){ const t = hbGreeting(), i = t.indexOf(","); return `<span class="hg">${t.slice(0, i + 1)}</span> <span class="hn">${t.slice(i + 2)}</span>`; }
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
   const today = isoToday(), now = remNow();
@@ -4683,7 +4688,7 @@ function renderHome(){
   const dd = n => n === 0 ? "today" : n === 1 ? "tomorrow" : "in " + n + " days";
   const when = it => { const a = RL.at(it), d = a.slice(0,10); return a <= now ? (d < today ? "Overdue" : "Now") : d === today ? a.slice(11,16) : fmtDate(d) + " " + a.slice(11,16); };
   host.innerHTML = `
-    <div class="exc hwel"><div class="hw1"><b id="hGreet">${hbGreeting()}</b><div class="hwx" id="hWx">${hbWxHtml()}</div></div><div class="hw2"><span id="hDateFull">${hbDateFull()}</span><span class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</span></div></div>
+    <div class="exc hwel"><div class="hw1"><b id="hGreet">${hbGreetHtml()}</b><div class="hwx" id="hWx">${hbWxHtml()}</div></div><div class="hw2"><span id="hDateFull">${hbDateFull()}</span><span class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</span></div></div>
     <div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>
     <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Next reminders</span><em>${open.length ? open.length + " due" : "All clear"}</em></div>
       ${next.map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${when(it)}</small></div>`).join("") || `<div class="hl mute">Nothing due in the next 5 days</div>`}
@@ -4704,7 +4709,7 @@ function renderHome(){
   clearInterval(window._hClk);
   window._hClk = setInterval(() => { const t = document.getElementById("hTime"); if (!t){ clearInterval(window._hClk); return; }
     const n = new Date(); t.textContent = n.toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" });
-    const gr = document.getElementById("hGreet"); if (gr) gr.textContent = hbGreeting();
+    const gr = document.getElementById("hGreet"); if (gr) gr.innerHTML = hbGreetHtml();
     const df = document.getElementById("hDateFull"); if (df) df.textContent = hbDateFull(); }, 15000);
   hbWxLoad();
 }
