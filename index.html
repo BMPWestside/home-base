@@ -683,6 +683,15 @@
   body.expenses #ins > div:last-child > .insflex{flex:none;max-height:330px;min-height:0;overflow-y:auto}
   .exbody .extiles{grid-template-columns:repeat(5,1fr)}
 
+  .hwel{flex-direction:column;align-items:stretch;gap:8px}
+  .hw1,.hw2{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .hw1 b{font-size:20px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .hwx{display:flex;align-items:center;gap:5px;flex:none;font-size:20px;font-weight:800;min-height:26px}
+  .hwx .wxi{font-size:22px;line-height:1}
+  .hw2 #hDateFull,.hw2 .hclock{font-size:16px;font-weight:800;letter-spacing:0;color:var(--ink);white-space:nowrap}
+  .hw2 .hclock{color:var(--acc)}
+  body.light .hwel .hw2 #hDateFull,body.light .hwel .hw2 .hclock,body.light .hwel .hwx{color:#fff}
+
   .acts3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:2px 8px 8px}
   .acts3 button{padding:12px 6px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700;color:var(--ink)}
   .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
@@ -4646,6 +4655,20 @@ render = function(){
 };
 function goTab(t, after){ if (isSpouse() && (t==="home" || t==="personal")) t = "shopping"; S.tab = t; save(); render(); document.getElementById("view").scrollTop = 0; if (after) setTimeout(after, 60); }
 
+function hbDateFull(){ return new Date().toLocaleDateString("en-AU", { weekday:"long", day:"numeric", month:"long", year:"numeric" }).replace(/,/g, ""); }
+function hbWxIcon(c, day){ if (c === 0 || c === 1) return day ? "☀️" : "🌙"; if (c === 2) return day ? "⛅" : "☁️"; if (c === 3 || c === 45 || c === 48) return "☁️"; if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return "🌧️"; if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "❄️"; if (c >= 95) return "⛈️"; return "☁️"; }
+function hbWxHtml(){ let w = null; try { w = JSON.parse(localStorage.getItem("hb_wx") || "null"); } catch(e){} return w ? `<span class="wxi">${hbWxIcon(w.c, w.d)}</span><span class="wxt">${w.t}°</span>` : ""; }
+function hbWxLoad(){
+  let w = null; try { w = JSON.parse(localStorage.getItem("hb_wx") || "null"); } catch(e){}
+  if (w && Date.now() - w.ts < 20 * 60 * 1000) return;
+  const go = (lat, lon) => fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,weather_code,is_day&timezone=auto")
+    .then(r => r.json()).then(j => { const c = j.current; if (!c) return; try { localStorage.setItem("hb_wx", JSON.stringify({ t: Math.round(c.temperature_2m), c: c.weather_code, d: c.is_day, ts: Date.now() })); } catch(e){} const el = document.getElementById("hWx"); if (el) el.innerHTML = hbWxHtml(); }).catch(() => {});
+  let loc = null; try { loc = JSON.parse(localStorage.getItem("hb_wxloc") || "null"); } catch(e){}
+  if (loc) return go(loc.a, loc.o);
+  const fb = () => go(-33.75, 150.69);   // Penrith NSW if location isn't allowed
+  if (!navigator.geolocation) return fb();
+  navigator.geolocation.getCurrentPosition(p => { const a = +p.coords.latitude.toFixed(2), o = +p.coords.longitude.toFixed(2); try { localStorage.setItem("hb_wxloc", JSON.stringify({ a, o })); } catch(e){} go(a, o); }, fb, { timeout: 8000, maximumAge: 3600000 });
+}
 function hbGreeting(d){ const h = (d || new Date()).getHours(); const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; const nm = LOCAL.nbLock ? "Srinath" : LOCAL.who === "D" ? "Deepthi" : "Surendra"; return g + ", " + nm; }
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
@@ -4660,7 +4683,7 @@ function renderHome(){
   const dd = n => n === 0 ? "today" : n === 1 ? "tomorrow" : "in " + n + " days";
   const when = it => { const a = RL.at(it), d = a.slice(0,10); return a <= now ? (d < today ? "Overdue" : "Now") : d === today ? a.slice(11,16) : fmtDate(d) + " " + a.slice(11,16); };
   host.innerHTML = `
-    <div class="exc hwel"><div class="hwl"><b id="hGreet">${hbGreeting()}</b><span id="hDay">${new Date().toLocaleDateString("en-AU", { weekday:"long" })}</span><span id="hDate">${new Date().toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" })}</span></div><div class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</div></div>
+    <div class="exc hwel"><div class="hw1"><b id="hGreet">${hbGreeting()}</b><div class="hwx" id="hWx">${hbWxHtml()}</div></div><div class="hw2"><span id="hDateFull">${hbDateFull()}</span><span class="hclock" id="hTime">${new Date().toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" })}</span></div></div>
     <div id="today"></div><div class="divider" id="tdiv" style="display:none"></div>
     <div class="exc hcard" data-go="personal"><div class="hh"><span>⏰ Next reminders</span><em>${open.length ? open.length + " due" : "All clear"}</em></div>
       ${next.map(it => `<div class="hl ${RL.at(it) <= now ? "late" : ""}"><b>${esc(it.title || it.text || "Reminder")}</b><small>${when(it)}</small></div>`).join("") || `<div class="hl mute">Nothing due in the next 5 days</div>`}
@@ -4682,7 +4705,8 @@ function renderHome(){
   window._hClk = setInterval(() => { const t = document.getElementById("hTime"); if (!t){ clearInterval(window._hClk); return; }
     const n = new Date(); t.textContent = n.toLocaleTimeString("en-AU", { hour:"numeric", minute:"2-digit" });
     const gr = document.getElementById("hGreet"); if (gr) gr.textContent = hbGreeting();
-    document.getElementById("hDay").textContent = n.toLocaleDateString("en-AU", { weekday:"long" }); document.getElementById("hDate").textContent = n.toLocaleDateString("en-AU", { day:"numeric", month:"long", year:"numeric" }); }, 15000);
+    const df = document.getElementById("hDateFull"); if (df) df.textContent = hbDateFull(); }, 15000);
+  hbWxLoad();
 }
 
 function renderSettingsPage(){
