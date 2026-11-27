@@ -2367,11 +2367,26 @@ function openAdder(kind){
   inp.focus();
   const commit = () => {
     const v = inp.value.trim(); if (!v) return false;
-    if (kind==="card"){ cards().unshift(mk(v, [], S.tab)); save(); renderBands(); }
+    const norm = x => String(x || "").trim().toLowerCase().replace(/\s+/g, " ");
+    if (kind==="card"){
+      const dup = cards().find(c => norm(c.title) === norm(v));
+      if (dup){ toast(`"${dup.title}" list already exists`); inp.value = ""; return false; }
+      cards().unshift(mk(v, [], S.tab)); save(); renderBands();
+    }
     else {
       const c = findCard(openId); if (!c) return false;
-      v.split(/\s*,\s*/).filter(Boolean).reverse().forEach(t => c.items.unshift(mkItem(t)));
+      const already = [], back = [];
+      const seen = new Set();
+      v.split(/\s*,\s*/).filter(Boolean).reverse().forEach(t => {
+        if (seen.has(norm(t))) return; seen.add(norm(t));
+        const ex = c.items.find(x => norm(x.text) === norm(t));
+        if (ex && !ex.done){ already.push(ex.text); return; }
+        if (ex){ ex.done = false; ex.counted = false; c.items = [ex, ...c.items.filter(x => x !== ex)]; back.push(ex.text); return; }
+        c.items.unshift(mkItem(t));
+      });
       save(); renderSheet();
+      const msg = [already.length ? `Already on the list: ${already.reverse().join(", ")}` : "", back.length ? `Moved back from ticked: ${back.reverse().join(", ")}` : ""].filter(Boolean).join(" · ");
+      if (msg) toast(msg);
     }
     inp.value = ""; return true;
   };
