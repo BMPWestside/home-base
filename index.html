@@ -1181,6 +1181,10 @@ const isWife = () => false;   // Home Base: same view for everyone
 const encCfg = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/=+$/,"");
 const decCfg = t => JSON.parse(decodeURIComponent(escape(atob(t))));
 (function readLinkConfig(){
+  const q = new URLSearchParams(location.search);
+  if (q.get("nb") === "1"){ LOCAL.noBills = 1; LOCAL.nbLock = 1; }          // plain link: Bills off
+  if (q.get("n")){ LOCAL.name = q.get("n").slice(0, 30); }                     // plain link: name for the greeting
+  if (q.get("nb") || q.get("n")){ if (!LOCAL.url) LOCAL.offline = true; saveLocal(); }   // plain link: no setup popup
   const m = location.search.match(/[?&]c=([^&#]+)/);
   if (!m) return;
   try {
@@ -4673,7 +4677,7 @@ function hbWxLoad(){
   if (!navigator.geolocation) return fb();
   navigator.geolocation.getCurrentPosition(p => { const a = +p.coords.latitude.toFixed(2), o = +p.coords.longitude.toFixed(2); try { localStorage.setItem("hb_wxloc", JSON.stringify({ a, o })); } catch(e){} go(a, o); }, fb, { timeout: 8000, maximumAge: 3600000 });
 }
-function hbGreeting(d){ const h = (d || new Date()).getHours(); const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; const nm = LOCAL.nbLock ? "Srinath" : LOCAL.who === "D" ? "Deepthi" : "Surendra"; return g + ", " + nm; }
+function hbGreeting(d){ const h = (d || new Date()).getHours(); const g = h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; const nm = LOCAL.name ? LOCAL.name : LOCAL.nbLock ? "Srinath" : LOCAL.who === "D" ? "Deepthi" : "Surendra"; return g + ", " + nm; }
 function hbGreetHtml(){ const t = hbGreeting(), i = t.indexOf(","); return `<span class="hg">${t.slice(0, i + 1)}</span> <span class="hn">${t.slice(i + 2)}</span>`; }
 function renderHome(){
   const host = document.getElementById("home"); if (!host) return;
