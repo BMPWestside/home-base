@@ -1202,6 +1202,14 @@ const decCfg = t => JSON.parse(decodeURIComponent(escape(atob(t))));
   } catch(e){}
 })();
 
+// households that never get Bills (stored as a hash, not the key itself)
+const NB_HOUSES = { "ef8c0254": "Srinath" };
+(function lockByHouse(){
+  if (!LOCAL.house) return;
+  let h = 0x811c9dc5; for (const c of String(LOCAL.house)){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  const nm = NB_HOUSES[h.toString(16)];
+  if (nm){ LOCAL.noBills = 1; LOCAL.nbLock = 1; LOCAL.name = nm; saveLocal(); }
+})();
 let SNAP = new Map();
 let pushTimer = null, busy = false, again = false;
 let syncState = { status: LOCAL.url ? "idle" : "off", at: 0, err: "" };
